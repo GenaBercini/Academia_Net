@@ -1,0 +1,475 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\TPIAcademia2daEntrega\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\especialidadeslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\especialidadeslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\especialidadesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\especialidadesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\subjectlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\subjectlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\planeslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\planeslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\cursoslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\cursoslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\cursosdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\cursosdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\planeslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\planeslist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\userdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\userdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\userdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\userdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\especialidadesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\especialidadesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\planesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\planesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\planesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\planesdetalle.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15693D5B-1F9B-473A-B53D-D81E96ECF398}|Data\\Data.csproj|d:\\tpiacademia2daentrega\\data\\tpicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15693D5B-1F9B-473A-B53D-D81E96ECF398}|Data\\Data.csproj|solutionrelative:data\\tpicontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\menu.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12E47EC2-8DB0-4B10-BF50-814B7047B468}|WebAPI\\WebAPI.csproj|d:\\tpiacademia2daentrega\\webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12E47EC2-8DB0-4B10-BF50-814B7047B468}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\userlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\userlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\userlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\userlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|D:\\TPIAcademia2daEntrega\\windowsforms\\subjectlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\subjectlist.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{12E47EC2-8DB0-4B10-BF50-814B7047B468}|WebAPI\\WebAPI.csproj|d:\\tpiacademia2daentrega\\webapi\\planendpoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{12E47EC2-8DB0-4B10-BF50-814B7047B468}|WebAPI\\WebAPI.csproj|solutionrelative:webapi\\planendpoints.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{003E613C-5001-41DC-ABC3-76CCA857D3C1}|DTOs\\DTOs.csproj|d:\\tpiacademia2daentrega\\dtos\\plandto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{003E613C-5001-41DC-ABC3-76CCA857D3C1}|DTOs\\DTOs.csproj|solutionrelative:dtos\\plandto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{EBD11591-7146-4F55-A1F3-6DBEA8A0AF48}|Domain.Model\\Domain.Model.csproj|d:\\tpiacademia2daentrega\\domain.model\\plan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{EBD11591-7146-4F55-A1F3-6DBEA8A0AF48}|Domain.Model\\Domain.Model.csproj|solutionrelative:domain.model\\plan.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15693D5B-1F9B-473A-B53D-D81E96ECF398}|Data\\Data.csproj|d:\\tpiacademia2daentrega\\data\\planrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15693D5B-1F9B-473A-B53D-D81E96ECF398}|Data\\Data.csproj|solutionrelative:data\\planrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99176DD8-76DD-406F-B261-E5F1A5E1F228}|API.Clients\\API.Clients.csproj|d:\\tpiacademia2daentrega\\api.clients\\plansapiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{99176DD8-76DD-406F-B261-E5F1A5E1F228}|API.Clients\\API.Clients.csproj|solutionrelative:api.clients\\plansapiclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15693D5B-1F9B-473A-B53D-D81E96ECF398}|Data\\Data.csproj|d:\\tpiacademia2daentrega\\data\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15693D5B-1F9B-473A-B53D-D81E96ECF398}|Data\\Data.csproj|solutionrelative:data\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99176DD8-76DD-406F-B261-E5F1A5E1F228}|API.Clients\\API.Clients.csproj|d:\\tpiacademia2daentrega\\api.clients\\authwindowsforms.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{99176DD8-76DD-406F-B261-E5F1A5E1F228}|API.Clients\\API.Clients.csproj|solutionrelative:api.clients\\authwindowsforms.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{99176DD8-76DD-406F-B261-E5F1A5E1F228}|API.Clients\\API.Clients.csproj|d:\\tpiacademia2daentrega\\api.clients\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{99176DD8-76DD-406F-B261-E5F1A5E1F228}|API.Clients\\API.Clients.csproj|solutionrelative:api.clients\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|d:\\tpiacademia2daentrega\\windowsforms\\subjectdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7E53D187-8FD5-6602-2910-6A3490F98A1C}|WindowsForms\\WindowsForms.csproj|solutionrelative:windowsforms\\subjectdetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{003E613C-5001-41DC-ABC3-76CCA857D3C1}|DTOs\\DTOs.csproj|d:\\tpiacademia2daentrega\\dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{003E613C-5001-41DC-ABC3-76CCA857D3C1}|DTOs\\DTOs.csproj|solutionrelative:dtos\\userdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "UserDetail.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\UserDetail.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\UserDetail.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\UserDetail.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:03:25.668Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "UserList.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\UserList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\UserList.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\UserList.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:52:30.03Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Menu.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\Menu.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\Menu.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\Menu.cs",
+              "RelativeToolTip": "WindowsForms\\Menu.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAiwDIAAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:47:38.042Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "TPIContext.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\Data\\TPIContext.cs",
+              "RelativeDocumentMoniker": "Data\\TPIContext.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\Data\\TPIContext.cs",
+              "RelativeToolTip": "Data\\TPIContext.cs",
+              "ViewState": "AgIAAFMAAAAAAAAAAAAAwHEAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:45:34.429Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WebAPI\\Program.cs",
+              "RelativeDocumentMoniker": "WebAPI\\Program.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WebAPI\\Program.cs",
+              "RelativeToolTip": "WebAPI\\Program.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAADwAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:44:44.817Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "PlanesList.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\PlanesList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\PlanesList.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\PlanesList.cs",
+              "RelativeToolTip": "WindowsForms\\PlanesList.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:46:23.823Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "EspecialidadesList.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\EspecialidadesList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\EspecialidadesList.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\EspecialidadesList.cs",
+              "RelativeToolTip": "WindowsForms\\EspecialidadesList.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAAC0AAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T02:10:12.968Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "UserList.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\UserList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\UserList.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\UserList.cs",
+              "RelativeToolTip": "WindowsForms\\UserList.cs",
+              "ViewState": "AgIAAEAAAAAAAAAAAAAcwE4AAABOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:52:31.356Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "SubjectList.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\SubjectList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\SubjectList.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\SubjectList.cs",
+              "RelativeToolTip": "WindowsForms\\SubjectList.cs",
+              "ViewState": "AgIAACAAAAAAAAAAAAAwwDgAAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:54:21.94Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "EspecialidadesDetalle.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\EspecialidadesDetalle.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\EspecialidadesDetalle.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\EspecialidadesDetalle.cs",
+              "RelativeToolTip": "WindowsForms\\EspecialidadesDetalle.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T02:07:22.022Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "EspecialidadesDetalle.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\EspecialidadesDetalle.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\EspecialidadesDetalle.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\EspecialidadesDetalle.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T02:07:20.487Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CursosDetalle.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\CursosDetalle.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\CursosDetalle.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\CursosDetalle.cs",
+              "RelativeToolTip": "WindowsForms\\CursosDetalle.cs",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAuwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T02:10:24.032Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "CursosList.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\CursosList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\CursosList.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\CursosList.cs",
+              "RelativeToolTip": "WindowsForms\\CursosList.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAowAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T02:10:29.892Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Menu.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\Menu.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\Menu.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\Menu.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:46:56.997Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UserDetail.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\UserDetail.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\UserDetail.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\UserDetail.cs",
+              "RelativeToolTip": "WindowsForms\\UserDetail.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:03:27.624Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "PlanesList.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\PlanesList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\PlanesList.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\PlanesList.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:46:21.705Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "PlanesDetalle.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\PlanesDetalle.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\PlanesDetalle.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\PlanesDetalle.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:46:07.875Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "PlanesDetalle.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\PlanesDetalle.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\PlanesDetalle.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\PlanesDetalle.cs",
+              "RelativeToolTip": "WindowsForms\\PlanesDetalle.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:46:10.224Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "SubjectList.cs [Dise\u00F1o]",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\SubjectList.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\SubjectList.cs",
+              "ToolTip": "C:\\Users\\berci\\Downloads\\TPAcademia\\TPAcademia\\WindowsForms\\SubjectList.cs [Dise\u00F1o]",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:52:27.834Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "PlanRepository.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\Data\\PlanRepository.cs",
+              "RelativeDocumentMoniker": "Data\\PlanRepository.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\Data\\PlanRepository.cs",
+              "RelativeToolTip": "Data\\PlanRepository.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAACAAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:51:02.085Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "PlansApiClient.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\API.Clients\\PlansApiClient.cs",
+              "RelativeDocumentMoniker": "API.Clients\\PlansApiClient.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\API.Clients\\PlansApiClient.cs",
+              "RelativeToolTip": "API.Clients\\PlansApiClient.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:50:55.87Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Plan.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\Domain.Model\\Plan.cs",
+              "RelativeDocumentMoniker": "Domain.Model\\Plan.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\Domain.Model\\Plan.cs",
+              "RelativeToolTip": "Domain.Model\\Plan.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:51:27.608Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "PlanDTO.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\DTOs\\PlanDTO.cs",
+              "RelativeDocumentMoniker": "DTOs\\PlanDTO.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\DTOs\\PlanDTO.cs",
+              "RelativeToolTip": "DTOs\\PlanDTO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:51:45.464Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "PlanEndpoints.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WebAPI\\PlanEndpoints.cs",
+              "RelativeDocumentMoniker": "WebAPI\\PlanEndpoints.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WebAPI\\PlanEndpoints.cs",
+              "RelativeToolTip": "WebAPI\\PlanEndpoints.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAA1wAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:51:53.912Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "IAuthService.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\API.Clients\\IAuthService.cs",
+              "RelativeDocumentMoniker": "API.Clients\\IAuthService.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\API.Clients\\IAuthService.cs",
+              "RelativeToolTip": "API.Clients\\IAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:39:02.113Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "SubjectDetail.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\WindowsForms\\SubjectDetail.cs",
+              "RelativeDocumentMoniker": "WindowsForms\\SubjectDetail.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\WindowsForms\\SubjectDetail.cs",
+              "RelativeToolTip": "WindowsForms\\SubjectDetail.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAuwGIAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T01:07:52.684Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\Data\\UserRepository.cs",
+              "RelativeDocumentMoniker": "Data\\UserRepository.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\Data\\UserRepository.cs",
+              "RelativeToolTip": "Data\\UserRepository.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAcwDAAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-29T23:59:16.466Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "AuthWindowsForms.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\API.Clients\\AuthWindowsForms.cs",
+              "RelativeDocumentMoniker": "API.Clients\\AuthWindowsForms.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\API.Clients\\AuthWindowsForms.cs",
+              "RelativeToolTip": "API.Clients\\AuthWindowsForms.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACIAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:06:45.721Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "UserDTO.cs",
+              "DocumentMoniker": "D:\\TPIAcademia2daEntrega\\DTOs\\UserDTO.cs",
+              "RelativeDocumentMoniker": "DTOs\\UserDTO.cs",
+              "ToolTip": "D:\\TPIAcademia2daEntrega\\DTOs\\UserDTO.cs",
+              "RelativeToolTip": "DTOs\\UserDTO.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAswAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-30T00:13:05.872Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
