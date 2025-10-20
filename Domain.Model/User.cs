@@ -43,7 +43,11 @@ namespace Domain.Model
         public DateTime? DateOfHire { get; private set; }           
         public UserStatus Status { get; private set; }
 
-        public User(
+        //Relacion con tabla intermedia CoursoMaterias
+        public ICollection<UserCourseSubject> CoursesSubjects { get; set; } = new List<UserCourseSubject>();
+
+        public User(int id, string userName, string password, string nombre, string apellido, string email, string adress, UserType typeUser)
+        {
         int id,
         string userName,
         string password,

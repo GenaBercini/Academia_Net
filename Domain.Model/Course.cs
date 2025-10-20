@@ -9,7 +9,16 @@
         public string Comision { get; private set; }
         public bool IsDeleted { get;  set; }
 
- 
+        //Relacion con Especialidad 
+        public Specialty Specialty { get; set; }
+        public int SpecialtyId { get; set; }   // FK hacia Specialty
+
+        //Relacion con Especialidad 
+        public ICollection<CourseSubject> CoursesSubjects { get; set; } = new List<CourseSubject>();
+        public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+
+
+
 
         public Course (int id, int cupo, int año_calendario, string turno, string comision)
         {

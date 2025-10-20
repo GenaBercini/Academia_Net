@@ -10,6 +10,14 @@ namespace Domain.Model
         public bool Obligatoria { get; private set; }
         public bool Habilitado { get; set; }
 
+        //Relacion con Cursos
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
+
+        //Tabla Intermedia Cursos Materias
+        public ICollection<CourseSubject> CoursesSubjects { get; set; } = new List<CourseSubject>();
+
+
+
         public Subject(int id, string desc, int hsSemanales, bool obligatoria, bool habilitado = true)
         {
             SetId(id);

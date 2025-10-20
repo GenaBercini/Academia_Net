@@ -7,7 +7,12 @@
         public int Año_calendario { get; private set; }
         public bool IsDeleted { get;  set; }
 
-     
+        //Tablas intermedias
+        public int SpecialtyId { get; set; }
+        public Specialty Specialty { get; set; }
+        public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+
+
 
         public Plan(int id, string descripcion, int año_calendario)
         {

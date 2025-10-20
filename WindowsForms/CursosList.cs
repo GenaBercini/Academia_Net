@@ -118,7 +118,6 @@ namespace WindowsForms
                 {
                     eliminarButton.Enabled = false;
                     modificarButton.Enabled = false;
-                    MessageBox.Show("No se encontraron cursos disponibles.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
