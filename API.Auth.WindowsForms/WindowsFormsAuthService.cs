@@ -1,7 +1,6 @@
-﻿
-using DTOs;
+﻿using API.Clients;
 
-namespace API.Clients
+namespace API.Auth.WindowsForms
 {
     public class WindowsFormsAuthService : IAuthService
     {

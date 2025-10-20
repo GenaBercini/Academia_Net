@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
@@ -28,8 +29,8 @@ namespace Domain.Model
     {
         public int Id { get; private set; }
         public string UserName { get; private set; }
-        public string Nombre { get; private set; }
-        public string Apellido { get; private set; }
+        public string Name { get; private set; }
+        public string LastName { get; private set; }
         public string PasswordHash { get; private set; }
         public string Salt { get; private set; }
         public string Email { get; private set; }
@@ -47,35 +48,44 @@ namespace Domain.Model
 
         public User(int id, string userName, string password, string nombre, string apellido, string email, string adress, UserType typeUser)
         {
+        int id,
+        string userName,
+        string password,
+        string name,
+        string lastname,
+        string email,
+        string adress,
+        UserType typeUser,
+        string dni,
+        string? studentNumber = null,
+        JobPositionType? jobPosition = null,
+        DateTime? dateOfAdmission = null,
+        DateTime? dateOfHire = null)
+        {
+            Debug.WriteLine($"Password: {password}");
             SetId(id);
             SetUserName(userName);
             SetPassword(password);
-            SetNombre(nombre);
-            SetApellido(apellido);
+            SetName(name);
+            SetLastName(lastname);
             SetEmail(email);
-            SetStatus(UserStatus.Active);
-            SetTypeUser(typeUser);
             SetAdress(adress);
+            SetTypeUser(typeUser);
+            SetStatus(UserStatus.Active);
+            SetDni(dni); 
+            if(typeUser == UserType.Student && !(string.IsNullOrWhiteSpace(studentNumber)) && dateOfAdmission.HasValue)
+            {
+                SetStudentNumber(studentNumber);
+                SetDateOfAdmission(dateOfAdmission.Value);
+            }
+            else if(typeUser == UserType.Teacher && jobPosition != null && dateOfHire.HasValue)
+            {
+                SetJobPosition(jobPosition.Value);
+                SetDateOfHire(dateOfHire.Value);
+            }
         }
 
-        public User(int id, string userName, string nombre, string apellido, string email, string adress, UserType typeUser, string salt, string passwordHash)
-        {
-            Id = id;
-            UserName = userName;
-            Nombre = nombre;
-            Apellido = apellido;
-            Email = email;
-            Adress = adress;
-            TypeUser = typeUser;
-            Status = UserStatus.Active;
-            Salt = salt;
-            PasswordHash = passwordHash;
-        }
-
-        public static User CreateAdminSeed(int id, string userName, string nombre, string apellido, string email, string adress, UserType typeUser, string password)
-        {
-            return new User(id, userName, password, nombre, apellido, email, adress, typeUser);
-        }
+        private User() { }
 
         public void SetUserName(string userName)
         {
@@ -103,24 +113,27 @@ namespace Domain.Model
             Dni = dni;
         }
 
-        public void SetNombre(string nombre)
+        public void SetName(string name)
         {
-            if (string.IsNullOrWhiteSpace(nombre))
-                throw new ArgumentException("El nombre no puede ser nulo o vacío.", nameof(nombre));
-            Nombre = nombre;
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("El nombre no puede ser nulo o vacío.", nameof(name));
+            Name = name;
         }
 
-        public void SetApellido(string apellido)
+        public void SetLastName(string lastname)
         {
-            if (string.IsNullOrWhiteSpace(apellido))
-                throw new ArgumentException("El apellido no puede ser nulo o vacío.", nameof(apellido));
-            Apellido = apellido;
+            if (string.IsNullOrWhiteSpace(lastname))
+                throw new ArgumentException("El apellido no puede ser nulo o vacío.", nameof(lastname));
+            LastName = lastname;
         }
 
-        public void SetStudentNumber(string? studentNumber)
+        public void SetStudentNumber(string studentNumber)
         {
+            if (string.IsNullOrWhiteSpace(studentNumber)) {
+                throw new ArgumentException("El numero de legajo no puede ser nulo o vacío.", nameof(studentNumber));
+            }
             if (TypeUser != UserType.Student)
-                throw new InvalidOperationException("Solo los estudiantes pueden tener número de estudiante.");
+                throw new ArgumentException("Solo los estudiantes pueden tener número de estudiante.", nameof(studentNumber));
             StudentNumber = string.IsNullOrWhiteSpace(studentNumber) ? null : studentNumber;
         }
 
@@ -138,35 +151,31 @@ namespace Domain.Model
             TypeUser = typeUser;
         }
 
-        public void SetJobPosition(JobPositionType? jobPosition)
+        public void SetJobPosition(JobPositionType jobPosition)
         {
             if (TypeUser != UserType.Teacher)
-                throw new InvalidOperationException("Solo los docentes pueden tener un puesto de trabajo.");
-
-            if (jobPosition.HasValue && !Enum.IsDefined(typeof(JobPositionType), jobPosition.Value))
-                throw new ArgumentException("El puesto de trabajo no es válido.");
-
+                throw new ArgumentException("Solo los docentes pueden tener un puesto de trabajo.", nameof(jobPosition));
             JobPosition = jobPosition;
         }
 
-        public void SetDateOfAdmission(DateTime? date)
+        public void SetDateOfAdmission(DateTime date)
         {
             if (TypeUser != UserType.Student)
                 throw new InvalidOperationException("Solo los estudiantes pueden tener fecha de admisión.");
 
-            if (date.HasValue && date.Value > DateTime.UtcNow)
-                throw new ArgumentException("La fecha de admisión no puede ser futura.");
+            if (date > DateTime.UtcNow)
+                throw new ArgumentException("La fecha de admisión no puede ser futura.", nameof(date));
 
             DateOfAdmission = date;
         }
 
-        public void SetDateOfHire(DateTime? date)
+        public void SetDateOfHire(DateTime date)
         {
             if (TypeUser != UserType.Teacher)
-                throw new InvalidOperationException("Solo los docentes pueden tener fecha de contratación.");
+                throw new ArgumentException("Solo los docentes pueden tener fecha de contratación.", nameof(date));
 
-            if (date.HasValue && date.Value > DateTime.UtcNow)
-                throw new ArgumentException("La fecha de contratación no puede ser futura.");
+            if (date > DateTime.UtcNow)
+                throw new ArgumentException("La fecha de contratación no puede ser futura.", nameof(date));
 
             DateOfHire = date;
         }
@@ -206,14 +215,14 @@ namespace Domain.Model
             return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         }
 
-        public static string GenerateSalt()
+        private static string GenerateSalt()
         {
             byte[] saltBytes = new byte[32];
             RandomNumberGenerator.Fill(saltBytes);
             return Convert.ToBase64String(saltBytes);
         }
 
-        public static string HashPassword(string password, string salt)
+        private static string HashPassword(string password, string salt)
         {
             using var pbkdf2 = new Rfc2898DeriveBytes(password, Convert.FromBase64String(salt), 10000, HashAlgorithmName.SHA256);
             byte[] hashBytes = pbkdf2.GetBytes(32);

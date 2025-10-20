@@ -116,6 +116,7 @@
             // 
             // primaryPanel
             // 
+            primaryPanel.BackgroundImage = Properties.Resources.fondo;
             primaryPanel.Dock = DockStyle.Fill;
             primaryPanel.Location = new Point(122, 0);
             primaryPanel.Name = "primaryPanel";

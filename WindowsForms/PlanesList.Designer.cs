@@ -47,13 +47,13 @@
             plansDataGridView.ReadOnly = true;
             plansDataGridView.RowHeadersWidth = 82;
             plansDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            plansDataGridView.Size = new Size(862, 358);
+            plansDataGridView.Size = new Size(778, 394);
             plansDataGridView.TabIndex = 2;
             // 
             // eliminarButton
             // 
             eliminarButton.Enabled = false;
-            eliminarButton.Location = new Point(520, 393);
+            eliminarButton.Location = new Point(241, 418);
             eliminarButton.Margin = new Padding(2, 1, 2, 1);
             eliminarButton.Name = "eliminarButton";
             eliminarButton.Size = new Size(81, 22);
@@ -65,7 +65,7 @@
             // modificarButton
             // 
             modificarButton.Enabled = false;
-            modificarButton.Location = new Point(653, 393);
+            modificarButton.Location = new Point(127, 418);
             modificarButton.Margin = new Padding(2, 1, 2, 1);
             modificarButton.Name = "modificarButton";
             modificarButton.Size = new Size(81, 22);
@@ -76,7 +76,7 @@
             // 
             // agregarButton
             // 
-            agregarButton.Location = new Point(792, 393);
+            agregarButton.Location = new Point(11, 418);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";
             agregarButton.Size = new Size(81, 22);
@@ -89,7 +89,8 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(884, 450);
+            BackgroundImage = Properties.Resources.fondo;
+            ClientSize = new Size(800, 450);
             Controls.Add(agregarButton);
             Controls.Add(modificarButton);
             Controls.Add(eliminarButton);

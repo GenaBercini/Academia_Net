@@ -54,34 +54,30 @@ namespace Data
                 entity.Property(entity => entity.Status).HasConversion<int>();
 
                 // Seed: usuario admin inicial
-
-                var admin = User.CreateAdminSeed(
-                    1,
-                   "admin",
-                   "Admin",
-                   "Admin",
-                   "admin@admin.com",
-                   "Calle Falsa 123",
-                   UserType.Admin,
-                   "admin123"
-                   );
+                var adminUser = new User(1,"admin", "admin123", "Juan", "Admin", "admin@tpi.com", "Juan Jose Paso 123", Domain.Model.UserType.Admin, "42789654");
+                //var admin = User.CreateAdminSeed(
+                //    1,
+                //   "admin",
+                //   "Admin",
+                //   "Admin",
+                //   "admin@admin.com",
+                //   "Calle Falsa 123",
+                //   UserType.Admin,
+                //   "admin123"
+                //   );
                 entity.HasData(new
                 {
-                    Id = admin.Id,
-                    UserName = admin.UserName,
-                    Nombre = admin.Nombre,
-                    Apellido = admin.Apellido,
-                    Email = admin.Email,
-                    Dni = admin.Dni ?? "",
-                    StudentNumber = admin.StudentNumber,
-                    Adress = admin.Adress ?? "",
-                    TypeUser = admin.TypeUser,
-                    JobPosition = admin.JobPosition,
-                    DateOfAdmission = admin.DateOfAdmission,
-                    DateOfHire = admin.DateOfHire,
-                    Status = admin.Status,
-                    PasswordHash = admin.PasswordHash,
-                    Salt = admin.Salt
+                    Id = adminUser.Id,
+                    UserName = adminUser.UserName,
+                    Name = adminUser.Name,
+                    LastName = adminUser.LastName,
+                    Email = adminUser.Email,
+                    Dni = adminUser.Dni,
+                    Adress = adminUser.Adress,
+                    TypeUser = adminUser.TypeUser,
+                    Status = adminUser.Status,
+                    PasswordHash = adminUser.PasswordHash,
+                    Salt = adminUser.Salt
                 });
             });
 

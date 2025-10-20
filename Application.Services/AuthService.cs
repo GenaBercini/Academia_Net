@@ -11,11 +11,11 @@ namespace Application.Services
 {
     public class AuthService
     {
-        private readonly UserRepository usuarioRepository;
+        private readonly UserRepository userRepository;
         private readonly IConfiguration configuration;
         public AuthService(IConfiguration configuration)
         {
-            usuarioRepository = new UserRepository();
+            userRepository = new UserRepository();
             this.configuration = configuration;
         }
         public async Task<LoginResponse?> LoginAsync(LoginRequest request)
@@ -23,19 +23,34 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
                 return null;
 
-            var usuario = usuarioRepository.GetByUsername(request.Username);
+            var user = userRepository.GetByUsername(request.Username);
 
-            if (usuario == null || !usuario.ValidatePassword(request.Password))
+            if (user == null || !user.ValidatePassword(request.Password))
                 return null;
 
-            var token = GenerateJwtToken(usuario);
+            var token = GenerateJwtToken(user);
             var expiresAt = DateTime.UtcNow.AddMinutes(GetExpirationMinutes());
+            var userDto = new UserDTO 
+            { 
+                Id = user.Id,
+                UserName =  user.UserName,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Adress = user.Adress,
+                TypeUser = user.TypeUser,
+                Dni = user.Dni,
+                StudentNumber = user.StudentNumber,
+                JobPosition = user.JobPosition,
+                DateOfAdmission = user.DateOfAdmission,
+                DateOfHire = user.DateOfHire
+            };
 
             return new LoginResponse
             {
                 Token = token,
                 ExpiresAt = expiresAt,
-                Username = usuario.UserName
+                User = userDto
             };
         }
         private string GenerateJwtToken(User user)
@@ -122,7 +137,7 @@ namespace Application.Services
             var jwtSettings = configuration.GetSection("JwtSettings");
             if (int.TryParse(jwtSettings["ExpirationMinutes"], out int minutes))
                 return minutes;
-            return 60; // Default 60 minutes
+            return 60;
         }
     }
 }

@@ -56,8 +56,8 @@ namespace Data
             if (existingUsuario != null)
             {
                 existingUsuario.SetUserName(user.UserName);
-                existingUsuario.SetNombre(user.Nombre);
-                existingUsuario.SetApellido(user.Apellido);
+                existingUsuario.SetName(user.Name);
+                existingUsuario.SetLastName(user.LastName);
                 existingUsuario.SetEmail(user.Email);
                 existingUsuario.SetStatus(user.Status);
                 existingUsuario.SetTypeUser(user.TypeUser);
@@ -65,20 +65,20 @@ namespace Data
                 if (!string.IsNullOrWhiteSpace(user.Dni))
                     existingUsuario.SetDni(user.Dni);
 
-                if (!string.IsNullOrWhiteSpace(user.StudentNumber))
-                    existingUsuario.SetStudentNumber(user.StudentNumber);
-
                 if (!string.IsNullOrWhiteSpace(user.Adress))
                     existingUsuario.SetAdress(user.Adress);
 
+                if (!string.IsNullOrWhiteSpace(user.StudentNumber) && user.TypeUser == UserType.Student)
+                    existingUsuario.SetStudentNumber(user.StudentNumber);
+
                 if (user.DateOfAdmission.HasValue && user.TypeUser == UserType.Student)
-                    existingUsuario.SetDateOfAdmission(user.DateOfAdmission);
+                    existingUsuario.SetDateOfAdmission(user.DateOfAdmission.Value);
 
                 if (user.DateOfHire.HasValue && user.TypeUser == UserType.Teacher)
-                    existingUsuario.SetDateOfHire(user.DateOfHire);
+                    existingUsuario.SetDateOfHire(user.DateOfHire.Value);
 
                 if (user.JobPosition.HasValue && user.TypeUser == UserType.Teacher)
-                    existingUsuario.SetJobPosition(user.JobPosition);
+                    existingUsuario.SetJobPosition(user.JobPosition.Value);
 
                 context.SaveChanges();
                 return true;

@@ -1,174 +1,113 @@
-﻿using API.Clients;
+﻿using System;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using API.Clients;
 using Domain.Model;
 using DTOs;
-using System.Text.RegularExpressions;
 
 namespace WindowsForms
 {
-    //public enum FormMode
-    //{
-    //    Add,
-    //    Update
-    //}
-
     public partial class UserDetail : Form
     {
         private UserDTO user;
         private FormMode mode;
-        public UserDTO User
-        {
-            get => user;
-            set
-            {
-                user = value;
-                SetFormFields();
-            }
-        }
-
-        public FormMode Mode
-        {
-            get => mode;
-            set
-            {
-                SetFormMode(value);
-            }
-        }
-
+        
         public UserDetail()
         {
             InitializeComponent();
-            Mode = FormMode.Add;
-            User = new UserDTO();
+            ConfigurarCombos();
+            mode = FormMode.Add;
+            user = new UserDTO();
         }
 
         public UserDetail(FormMode mode, UserDTO user) : this()
         {
-            Init(mode, user);
+            CargarUsuario(mode, user);
         }
 
-        private async void Init(FormMode mode, UserDTO user)
-        {
-            this.Mode = mode;
-            this.User = user;
-        }
-        private void SetFormMode(FormMode value)
-        {
-            mode = value;
-            txtDni.Enabled = (mode == FormMode.Add);
-        }
 
-        private void SetFormFields()
+        private void ConfigurarCombos()
         {
             comboTypeUser.DataSource = Enum.GetValues(typeof(UserType));
             comboJobPosition.DataSource = Enum.GetValues(typeof(JobPositionType));
+        }
 
+        private void CargarUsuario(FormMode mode, UserDTO user)
+        {
+            this.mode = mode;
+            this.user = user;
+
+            txtPassword.Enabled = (mode == FormMode.Add);
+            MostrarDatosUsuario();
+        }
+
+        private void MostrarDatosUsuario()
+        {
             if (user == null)
             {
-                comboTypeUser.SelectedItem = UserType.Student;
-
-                txtUserName.Text = string.Empty;
-                txtNombre.Text = string.Empty;
-                txtApellido.Text = string.Empty;
-                txtEmail.Text = string.Empty;
-                txtDni.Text = string.Empty;
-                txtStudentNumber.Text = string.Empty;
-                txtAdress.Text = string.Empty;
-
-                txtStudentNumber.Visible = true;
-                lblJobPosition.Visible = false;
-                lblStudentNumber.Visible = true;
+                LimpiarCampos();
+                return;
             }
-            else
-            {
-                txtUserName.Text = user.UserName;
-                txtNombre.Text = user.Nombre;
-                txtApellido.Text = user.Apellido;
-                txtEmail.Text = user.Email;
-                txtDni.Text = user.Dni;
-                txtStudentNumber.Text = user.StudentNumber;
-                txtAdress.Text = user.Adress;
 
-                comboTypeUser.SelectedItem = user.TypeUser;
+            txtUserName.Text = user.UserName;
+            txtNombre.Text = user.Name;
+            txtApellido.Text = user.LastName;
+            txtEmail.Text = user.Email;
+            txtDni.Text = user.Dni;
+            txtStudentNumber.Text = user.StudentNumber;
+            txtAdress.Text = user.Adress;
 
-                txtStudentNumber.Visible = (user.TypeUser == UserType.Student);
-                lblJobPosition.Visible = (user.TypeUser == UserType.Teacher);
-                lblStudentNumber.Visible = (user.TypeUser == UserType.Student);
-            }
+            comboTypeUser.SelectedItem = user.TypeUser;
+            comboJobPosition.SelectedItem = user.JobPosition;
+
+            ActualizarVisibilidadCampos();
+        }
+
+        private void LimpiarCampos()
+        {
+            txtUserName.Clear();
+            txtNombre.Clear();
+            txtApellido.Clear();
+            txtEmail.Clear();
+            txtDni.Clear();
+            txtStudentNumber.Clear();
+            txtAdress.Clear();
+
+            comboTypeUser.SelectedItem = UserType.Student;
+            ActualizarVisibilidadCampos();
+        }
+
+        private void ActualizarVisibilidadCampos()
+        {
+            var selectedType = (UserType)comboTypeUser.SelectedItem;
+
+            bool esAlumno = selectedType == UserType.Student;
+            bool esDocente = selectedType == UserType.Teacher;
+            txtStudentNumber.Visible = lblStudentNumber.Visible = esAlumno;
+            lblJobPosition.Visible = comboJobPosition.Visible = esDocente;
         }
 
         private void comboTypeUser_SelectedIndexChanged(object sender, EventArgs e)
         {
-            var selectedType = (UserType)comboTypeUser.SelectedItem;
-
-            txtStudentNumber.Visible = (selectedType == UserType.Student);
-            lblStudentNumber.Visible = (selectedType == UserType.Student);
-            lblJobPosition.Visible = (selectedType == UserType.Teacher);
+            ActualizarVisibilidadCampos();
         }
+
 
         private async void aceptarButton_Click(object sender, EventArgs e)
         {
-            if (!ValidateFields())
-                return;
+            if (!ValidarCampos()) return;
 
             try
             {
-                user.UserName = txtUserName.Text;
-                user.Nombre = txtNombre.Text;
-                user.Apellido = txtApellido.Text;
-                user.Email = txtEmail.Text;
-                user.Dni = txtDni.Text;
-                user.StudentNumber = txtStudentNumber.Text;
-                user.Adress = txtAdress.Text;
-                user.TypeUser = (UserType)comboTypeUser.SelectedItem;
+                MapearCamposAEntidad();
 
-                if (user.TypeUser == UserType.Teacher && comboJobPosition.Visible)
-                    user.JobPosition = (JobPositionType?)comboJobPosition.SelectedItem;
+                if (mode == FormMode.Add)
+                    await CrearUsuario();
                 else
-                    user.JobPosition = null;
-
-                if (Mode == FormMode.Add)
-                {
-                    var createUser = new UserCreateDTO
-                    {
-                        UserName = user.UserName,
-                        Nombre = user.Nombre,
-                        Apellido = user.Apellido,
-                        Email = user.Email,
-                        Dni = user.Dni,
-                        Adress = user.Adress,
-                        TypeUser = user.TypeUser,
-                        StudentNumber = user.StudentNumber,
-                        JobPosition = user.JobPosition,
-                        Password = txtDni.Text
-
-                    };
-
-                    await UsersApiClient.AddAsync(createUser);
-                }
-                else
-                {
-                    var updateUser = new UserUpdateDTO
-                    {
-                        Id = user.Id,
-                        UserName = user.UserName,
-                        Nombre = user.Nombre,
-                        Apellido = user.Apellido,
-                        Email = user.Email,
-                        Dni = user.Dni,
-                        Adress = user.Adress,
-                        TypeUser = user.TypeUser,
-                        JobPosition = user.JobPosition,
-                        StudentNumber = user.StudentNumber,
-                        DateOfAdmission = user.DateOfAdmission,
-                        DateOfHire = user.DateOfHire,
-                        Status = user.Status,
-                        Password = string.IsNullOrWhiteSpace(txtDni.Text) ? null : txtDni.Text
-                    };
-
-                    await UsersApiClient.UpdateAsync(updateUser);
-                }
+                    await ActualizarUsuario();
 
                 MessageBox.Show("Usuario guardado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
@@ -177,64 +116,97 @@ namespace WindowsForms
             }
         }
 
-        private void cancelarButton_Click(object sender, EventArgs e)
+        private void cancelarButton_Click(object sender, EventArgs e) => Close();
+
+        private void MapearCamposAEntidad()
         {
-            this.Close();
+            user.UserName = txtUserName.Text;
+            user.Name = txtNombre.Text;
+            user.LastName = txtApellido.Text;
+            user.Email = txtEmail.Text;
+            user.Dni = txtDni.Text;
+            user.StudentNumber = txtStudentNumber.Text;
+            user.Adress = txtAdress.Text;
+            user.TypeUser = (UserType)comboTypeUser.SelectedItem;
+
+            user.JobPosition = (user.TypeUser == UserType.Teacher && comboJobPosition.Visible)
+                ? (JobPositionType?)comboJobPosition.SelectedItem
+                : null;
         }
 
-        private bool ValidateFields()
+        private async Task CrearUsuario()
         {
-            bool isValid = true;
+            var createUser = new UserCreateDTO
+            {
+                UserName = user.UserName,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Dni = user.Dni,
+                Adress = user.Adress,
+                TypeUser = user.TypeUser,
+                StudentNumber = user.StudentNumber,
+                JobPosition = user.JobPosition,
+                Password = txtPassword.Text
+            };
 
+            await UsersApiClient.AddAsync(createUser);
+        }
+
+        private async Task ActualizarUsuario()
+        {
+            var updateUser = new UserUpdateDTO
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Dni = user.Dni,
+                Adress = user.Adress,
+                TypeUser = user.TypeUser,
+                JobPosition = user.JobPosition,
+                StudentNumber = user.StudentNumber,
+                DateOfAdmission = user.DateOfAdmission,
+                DateOfHire = user.DateOfHire,
+                Status = user.Status,
+                Password = string.IsNullOrWhiteSpace(txtPassword.Text) ? null : txtPassword.Text
+            };
+
+            await UsersApiClient.UpdateAsync(updateUser);
+        }
+        private bool ValidarCampos()
+        {
+            bool valido = true;
             errorProvider.Clear();
 
-            if (string.IsNullOrWhiteSpace(txtUserName.Text))
+            void MarcarError(Control c, string mensaje)
             {
-                errorProvider.SetError(txtUserName, "El nombre de usuario es requerido");
-                isValid = false;
+                errorProvider.SetError(c, mensaje);
+                valido = false;
             }
 
-            if (Mode == FormMode.Add && string.IsNullOrWhiteSpace(txtDni.Text))
-            {
-                errorProvider.SetError(txtDni, "La contraseña es requerida");
-                isValid = false;
-            }
+            if (string.IsNullOrWhiteSpace(txtUserName.Text))
+                MarcarError(txtUserName, "El nombre de usuario es requerido");
+
+            if (mode == FormMode.Add && string.IsNullOrWhiteSpace(txtPassword.Text))
+                MarcarError(txtPassword, "La contraseña es requerida");
 
             if (string.IsNullOrWhiteSpace(txtNombre.Text))
-            {
-                errorProvider.SetError(txtNombre, "El nombre es requerido");
-                isValid = false;
-            }
-            if (string.IsNullOrWhiteSpace(txtStudentNumber.Text))
-            {
-                errorProvider.SetError(txtStudentNumber, "El legajo es requerido");
-                isValid = false;
-            }
+                MarcarError(txtNombre, "El nombre es requerido");
 
             if (string.IsNullOrWhiteSpace(txtApellido.Text))
-            {
-                errorProvider.SetError(txtApellido, "El apellido es requerido");
-                isValid = false;
-            }
+                MarcarError(txtApellido, "El apellido es requerido");
 
             if (string.IsNullOrWhiteSpace(txtEmail.Text))
-            {
-                errorProvider.SetError(txtEmail, "El email es requerido");
-                isValid = false;
-            }
-            else if (!IsValidEmail(txtEmail.Text))
-            {
-                errorProvider.SetError(txtEmail, "Formato de email no válido");
-                isValid = false;
-            }
+                MarcarError(txtEmail, "El email es requerido");
+            else if (!Regex.IsMatch(txtEmail.Text, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                MarcarError(txtEmail, "Formato de email no válido");
 
-            return isValid;
-        }
+            if (string.IsNullOrWhiteSpace(txtStudentNumber.Text) && txtStudentNumber.Visible)
+                MarcarError(txtStudentNumber, "El legajo es requerido");
 
-        private static bool IsValidEmail(string email)
-        {
-            if (string.IsNullOrWhiteSpace(email)) return false;
-            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            return valido;
         }
 
         private void comboJobPosition_SelectedIndexChanged(object sender, EventArgs e)
