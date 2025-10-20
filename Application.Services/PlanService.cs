@@ -6,8 +6,22 @@ namespace Application.Services
 {
     public class PlanService
     {
+        private void ValidarPlanDTO(PlanDTO dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.Descripcion))
+                throw new ArgumentException("La descripción es obligatoria.");
+
+            if (dto.Descripcion.Length < 3 || dto.Descripcion.Length > 100)
+                throw new ArgumentException("La descripción debe tener entre 3 y 100 caracteres.");
+
+            int añoActual = DateTime.Now.Year;
+            if (dto.Año_calendario < 2000 || dto.Año_calendario > añoActual + 1)
+                throw new ArgumentException("Año calendario inválido.");
+        }
+
         public PlanDTO Add(PlanDTO dto)
         {
+            ValidarPlanDTO(dto);
             var planRepository = new PlanRepository();
 
             var plan = new Plan(
@@ -59,7 +73,16 @@ namespace Application.Services
 
         public bool Update(PlanDTO dto)
         {
+            if (dto == null)
+                throw new ArgumentException("Los datos del plan no pueden ser nulos.");
+
+            ValidarPlanDTO(dto);
+
             var planRepository = new PlanRepository();
+
+            var existingPlan = planRepository.Get(dto.Id);
+            if (existingPlan == null)
+                throw new ArgumentException("El plan no existe.");
 
             var plan = new Plan(
                 dto.Id,
@@ -69,5 +92,6 @@ namespace Application.Services
 
             return planRepository.Update(plan);
         }
+
     }
 }

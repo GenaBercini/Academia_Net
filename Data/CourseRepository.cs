@@ -63,7 +63,7 @@ namespace Data
             return false;
         }
 
-        public bool Exists(int año_calendario, int comision, int excludeId)
+        public bool Exists(int año_calendario, string comision, int excludeId)
         {
             using var contex = CreateContext();
             return contex.Courses.Any(c =>
@@ -72,7 +72,7 @@ namespace Data
                 && c.Comision == comision
                 && !c.IsDeleted);
         }
-        public bool Exists(int año_calendario, int comision)
+        public bool Exists(int año_calendario, string comision)
         {
             using var contex = CreateContext();
             return contex.Courses.Any(c =>

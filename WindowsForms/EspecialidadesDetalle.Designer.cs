@@ -42,7 +42,7 @@
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(177, 249);
+            aceptarButton.Location = new Point(235, 279);
             aceptarButton.Margin = new Padding(2, 1, 2, 1);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(81, 22);
@@ -53,7 +53,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(286, 249);
+            cancelarButton.Location = new Point(375, 279);
             cancelarButton.Margin = new Padding(2, 1, 2, 1);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(81, 22);
@@ -64,15 +64,16 @@
             // 
             // duracionTextBox
             // 
-            duracionTextBox.Location = new Point(146, 142);
+            duracionTextBox.Location = new Point(235, 186);
             duracionTextBox.Margin = new Padding(2, 1, 2, 1);
             duracionTextBox.Name = "duracionTextBox";
             duracionTextBox.Size = new Size(221, 23);
             duracionTextBox.TabIndex = 5;
+            duracionTextBox.KeyPress += duracionTextBox_KeyPress;
             // 
             // descripcionTextBox
             // 
-            descripcionTextBox.Location = new Point(146, 92);
+            descripcionTextBox.Location = new Point(235, 92);
             descripcionTextBox.Margin = new Padding(2, 1, 2, 1);
             descripcionTextBox.Name = "descripcionTextBox";
             descripcionTextBox.Size = new Size(221, 23);
@@ -81,7 +82,7 @@
             // nombreLabel
             // 
             nombreLabel.AutoSize = true;
-            nombreLabel.Location = new Point(48, 95);
+            nombreLabel.Location = new Point(90, 95);
             nombreLabel.Margin = new Padding(2, 0, 2, 0);
             nombreLabel.Name = "nombreLabel";
             nombreLabel.Size = new Size(69, 15);
@@ -91,12 +92,12 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(48, 150);
+            label1.Location = new Point(90, 194);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
-            label1.Size = new Size(55, 15);
+            label1.Size = new Size(91, 15);
             label1.TabIndex = 14;
-            label1.Text = "Duracion";
+            label1.Text = "Duracion (años)";
             // 
             // label2
             // 
@@ -115,7 +116,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(684, 411);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(nombreLabel);

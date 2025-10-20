@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            idLabel = new Label();
-            idTextBox = new TextBox();
             descripcionTextBox = new TextBox();
             aceptarButton = new Button();
             cancelarButton = new Button();
@@ -41,37 +39,19 @@
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
-            // idLabel
-            // 
-            idLabel.AutoSize = true;
-            idLabel.Location = new Point(77, 45);
-            idLabel.Margin = new Padding(2, 0, 2, 0);
-            idLabel.Name = "idLabel";
-            idLabel.Size = new Size(17, 15);
-            idLabel.TabIndex = 13;
-            idLabel.Text = "Id";
-            // 
-            // idTextBox
-            // 
-            idTextBox.Location = new Point(141, 42);
-            idTextBox.Margin = new Padding(2, 1, 2, 1);
-            idTextBox.Name = "idTextBox";
-            idTextBox.ReadOnly = true;
-            idTextBox.Size = new Size(221, 23);
-            idTextBox.TabIndex = 14;
-            idTextBox.TabStop = false;
-            // 
             // descripcionTextBox
             // 
-            descripcionTextBox.Location = new Point(141, 107);
+            descripcionTextBox.Location = new Point(245, 93);
             descripcionTextBox.Margin = new Padding(2, 1, 2, 1);
             descripcionTextBox.Name = "descripcionTextBox";
-            descripcionTextBox.Size = new Size(221, 23);
+            descripcionTextBox.Size = new Size(251, 23);
             descripcionTextBox.TabIndex = 15;
+            descripcionTextBox.KeyPress += DescripcionTextBox_KeyPress;
+            descripcionTextBox.Leave += DescripcionTextBox_Leave;
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(176, 228);
+            aceptarButton.Location = new Point(415, 253);
             aceptarButton.Margin = new Padding(2, 1, 2, 1);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(81, 22);
@@ -82,7 +62,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(281, 228);
+            cancelarButton.Location = new Point(245, 253);
             cancelarButton.Margin = new Padding(2, 1, 2, 1);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(81, 22);
@@ -94,7 +74,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(32, 169);
+            label1.Location = new Point(63, 172);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new Size(89, 15);
@@ -104,7 +84,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(52, 110);
+            label2.Location = new Point(63, 96);
             label2.Margin = new Padding(2, 0, 2, 0);
             label2.Name = "label2";
             label2.Size = new Size(69, 15);
@@ -113,11 +93,13 @@
             // 
             // añoCalendarioTextBox
             // 
-            añoCalendarioTextBox.Location = new Point(141, 169);
+            añoCalendarioTextBox.Location = new Point(245, 169);
             añoCalendarioTextBox.Margin = new Padding(2, 1, 2, 1);
             añoCalendarioTextBox.Name = "añoCalendarioTextBox";
-            añoCalendarioTextBox.Size = new Size(221, 23);
+            añoCalendarioTextBox.Size = new Size(251, 23);
             añoCalendarioTextBox.TabIndex = 20;
+            añoCalendarioTextBox.KeyPress += AñoCalendarioTextBox_KeyPress;
+            añoCalendarioTextBox.Leave += AñoCalendarioTextBox_Leave;
             // 
             // errorProvider1
             // 
@@ -127,15 +109,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(684, 411);
             Controls.Add(añoCalendarioTextBox);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
             Controls.Add(descripcionTextBox);
-            Controls.Add(idTextBox);
-            Controls.Add(idLabel);
             Name = "PlanesDetalle";
             Text = "Planes";
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
@@ -144,9 +124,6 @@
         }
 
         #endregion
-
-        private Label idLabel;
-        private TextBox idTextBox;
         private TextBox descripcionTextBox;
         private Button aceptarButton;
         private Button cancelarButton;

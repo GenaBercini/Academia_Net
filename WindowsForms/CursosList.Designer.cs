@@ -40,20 +40,20 @@
             coursesDataGridView.AllowUserToAddRows = false;
             coursesDataGridView.AllowUserToDeleteRows = false;
             coursesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            coursesDataGridView.Location = new Point(25, 51);
+            coursesDataGridView.Location = new Point(11, 10);
             coursesDataGridView.Margin = new Padding(2, 1, 2, 1);
             coursesDataGridView.MultiSelect = false;
             coursesDataGridView.Name = "coursesDataGridView";
             coursesDataGridView.ReadOnly = true;
             coursesDataGridView.RowHeadersWidth = 82;
             coursesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            coursesDataGridView.Size = new Size(751, 296);
+            coursesDataGridView.Size = new Size(862, 358);
             coursesDataGridView.TabIndex = 1;
             // 
             // eliminarButton
             // 
             eliminarButton.Enabled = false;
-            eliminarButton.Location = new Point(469, 370);
+            eliminarButton.Location = new Point(537, 390);
             eliminarButton.Margin = new Padding(2, 1, 2, 1);
             eliminarButton.Name = "eliminarButton";
             eliminarButton.Size = new Size(81, 22);
@@ -65,7 +65,7 @@
             // modificarButton
             // 
             modificarButton.Enabled = false;
-            modificarButton.Location = new Point(582, 370);
+            modificarButton.Location = new Point(666, 390);
             modificarButton.Margin = new Padding(2, 1, 2, 1);
             modificarButton.Name = "modificarButton";
             modificarButton.Size = new Size(81, 22);
@@ -76,7 +76,7 @@
             // 
             // agregarButton
             // 
-            agregarButton.Location = new Point(695, 370);
+            agregarButton.Location = new Point(792, 390);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";
             agregarButton.Size = new Size(81, 22);
@@ -89,7 +89,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(884, 450);
             Controls.Add(agregarButton);
             Controls.Add(modificarButton);
             Controls.Add(eliminarButton);

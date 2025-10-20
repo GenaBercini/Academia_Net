@@ -6,12 +6,12 @@
         public int Cupo { get; private set; }
         public int Año_calendario { get; private set; }
         public string Turno { get; private set; }
-        public int Comision { get; private set; }
+        public string Comision { get; private set; }
         public bool IsDeleted { get;  set; }
 
  
 
-        public Course (int id, int cupo, int año_calendario, string turno, int comision)
+        public Course (int id, int cupo, int año_calendario, string turno, string comision)
         {
             SetId(id);
             SetCupo(cupo);
@@ -50,10 +50,10 @@
             Turno = turno;
         }
 
-        public void SetComision(int comision)
+        public void SetComision(string comision)
         {
-            if (comision < 0)
-                throw new ArgumentException("La comisión debe ser mayor que 0.", nameof(comision));
+            if (string.IsNullOrWhiteSpace(comision))
+                throw new ArgumentException("Las comisiones de los cursos no puede ser nulo o vacío.", nameof(comision));
             Comision = comision;
         }
       

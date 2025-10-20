@@ -27,7 +27,7 @@ namespace WindowsForms
 
         public FormMode Mode
         {
-            get =>  mode;
+            get => mode;
             set
             {
                 SetFormMode(value);
@@ -38,7 +38,7 @@ namespace WindowsForms
         {
             InitializeComponent();
             Mode = FormMode.Add;
-            User = new UserDTO(); 
+            User = new UserDTO();
         }
 
         public UserDetail(FormMode mode, UserDTO user) : this()
@@ -54,7 +54,7 @@ namespace WindowsForms
         private void SetFormMode(FormMode value)
         {
             mode = value;
-            txtDni.Enabled = (mode == FormMode.Add); 
+            txtDni.Enabled = (mode == FormMode.Add);
         }
 
         private void SetFormFields()
@@ -74,7 +74,7 @@ namespace WindowsForms
                 txtStudentNumber.Text = string.Empty;
                 txtAdress.Text = string.Empty;
 
-                txtStudentNumber.Visible = true; 
+                txtStudentNumber.Visible = true;
                 lblJobPosition.Visible = false;
                 lblStudentNumber.Visible = true;
             }
@@ -235,6 +235,11 @@ namespace WindowsForms
         {
             if (string.IsNullOrWhiteSpace(email)) return false;
             return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+        }
+
+        private void comboJobPosition_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
