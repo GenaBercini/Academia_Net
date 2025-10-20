@@ -42,7 +42,7 @@
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(235, 279);
+            aceptarButton.Location = new Point(375, 282);
             aceptarButton.Margin = new Padding(2, 1, 2, 1);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(81, 22);
@@ -53,7 +53,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(375, 279);
+            cancelarButton.Location = new Point(235, 282);
             cancelarButton.Margin = new Padding(2, 1, 2, 1);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(81, 22);

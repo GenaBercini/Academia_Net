@@ -13,8 +13,9 @@ namespace Data
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Course> Courses { get; set; }
-
         public DbSet<Specialty> Specialties { get; set; }
+        public DbSet<CourseSubject> CoursesSubjects { get; set; }
+        public DbSet<UserCourseSubject> UsersCoursesSubjects { get; set; }
 
         internal TPIContext()
         {
@@ -147,6 +148,48 @@ namespace Data
                       .IsRequired()
                       .HasMaxLength(50);
             });
+
+            // Especialidad 1 a M Planes 
+            modelBuilder.Entity<Plan>()
+                .HasOne(p => p.Specialty)
+                .WithMany(s => s.Plans)
+                .HasForeignKey(p => p.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Especialidad 1 a M Cursos 
+            modelBuilder.Entity<Course>()
+                .HasOne(c => c.Specialty)
+                .WithMany(s => s.Courses)
+                .HasForeignKey(c => c.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Curso  Materia (M:N con atributo) 
+            modelBuilder.Entity<CourseSubject>()
+                .HasKey(cs => new { cs.CourseId, cs.SubjectId });
+
+            modelBuilder.Entity<CourseSubject>()
+                .HasOne(cs => cs.Course)
+                .WithMany(c => c.CoursesSubjects)
+                .HasForeignKey(cs => cs.CourseId);
+
+            modelBuilder.Entity<CourseSubject>()
+                .HasOne(cs => cs.Subject)
+                .WithMany(s => s.CoursesSubjects)
+                .HasForeignKey(cs => cs.SubjectId);
+
+            // Usuario relación con CursoMateria (M:N con atributo)
+            modelBuilder.Entity<UserCourseSubject>()
+                .HasKey(ucs => new { ucs.UserId, ucs.CourseId, ucs.SubjectId });
+
+            modelBuilder.Entity<UserCourseSubject>()
+                .HasOne(ucs => ucs.User)
+                .WithMany(u => u.CoursesSubjects) 
+                .HasForeignKey(ucs => ucs.UserId);
+
+            modelBuilder.Entity<UserCourseSubject>()
+                .HasOne(ucs => ucs.CourseSubject)
+                .WithMany(cs => cs.Users)
+                .HasForeignKey(ucs => new { ucs.CourseId, ucs.SubjectId });
         }
     }
 }

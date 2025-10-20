@@ -8,6 +8,8 @@ namespace Domain.Model
         public string DescEspecialidad { get; private set; }
         public int DuracionAnios { get; private set; }
         public bool Habilitado { get; set; }
+        public ICollection<Plan> Plans { get; set; } = new List<Plan>();
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
 
 
         public Specialty(int id, string descEspecialidad, int duracionAnios, bool habilitado = true)
