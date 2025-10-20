@@ -49,6 +49,7 @@
             UsersDataGridView.RowHeadersWidth = 82;
             UsersDataGridView.RowTemplate.Height = 41;
             UsersDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
             UsersDataGridView.Size = new Size(779, 389);
             UsersDataGridView.TabIndex = 0;
             // 

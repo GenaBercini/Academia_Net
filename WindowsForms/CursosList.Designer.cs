@@ -73,9 +73,7 @@
             modificarButton.Text = "Modificar";
             modificarButton.UseVisualStyleBackColor = true;
             modificarButton.Click += modificarButton_Click;
-            // 
-            // agregarButton
-            // 
+
             agregarButton.Location = new Point(11, 418);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";

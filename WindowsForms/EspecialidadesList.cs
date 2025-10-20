@@ -13,12 +13,8 @@ namespace WindowsForms
         public EspecialidadesList()
         {
             InitializeComponent();
-            ConfigurarColumnas();
-        }
-
-        private void EspecialidadesList_Load(object sender, EventArgs e)
-        {
             this.GetAllSpecialties();
+            ConfigurarColumnas();
         }
 
         private void ConfigurarColumnas()
@@ -30,7 +26,7 @@ namespace WindowsForms
                 Name = "Id",
                 HeaderText = "Id",
                 DataPropertyName = "Id",
-                Width = 80
+                Width = 120
             });
 
             this.specialtiesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -38,7 +34,7 @@ namespace WindowsForms
                 Name = "DescEspecialidad",
                 HeaderText = "Descripción",
                 DataPropertyName = "DescEspecialidad",
-                Width = 250
+                Width = 371
             });
 
             this.specialtiesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -46,7 +42,7 @@ namespace WindowsForms
                 Name = "DuracionAnios",
                 HeaderText = "Duración(Horas)",
                 DataPropertyName = "DuracionAnios",
-                Width = 120
+                Width = 371
             });
         }
 
@@ -54,9 +50,12 @@ namespace WindowsForms
         {
             try
             {
+                eliminarButton.Enabled = false;
+                modificarButton.Enabled = false;
                 this.specialtiesDataGridView.DataSource = null;
-                var specialties = await SpecialtiesApiClient.GetAllAsync();
-                this.specialtiesDataGridView.DataSource = specialties;
+
+                this.specialtiesDataGridView.DataSource = await SpecialtiesApiClient.GetAllAsync();
+
 
                 if (specialtiesDataGridView.Rows.Count > 0)
                 {
@@ -64,17 +63,10 @@ namespace WindowsForms
                     eliminarButton.Enabled = true;
                     modificarButton.Enabled = true;
                 }
-                else
-                {
-                    eliminarButton.Enabled = false;
-                    modificarButton.Enabled = false;
-                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al cargar especialidades: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                eliminarButton.Enabled = false;
-                modificarButton.Enabled = false;
             }
         }
 
@@ -92,12 +84,18 @@ namespace WindowsForms
         {
             try
             {
-                int id = this.SelectedSpecialty().Id;
-                SpecialtyDTO specialty = await SpecialtiesApiClient.GetAsync(id);
+                var selected = this.SelectedSpecialty();
+                if (selected == null) return;
+
+                SpecialtyDTO specialty = await SpecialtiesApiClient.GetAsync(selected.Id);
+                if (specialty == null)
+                {
+                    MessageBox.Show("La especialidad seleccionada no existe o fue eliminada.", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 EspecialidadesDetalle specialtyDetalle = new EspecialidadesDetalle(FormMode.Update, specialty);
                 specialtyDetalle.ShowDialog();
-
                 this.GetAllSpecialties();
             }
             catch (Exception ex)
@@ -110,7 +108,8 @@ namespace WindowsForms
         {
             try
             {
-                SpecialtyDTO specialty = this.SelectedSpecialty();
+                var specialty = this.SelectedSpecialty();
+                if (specialty == null) return;
 
                 var result = MessageBox.Show(
                     $"¿Está seguro que desea eliminar la especialidad {specialty.DescEspecialidad}?",
@@ -131,9 +130,15 @@ namespace WindowsForms
             }
         }
 
-        private SpecialtyDTO SelectedSpecialty()
+        private SpecialtyDTO? SelectedSpecialty()
         {
-            return (SpecialtyDTO)specialtiesDataGridView.SelectedRows[0].DataBoundItem;
+            if (specialtiesDataGridView.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Debe seleccionar una especialidad.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return null;
+            }
+
+            return specialtiesDataGridView.SelectedRows[0].DataBoundItem as SpecialtyDTO;
         }
     }
 }

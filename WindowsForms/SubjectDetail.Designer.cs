@@ -73,19 +73,23 @@
             // 
             descripcionSubjectTextBox.Location = new Point(191, 95);
             descripcionSubjectTextBox.Name = "descripcionSubjectTextBox";
-            descripcionSubjectTextBox.Size = new Size(150, 23);
+            descripcionSubjectTextBox.Size = new Size(274, 23);
             descripcionSubjectTextBox.TabIndex = 7;
+            descripcionSubjectTextBox.KeyPress += DescripcionSubjectTextBox_KeyPress;
+            descripcionSubjectTextBox.Leave += DescripcionSubjectTextBox_Leave;
             // 
             // horasSemanalesTextBox
             // 
             horasSemanalesTextBox.Location = new Point(191, 142);
             horasSemanalesTextBox.Name = "horasSemanalesTextBox";
-            horasSemanalesTextBox.Size = new Size(150, 23);
+            horasSemanalesTextBox.Size = new Size(274, 23);
             horasSemanalesTextBox.TabIndex = 8;
+            horasSemanalesTextBox.KeyPress += HorasSemanalesTextBox_KeyPress;
+            horasSemanalesTextBox.Leave += HorasSemanalesTextBox_Leave;
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(106, 249);
+            aceptarButton.Location = new Point(384, 269);
             aceptarButton.Margin = new Padding(2, 1, 2, 1);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(81, 22);
@@ -96,7 +100,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(249, 249);
+            cancelarButton.Location = new Point(191, 269);
             cancelarButton.Margin = new Padding(2, 1, 2, 1);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(81, 22);
@@ -108,7 +112,7 @@
             // checkBoxObligatoriaSi
             // 
             checkBoxObligatoriaSi.AutoSize = true;
-            checkBoxObligatoriaSi.Location = new Point(191, 206);
+            checkBoxObligatoriaSi.Location = new Point(237, 205);
             checkBoxObligatoriaSi.Name = "checkBoxObligatoriaSi";
             checkBoxObligatoriaSi.Size = new Size(35, 19);
             checkBoxObligatoriaSi.TabIndex = 19;
@@ -119,7 +123,7 @@
             // checkBoxObligatoriaNo
             // 
             checkBoxObligatoriaNo.AutoSize = true;
-            checkBoxObligatoriaNo.Location = new Point(299, 206);
+            checkBoxObligatoriaNo.Location = new Point(384, 206);
             checkBoxObligatoriaNo.Name = "checkBoxObligatoriaNo";
             checkBoxObligatoriaNo.Size = new Size(42, 19);
             checkBoxObligatoriaNo.TabIndex = 20;
@@ -135,7 +139,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(443, 358);
+            ClientSize = new Size(684, 411);
             Controls.Add(checkBoxObligatoriaNo);
             Controls.Add(checkBoxObligatoriaSi);
             Controls.Add(cancelarButton);
@@ -154,11 +158,9 @@
 
         #endregion
 
-        private Label idLabel;
         private Label label1;
         private Label label2;
         private Label label3;
-        private TextBox idTextBox;
         private TextBox descripcionSubjectTextBox;
         private TextBox horasSemanalesTextBox;
         private Button aceptarButton;

@@ -14,12 +14,8 @@ namespace WindowsForms
         public CursosList()
         {
             InitializeComponent();
-            ConfigurarColumnas();
-        }
-
-        private void CursosList_Load(object sender, EventArgs e)
-        {
             this.GetAllCourses();
+            ConfigurarColumnas();
         }
 
         private void ConfigurarColumnas()
@@ -31,7 +27,7 @@ namespace WindowsForms
                 Name = "Id",
                 HeaderText = "Id",
                 DataPropertyName = "Id",
-                Width = 80
+                Width = 120
             });
 
             this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -39,7 +35,7 @@ namespace WindowsForms
                 Name = "Cupo",
                 HeaderText = "Cupo",
                 DataPropertyName = "Cupo",
-                Width = 250
+                Width = 185
             });
 
             this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -47,7 +43,7 @@ namespace WindowsForms
                 Name = "AñoCalendario",
                 HeaderText = "Año Calendario",
                 DataPropertyName = "Año_calendario",
-                Width = 120
+                Width = 185
             });
 
             this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -55,7 +51,7 @@ namespace WindowsForms
                 Name = "Turno",
                 HeaderText = "Turno",
                 DataPropertyName = "Turno",
-                Width = 120
+                Width = 186
             });
 
             this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -63,7 +59,7 @@ namespace WindowsForms
                 Name = "Comision",
                 HeaderText = "Comisión",
                 DataPropertyName = "Comision",
-                Width = 120
+                Width = 186
             });
         }
 
@@ -77,9 +73,15 @@ namespace WindowsForms
 
         private async void eliminarButton_Click(object sender, EventArgs e)
         {
+            if (coursesDataGridView.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Debe seleccionar un curso para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                CourseDTO course = this.SelectedCourse();
+                var course = SelectedCourse();
 
                 var result = MessageBox.Show(
                     $"¿Está seguro que desea eliminar el curso {course.Id}?",
@@ -91,7 +93,7 @@ namespace WindowsForms
                 if (result == DialogResult.Yes)
                 {
                     await CoursesApiClient.DeleteAsync(course.Id);
-                    this.GetAllCourses();
+                    GetAllCourses();
                 }
             }
             catch (Exception ex)
@@ -111,23 +113,23 @@ namespace WindowsForms
             {
                 this.coursesDataGridView.DataSource = null;
                 var courses = await CoursesApiClient.GetAllAsync();
-                this.coursesDataGridView.DataSource = courses;
 
-                if (coursesDataGridView.Rows.Count > 0)
-                {
-                    coursesDataGridView.Rows[0].Selected = true;
-                    eliminarButton.Enabled = true;
-                    modificarButton.Enabled = true;
-                }
-                else
+                if (courses == null || !courses.Any())
                 {
                     eliminarButton.Enabled = false;
                     modificarButton.Enabled = false;
+                    MessageBox.Show("No se encontraron cursos disponibles.", "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
                 }
+
+                this.coursesDataGridView.DataSource = courses;
+                coursesDataGridView.Rows[0].Selected = true;
+                eliminarButton.Enabled = true;
+                modificarButton.Enabled = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar lista de cursos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar la lista de cursos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 eliminarButton.Enabled = false;
                 modificarButton.Enabled = false;
             }
@@ -135,25 +137,24 @@ namespace WindowsForms
 
         private async void modificarButton_Click(object sender, EventArgs e)
         {
+            if (coursesDataGridView.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Debe seleccionar un curso para modificar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                int id = this.SelectedItem().Id;
-                CourseDTO curso = await CoursesApiClient.GetAsync(id);
-
-                CursosDetalle cursosDetalles = new CursosDetalle(FormMode.Update, curso);
-                cursosDetalles.ShowDialog();
-
-                this.GetAllCourses();
+                int id = SelectedCourse().Id;
+                var curso = await CoursesApiClient.GetAsync(id);
+                var detalle = new CursosDetalle(FormMode.Update, curso);
+                detalle.ShowDialog();
+                GetAllCourses();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al cargar curso para modificar: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private CourseDTO SelectedItem()
-        {
-            return (CourseDTO)coursesDataGridView.SelectedRows[0].DataBoundItem;
         }
     }
 }

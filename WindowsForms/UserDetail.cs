@@ -11,7 +11,7 @@ namespace WindowsForms
     {
         private UserDTO user;
         private FormMode mode;
-
+        
         public UserDetail()
         {
             InitializeComponent();
@@ -207,6 +207,11 @@ namespace WindowsForms
                 MarcarError(txtStudentNumber, "El legajo es requerido");
 
             return valido;
+        }
+
+        private void comboJobPosition_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

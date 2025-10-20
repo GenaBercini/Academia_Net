@@ -60,7 +60,7 @@
             txtNombre.Location = new Point(11, 75);
             txtNombre.Margin = new Padding(2, 1, 2, 1);
             txtNombre.Name = "txtNombre";
-            txtNombre.Size = new Size(208, 23);
+            txtNombre.Size = new Size(305, 23);
             txtNombre.TabIndex = 0;
             // 
             // nombreLabel
@@ -75,7 +75,7 @@
             // 
             // btnCreate
             // 
-            btnCreate.Location = new Point(274, 296);
+            btnCreate.Location = new Point(359, 296);
             btnCreate.Margin = new Padding(2, 1, 2, 1);
             btnCreate.Name = "btnCreate";
             btnCreate.Size = new Size(81, 22);
@@ -90,7 +90,7 @@
             // 
             // cancelButton
             // 
-            cancelButton.Location = new Point(379, 296);
+            cancelButton.Location = new Point(235, 296);
             cancelButton.Margin = new Padding(2, 1, 2, 1);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(81, 22);
@@ -102,7 +102,7 @@
             // apellidoLabel
             // 
             apellidoLabel.AutoSize = true;
-            apellidoLabel.Location = new Point(249, 59);
+            apellidoLabel.Location = new Point(359, 59);
             apellidoLabel.Margin = new Padding(2, 0, 2, 0);
             apellidoLabel.Name = "apellidoLabel";
             apellidoLabel.Size = new Size(51, 15);
@@ -111,10 +111,10 @@
             // 
             // txtApellido
             // 
-            txtApellido.Location = new Point(249, 75);
+            txtApellido.Location = new Point(359, 75);
             txtApellido.Margin = new Padding(2, 1, 2, 1);
             txtApellido.Name = "txtApellido";
-            txtApellido.Size = new Size(208, 23);
+            txtApellido.Size = new Size(314, 23);
             txtApellido.TabIndex = 1;
             // 
             // emailLabel
@@ -132,7 +132,7 @@
             txtEmail.Location = new Point(11, 25);
             txtEmail.Margin = new Padding(2, 1, 2, 1);
             txtEmail.Name = "txtEmail";
-            txtEmail.Size = new Size(446, 23);
+            txtEmail.Size = new Size(662, 23);
             txtEmail.TabIndex = 2;
             // 
             // idLabel
@@ -150,14 +150,14 @@
             txtUserName.Location = new Point(11, 125);
             txtUserName.Margin = new Padding(2, 1, 2, 1);
             txtUserName.Name = "txtUserName";
-            txtUserName.Size = new Size(208, 23);
+            txtUserName.Size = new Size(305, 23);
             txtUserName.TabIndex = 0;
             txtUserName.TabStop = false;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(249, 109);
+            label1.Location = new Point(359, 109);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new Size(25, 15);
@@ -166,19 +166,19 @@
             // 
             // txtDni
             // 
-            txtDni.Location = new Point(249, 125);
+            txtDni.Location = new Point(359, 125);
             txtDni.Margin = new Padding(2, 1, 2, 1);
             txtDni.Name = "txtDni";
-            txtDni.Size = new Size(208, 23);
+            txtDni.Size = new Size(314, 23);
             txtDni.TabIndex = 12;
             txtDni.TabStop = false;
             // 
             // txtPassword
             // 
-            txtPassword.Location = new Point(249, 175);
+            txtPassword.Location = new Point(359, 175);
             txtPassword.Margin = new Padding(2, 1, 2, 1);
             txtPassword.Name = "txtPassword";
-            txtPassword.Size = new Size(208, 23);
+            txtPassword.Size = new Size(314, 23);
             txtPassword.TabIndex = 14;
             txtPassword.TabStop = false;
             // 
@@ -187,7 +187,7 @@
             txtAdress.Location = new Point(11, 175);
             txtAdress.Margin = new Padding(2, 1, 2, 1);
             txtAdress.Name = "txtAdress";
-            txtAdress.Size = new Size(208, 23);
+            txtAdress.Size = new Size(305, 23);
             txtAdress.TabIndex = 15;
             txtAdress.TabStop = false;
             // 
@@ -204,7 +204,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(249, 159);
+            label3.Location = new Point(359, 159);
             label3.Margin = new Padding(2, 0, 2, 0);
             label3.Name = "label3";
             label3.Size = new Size(67, 15);
@@ -214,26 +214,26 @@
             // comboTypeUser
             // 
             comboTypeUser.FormattingEnabled = true;
-            comboTypeUser.Location = new Point(33, 231);
+            comboTypeUser.Location = new Point(11, 231);
             comboTypeUser.Name = "comboTypeUser";
-            comboTypeUser.Size = new Size(156, 23);
+            comboTypeUser.Size = new Size(305, 23);
             comboTypeUser.TabIndex = 18;
             comboTypeUser.SelectedIndexChanged += comboTypeUser_SelectedIndexChanged;
             // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Location = new Point(65, 213);
+            label4.Location = new Point(11, 213);
             label4.Margin = new Padding(2, 0, 2, 0);
             label4.Name = "label4";
-            label4.Size = new Size(90, 15);
+            label4.Size = new Size(89, 15);
             label4.TabIndex = 19;
             label4.Text = "Tipo de Usuario";
             // 
             // lblJobPosition
             // 
             lblJobPosition.AutoSize = true;
-            lblJobPosition.Location = new Point(333, 213);
+            lblJobPosition.Location = new Point(443, 213);
             lblJobPosition.Margin = new Padding(2, 0, 2, 0);
             lblJobPosition.Name = "lblJobPosition";
             lblJobPosition.Size = new Size(39, 15);
@@ -243,24 +243,24 @@
             // comboJobPosition
             // 
             comboJobPosition.FormattingEnabled = true;
-            comboJobPosition.Location = new Point(274, 231);
+            comboJobPosition.Location = new Point(384, 231);
             comboJobPosition.Name = "comboJobPosition";
-            comboJobPosition.Size = new Size(156, 23);
+            comboJobPosition.Size = new Size(262, 23);
             comboJobPosition.TabIndex = 21;
             // 
             // txtStudentNumber
             // 
-            txtStudentNumber.Location = new Point(249, 231);
+            txtStudentNumber.Location = new Point(359, 231);
             txtStudentNumber.Margin = new Padding(2, 1, 2, 1);
             txtStudentNumber.Name = "txtStudentNumber";
-            txtStudentNumber.Size = new Size(208, 23);
+            txtStudentNumber.Size = new Size(314, 23);
             txtStudentNumber.TabIndex = 22;
             txtStudentNumber.TabStop = false;
             // 
             // lblStudentNumber
             // 
             lblStudentNumber.AutoSize = true;
-            lblStudentNumber.Location = new Point(249, 213);
+            lblStudentNumber.Location = new Point(359, 213);
             lblStudentNumber.Margin = new Padding(2, 0, 2, 0);
             lblStudentNumber.Name = "lblStudentNumber";
             lblStudentNumber.Size = new Size(42, 15);
@@ -271,7 +271,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(471, 328);
+            ClientSize = new Size(684, 411);
             Controls.Add(lblStudentNumber);
             Controls.Add(txtStudentNumber);
             Controls.Add(comboJobPosition);
