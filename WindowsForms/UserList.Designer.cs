@@ -41,7 +41,7 @@
             UsersDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             UsersDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             UsersDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            UsersDataGridView.Location = new Point(21, 18);
+            UsersDataGridView.Location = new Point(11, 10);
             UsersDataGridView.Margin = new Padding(2, 1, 2, 1);
             UsersDataGridView.MultiSelect = false;
             UsersDataGridView.Name = "UsersDataGridView";
@@ -49,12 +49,12 @@
             UsersDataGridView.RowHeadersWidth = 82;
             UsersDataGridView.RowTemplate.Height = 41;
             UsersDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            UsersDataGridView.Size = new Size(983, 280);
+            UsersDataGridView.Size = new Size(779, 389);
             UsersDataGridView.TabIndex = 0;
             // 
             // addUserButton
             // 
-            addUserButton.Location = new Point(572, 401);
+            addUserButton.Location = new Point(11, 416);
             addUserButton.Margin = new Padding(2, 1, 2, 1);
             addUserButton.Name = "addUserButton";
             addUserButton.Size = new Size(81, 22);
@@ -65,7 +65,7 @@
             // 
             // deleteButton
             // 
-            deleteButton.Location = new Point(375, 401);
+            deleteButton.Location = new Point(233, 416);
             deleteButton.Margin = new Padding(2, 1, 2, 1);
             deleteButton.Name = "deleteButton";
             deleteButton.Size = new Size(81, 22);
@@ -76,7 +76,7 @@
             // 
             // updateButton
             // 
-            updateButton.Location = new Point(474, 401);
+            updateButton.Location = new Point(121, 416);
             updateButton.Margin = new Padding(2, 1, 2, 1);
             updateButton.Name = "updateButton";
             updateButton.Size = new Size(81, 22);
@@ -90,7 +90,8 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
-            ClientSize = new Size(1025, 433);
+            BackgroundImage = Properties.Resources.fondo;
+            ClientSize = new Size(801, 448);
             Controls.Add(updateButton);
             Controls.Add(deleteButton);
             Controls.Add(addUserButton);

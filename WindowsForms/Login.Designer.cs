@@ -53,18 +53,20 @@
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label2.Location = new Point(30, 63);
             label2.Name = "label2";
-            label2.Size = new Size(50, 15);
+            label2.Size = new Size(52, 15);
             label2.TabIndex = 1;
             label2.Text = "Usuario:";
             // 
             // label3
             // 
             label3.AutoSize = true;
+            label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label3.Location = new Point(30, 113);
             label3.Name = "label3";
-            label3.Size = new Size(70, 15);
+            label3.Size = new Size(72, 15);
             label3.TabIndex = 2;
             label3.Text = "Contraseña:";
             // 
@@ -111,6 +113,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = Properties.Resources.fondo;
             ClientSize = new Size(273, 241);
             Controls.Add(button2);
             Controls.Add(loginButton);

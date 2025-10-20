@@ -31,7 +31,7 @@ namespace WebAPI
             .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status500InternalServerError)
             .WithOpenApi()
-            .AllowAnonymous(); // Este endpoint NO requiere autenticación
+            .AllowAnonymous();
         }
     }
 }

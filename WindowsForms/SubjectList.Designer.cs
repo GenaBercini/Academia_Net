@@ -47,13 +47,13 @@
             subjectsDataGridView.ReadOnly = true;
             subjectsDataGridView.RowHeadersWidth = 82;
             subjectsDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            subjectsDataGridView.Size = new Size(722, 340);
+            subjectsDataGridView.Size = new Size(778, 393);
             subjectsDataGridView.TabIndex = 2;
             // 
             // eliminarButton
             // 
             eliminarButton.Enabled = false;
-            eliminarButton.Location = new Point(411, 370);
+            eliminarButton.Location = new Point(233, 418);
             eliminarButton.Margin = new Padding(2, 1, 2, 1);
             eliminarButton.Name = "eliminarButton";
             eliminarButton.Size = new Size(81, 22);
@@ -65,7 +65,7 @@
             // modificarButton
             // 
             modificarButton.Enabled = false;
-            modificarButton.Location = new Point(529, 370);
+            modificarButton.Location = new Point(118, 418);
             modificarButton.Margin = new Padding(2, 1, 2, 1);
             modificarButton.Name = "modificarButton";
             modificarButton.Size = new Size(81, 22);
@@ -76,7 +76,7 @@
             // 
             // agregarButton
             // 
-            agregarButton.Location = new Point(652, 370);
+            agregarButton.Location = new Point(11, 418);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";
             agregarButton.Size = new Size(81, 22);
@@ -85,16 +85,17 @@
             agregarButton.UseVisualStyleBackColor = true;
             agregarButton.Click += agregarButton_Click;
             // 
-            // MateriasList
+            // SubjectList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackgroundImage = Properties.Resources.fondo;
             ClientSize = new Size(800, 450);
             Controls.Add(agregarButton);
             Controls.Add(modificarButton);
             Controls.Add(eliminarButton);
             Controls.Add(subjectsDataGridView);
-            Name = "MateriasList";
+            Name = "SubjectList";
             Text = "Materias";
             ((System.ComponentModel.ISupportInitialize)subjectsDataGridView).EndInit();
             ResumeLayout(false);

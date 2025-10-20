@@ -11,31 +11,35 @@ namespace Application.Services
         {
             var userRepository = new UserRepository();
 
-            User user = new(0, 
+            User user = new(0,
                 createDto.UserName,
                 createDto.Password,
-                createDto.Nombre,
-                createDto.Apellido,
+                createDto.Name,
+                createDto.LastName,
                 createDto.Email,
                 createDto.Adress,
-                createDto.TypeUser
+                createDto.TypeUser,
+                createDto.Dni,
+                createDto.TypeUser == UserType.Student ? createDto.StudentNumber : null,
+                createDto.TypeUser == UserType.Teacher ? createDto.JobPosition : null,
+                createDto.TypeUser == UserType.Teacher ? createDto.DateOfAdmission : null,
+                createDto.TypeUser == UserType.Teacher ? createDto.DateOfHire : null
             );
 
             if (!string.IsNullOrWhiteSpace(createDto.Dni))
                 user.SetDni(createDto.Dni);
 
             if (createDto.DateOfAdmission.HasValue && createDto.TypeUser == UserType.Student)
-                user.SetDateOfAdmission(createDto.DateOfAdmission);
+                user.SetDateOfAdmission(createDto.DateOfAdmission.Value);
 
             if (createDto.DateOfHire.HasValue && createDto.TypeUser == UserType.Teacher)
-                user.SetDateOfHire(createDto.DateOfHire);
+                user.SetDateOfHire(createDto.DateOfHire.Value);
 
             if (createDto.JobPosition.HasValue && createDto.TypeUser == UserType.Teacher)
-                user.SetJobPosition(createDto.JobPosition);
-            if (!string.IsNullOrWhiteSpace(createDto.StudentNumber) && createDto.TypeUser == UserType.Teacher)
-                user.SetStudentNumber(createDto.StudentNumber); 
+                user.SetJobPosition(createDto.JobPosition.Value);
 
-            user.SetAdress(createDto.Adress);               
+            if (!string.IsNullOrWhiteSpace(createDto.StudentNumber) && createDto.TypeUser == UserType.Student)
+                user.SetStudentNumber(createDto.StudentNumber);
 
             userRepository.Add(user);
 
@@ -74,8 +78,8 @@ namespace Application.Services
                 return false;
 
             usuario.SetUserName(updateDto.UserName);
-            usuario.SetNombre(updateDto.Nombre);
-            usuario.SetApellido(updateDto.Apellido);
+            usuario.SetName(updateDto.Name);
+            usuario.SetLastName(updateDto.LastName);
             usuario.SetEmail(updateDto.Email);
             usuario.SetStatus(updateDto.Status);
             usuario.SetTypeUser(updateDto.TypeUser);
@@ -90,13 +94,13 @@ namespace Application.Services
                 usuario.SetAdress(updateDto.Adress);
 
             if (updateDto.DateOfAdmission.HasValue)
-                usuario.SetDateOfAdmission(updateDto.DateOfAdmission);
+                usuario.SetDateOfAdmission(updateDto.DateOfAdmission.Value);
 
             if (updateDto.DateOfHire.HasValue)
-                usuario.SetDateOfHire(updateDto.DateOfHire);
+                usuario.SetDateOfHire(updateDto.DateOfHire.Value);
 
             if (updateDto.JobPosition.HasValue)
-                usuario.SetJobPosition(updateDto.JobPosition);
+                usuario.SetJobPosition(updateDto.JobPosition.Value);
 
             if (!string.IsNullOrWhiteSpace(updateDto.Password))
                 usuario.SetPassword(updateDto.Password);
@@ -107,8 +111,8 @@ namespace Application.Services
         {
             Id = user.Id,
             UserName = user.UserName,
-            Nombre = user.Nombre,
-            Apellido = user.Apellido,
+            Name = user.Name,
+            LastName = user.LastName,
             Email = user.Email,
             Dni = user.Dni,
             StudentNumber = user.StudentNumber,
