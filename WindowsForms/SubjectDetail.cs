@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using API.Clients;
 using DTOs;
@@ -7,7 +8,7 @@ namespace WindowsForms
 {
     public partial class SubjectDetail : Form
     {
-        private SubjectDTO subject;
+        private SubjectDTO? subject;
         private FormMode mode;
 
         public SubjectDTO Subject
@@ -43,7 +44,6 @@ namespace WindowsForms
 
         private void ApplyFormMode()
         {
-
             if (Mode == FormMode.Add)
                 this.Text = "Agregar Materia";
             else if (Mode == FormMode.Update)
@@ -61,6 +61,48 @@ namespace WindowsForms
             }
         }
 
+        private void HorasSemanalesTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+                errorProvider1.SetError(horasSemanalesTextBox, "Solo se permiten números.");
+            }
+            else
+            {
+                errorProvider1.SetError(horasSemanalesTextBox, "");
+            }
+        }
+
+        private void DescripcionSubjectTextBox_Leave(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(descripcionSubjectTextBox.Text))
+            {
+                errorProvider1.SetError(descripcionSubjectTextBox, "La descripción es obligatoria.");
+            }
+            else if (descripcionSubjectTextBox.Text.Length < 3)
+            {
+                errorProvider1.SetError(descripcionSubjectTextBox, "La descripción debe tener al menos 3 caracteres.");
+            }
+
+            else
+            {
+                errorProvider1.SetError(descripcionSubjectTextBox, "");
+            }
+        }
+
+        private void HorasSemanalesTextBox_Leave(object sender, EventArgs e)
+        {
+            if (!int.TryParse(horasSemanalesTextBox.Text, out int horas) || horas <= 0)
+            {
+                errorProvider1.SetError(horasSemanalesTextBox, "Ingrese un número válido mayor que cero.");
+            }
+            else
+            {
+                errorProvider1.SetError(horasSemanalesTextBox, "");
+            }
+        }
+
         private bool ValidateSubject()
         {
             bool isValid = true;
@@ -70,6 +112,10 @@ namespace WindowsForms
             {
                 errorProvider1.SetError(descripcionSubjectTextBox, "La descripción es obligatoria.");
                 isValid = false;
+            }
+            else if (!Regex.IsMatch(descripcionSubjectTextBox.Text, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
+            {
+                errorProvider1.SetError(descripcionSubjectTextBox, "La descripción solo puede contener letras.");
             }
 
             if (!int.TryParse(horasSemanalesTextBox.Text, out int horas) || horas <= 0)
@@ -86,6 +132,18 @@ namespace WindowsForms
 
             return isValid;
         }
+        private void DescripcionSubjectTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar) && e.KeyChar != ' ')
+            {
+                e.Handled = true; 
+                errorProvider1.SetError(descripcionSubjectTextBox, "Solo se permiten letras.");
+            }
+            else
+            {
+                errorProvider1.SetError(descripcionSubjectTextBox, "");
+            }
+        }
 
         private async void aceptarButton_Click(object sender, EventArgs e)
         {
@@ -98,7 +156,7 @@ namespace WindowsForms
                 {
                     var createSubject = new SubjectDTO
                     {
-                        Desc = descripcionSubjectTextBox.Text,
+                        Desc = descripcionSubjectTextBox.Text.Trim(),
                         HsSemanales = int.Parse(horasSemanalesTextBox.Text),
                         Obligatoria = checkBoxObligatoriaSi.Checked,
                     };
@@ -110,7 +168,7 @@ namespace WindowsForms
                     var updateSubject = new SubjectDTO
                     {
                         Id = Subject.Id,
-                        Desc = descripcionSubjectTextBox.Text,
+                        Desc = descripcionSubjectTextBox.Text.Trim(),
                         HsSemanales = int.Parse(horasSemanalesTextBox.Text),
                         Obligatoria = checkBoxObligatoriaSi.Checked,
                         Habilitado = Subject.Habilitado
@@ -118,8 +176,6 @@ namespace WindowsForms
 
                     await SubjectsApiClient.UpdateAsync(updateSubject);
                 }
-
-                MessageBox.Show("Materia guardada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }

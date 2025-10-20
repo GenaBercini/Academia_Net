@@ -6,24 +6,50 @@ namespace Application.Services
 {
     public class SpecialtyService
     {
-        public SpecialtyDTO Add(SpecialtyDTO dto)
+        private void ValidarSpecialtyDTO(SpecialtyDTO dto, bool isUpdate = false)
         {
+            if (dto == null)
+                throw new ArgumentException("Los datos de la especialidad no pueden ser nulos.");
+
+            dto.DescEspecialidad = (dto.DescEspecialidad ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(dto.DescEspecialidad))
+                throw new ArgumentException("La descripción es obligatoria.");
+
+            if (dto.DescEspecialidad.Length < 3)
+                throw new ArgumentException("La descripción debe tener al menos 3 caracteres.");
+
+            if (dto.DuracionAnios <= 0 || dto.DuracionAnios > 100)
+                throw new ArgumentException("La duración debe estar entre 1 y 100 años.");
+
             var specialtyRepository = new SpecialtyRepository();
 
-            var specialty = new Specialty(
-                0,
-                dto.DescEspecialidad,
-                dto.DuracionAnios
-            );
+            var duplicado = specialtyRepository.GetAll()
+                .FirstOrDefault(s =>
+                    s.DescEspecialidad.Equals(dto.DescEspecialidad, StringComparison.OrdinalIgnoreCase) &&
+                    s.Habilitado &&
+                    (!isUpdate || s.Id != dto.Id));
 
+            if (duplicado != null)
+                throw new ArgumentException("Ya existe una especialidad con esa descripción.");
+        }
+        public SpecialtyDTO Add(SpecialtyDTO dto)
+        {
+            ValidarSpecialtyDTO(dto);
+            var specialtyRepository = new SpecialtyRepository();
+
+            var specialty = new Specialty(0, dto.DescEspecialidad, dto.DuracionAnios);
             specialtyRepository.Add(specialty);
-
             dto.Id = specialty.Id;
+
             return dto;
         }
 
         public bool Delete(int id)
         {
+            if (id <= 0)
+                throw new ArgumentException("El Id debe ser mayor que cero.");
+
             var specialtyRepository = new SpecialtyRepository();
             var specialty = specialtyRepository.Get(id);
 
@@ -36,6 +62,9 @@ namespace Application.Services
 
         public SpecialtyDTO? Get(int id)
         {
+            if (id <= 0)
+                return null;
+
             var specialtyRepository = new SpecialtyRepository();
             Specialty? specialty = specialtyRepository.Get(id);
 
@@ -70,18 +99,21 @@ namespace Application.Services
         public bool Update(SpecialtyDTO dto)
         {
             var specialtyRepository = new SpecialtyRepository();
+            var existing = specialtyRepository.Get(dto.Id);
 
-            var specialty = new Specialty(
-                dto.Id,
-                dto.DescEspecialidad,
-                dto.DuracionAnios
-            )
+            if (existing == null || !existing.Habilitado)
+                throw new ArgumentException("La especialidad no existe o está deshabilitada.");
+
+            ValidarSpecialtyDTO(dto, isUpdate: true);
+
+            var specialty = new Specialty(dto.Id, dto.DescEspecialidad, dto.DuracionAnios)
             {
                 Habilitado = dto.Habilitado
             };
 
             return specialtyRepository.Update(specialty);
         }
+
     }
 }
 

@@ -10,8 +10,8 @@ namespace WindowsForms
         public PlanesList()
         {
             InitializeComponent();
+            this.GetAllPlans();
             ConfigurarColumnas();
-            this.Load += (s, e) => GetAllPlans(); 
         }
 
         private void ConfigurarColumnas()
@@ -25,7 +25,7 @@ namespace WindowsForms
                 Name = "Id",
                 HeaderText = "Id",
                 DataPropertyName = "Id",
-                Width = 80
+                Width = 120
             });
 
             plansDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -33,7 +33,7 @@ namespace WindowsForms
                 Name = "Año_calendario",
                 HeaderText = "Año Calendario",
                 DataPropertyName = "Año_calendario",
-                Width = 150
+                Width = 371
             });
 
             plansDataGridView.Columns.Add(new DataGridViewTextBoxColumn
@@ -41,7 +41,7 @@ namespace WindowsForms
                 Name = "Descripcion",
                 HeaderText = "Descripción",
                 DataPropertyName = "Descripcion",
-                Width = 250
+                Width = 371
             });
         }
 
@@ -108,12 +108,13 @@ namespace WindowsForms
             }
         }
 
-        private PlanDTO SelectedPlan()
+        private PlanDTO? SelectedPlan()
         {
             if (plansDataGridView.SelectedRows.Count == 0)
                 return null;
 
-            return (PlanDTO)plansDataGridView.SelectedRows[0].DataBoundItem;
+            return (PlanDTO)plansDataGridView.SelectedRows[0].DataBoundItem!;
         }
+
     }
 }

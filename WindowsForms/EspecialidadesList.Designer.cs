@@ -47,13 +47,13 @@
             specialtiesDataGridView.ReadOnly = true;
             specialtiesDataGridView.RowHeadersWidth = 82;
             specialtiesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            specialtiesDataGridView.Size = new Size(730, 358);
+            specialtiesDataGridView.Size = new Size(862, 358);
             specialtiesDataGridView.TabIndex = 2;
             // 
             // eliminarButton
             // 
             eliminarButton.Enabled = false;
-            eliminarButton.Location = new Point(406, 395);
+            eliminarButton.Location = new Point(532, 395);
             eliminarButton.Margin = new Padding(2, 1, 2, 1);
             eliminarButton.Name = "eliminarButton";
             eliminarButton.Size = new Size(81, 22);
@@ -65,7 +65,7 @@
             // modificarButton
             // 
             modificarButton.Enabled = false;
-            modificarButton.Location = new Point(535, 395);
+            modificarButton.Location = new Point(663, 395);
             modificarButton.Margin = new Padding(2, 1, 2, 1);
             modificarButton.Name = "modificarButton";
             modificarButton.Size = new Size(81, 22);
@@ -76,7 +76,7 @@
             // 
             // agregarButton
             // 
-            agregarButton.Location = new Point(660, 395);
+            agregarButton.Location = new Point(792, 395);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";
             agregarButton.Size = new Size(81, 22);
@@ -89,7 +89,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(884, 450);
             Controls.Add(agregarButton);
             Controls.Add(modificarButton);
             Controls.Add(eliminarButton);

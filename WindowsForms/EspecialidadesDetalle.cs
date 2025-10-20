@@ -8,7 +8,7 @@ namespace WindowsForms
 {
     public partial class EspecialidadesDetalle : Form
     {
-        private SpecialtyDTO specialty;
+        private SpecialtyDTO specialty = null!;
         private FormMode mode;
 
         public EspecialidadesDetalle()
@@ -69,15 +69,33 @@ namespace WindowsForms
             bool isValid = true;
             errorProvider1.Clear();
 
-            if (string.IsNullOrWhiteSpace(descripcionTextBox.Text))
+            var descripcion = descripcionTextBox.Text.Trim();
+            var duracionTexto = duracionTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(descripcion))
             {
                 errorProvider1.SetError(descripcionTextBox, "La descripción es obligatoria.");
                 isValid = false;
             }
+            else if (descripcion.Length < 3)
+            {
+                errorProvider1.SetError(descripcionTextBox, "La descripción debe tener al menos 3 caracteres.");
+                isValid = false;
+            }
+            else if (!System.Text.RegularExpressions.Regex.IsMatch(descripcion, @"^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$"))
+            {
+                errorProvider1.SetError(descripcionTextBox, "La descripción solo puede contener letras, números y espacios.");
+                isValid = false;
+            }
 
-            if (!int.TryParse(duracionTextBox.Text, out int duracion) || duracion <= 0)
+            if (!int.TryParse(duracionTexto, out int duracion) || duracion <= 0)
             {
                 errorProvider1.SetError(duracionTextBox, "Ingrese una duración válida en años.");
+                isValid = false;
+            }
+            else if (duracion > 100)
+            {
+                errorProvider1.SetError(duracionTextBox, "La duración no puede ser mayor a 100 años.");
                 isValid = false;
             }
 
@@ -86,22 +104,25 @@ namespace WindowsForms
 
         private async void aceptarButton_Click(object sender, EventArgs e)
         {
-            if (ValidateSpecialty())
-            {
-                Specialty.DescEspecialidad = descripcionTextBox.Text;
-                Specialty.DuracionAnios = int.Parse(duracionTextBox.Text);
+            if (!ValidateSpecialty())
+                return;
 
+            Specialty.DescEspecialidad = descripcionTextBox.Text.Trim();
+            Specialty.DuracionAnios = int.Parse(duracionTextBox.Text.Trim());
+
+            try
+            {
                 if (Mode == FormMode.Update)
-                {
                     await SpecialtiesApiClient.UpdateAsync(Specialty);
-                }
                 else
-                {
                     await SpecialtiesApiClient.AddAsync(Specialty);
-                }
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message}", "Validación de negocio", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
@@ -109,6 +130,14 @@ namespace WindowsForms
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private void duracionTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsNumber(e.KeyChar) && !char.IsControl(e.KeyChar) && !char.IsWhiteSpace(e.KeyChar))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
-using Application.Services;
-using Domain.Model;
-using DTOs;
+
 using WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,5 +58,6 @@ app.MapSubjectEndpoints();
 app.MapPlanEndpoints();
 app.MapCourseEndpoints();
 app.MapSpecialtyEndpoints();
+
 
 app.Run();
