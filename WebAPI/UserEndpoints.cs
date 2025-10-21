@@ -101,6 +101,47 @@ namespace WebAPI
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
+
+            app.MapPost("/users/{userId:int}/enroll", (int userId, UserCourseSubjectCreateDTO dto) =>
+            {
+                EnrollmentService enrollmentService = new EnrollmentService();
+                try
+                {
+                    bool created = enrollmentService.EnrollUserInCourseSubject(userId, dto.CourseId, dto.SubjectId);
+                    if (!created)
+                        return Results.Conflict(new { Message = "El usuario ya está inscripto en esa materia." });
+
+                    return Results.Created($"/users/{userId}/enrollments", null);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new { Message = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            })
+            .WithName("EnrollUser")
+            .Produces(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status409Conflict);
+
+            app.MapGet("/users/{userId:int}/enrollments", (int userId) =>
+            {
+                EnrollmentService enrollmentService = new EnrollmentService();
+                try
+                {
+                    var enrollments = enrollmentService.GetEnrollmentsByUser(userId);
+                    return Results.Ok(enrollments);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            })
+            .WithName("GetUserEnrollments")
+            .Produces<IEnumerable<UserCourseSubjectDTO>>(StatusCodes.Status200OK);
         }
     }
 }

@@ -9,10 +9,10 @@ namespace Domain.Model
     public class CourseSubject
     {
         public int CourseId { get; set; }
-        public Course Course { get; set; }
+        public Course Course { get; set; } = default!;
 
         public int SubjectId { get; set; }
-        public Subject Subject { get; set; }
+        public Subject Subject { get; set; } = default!;
 
         //Atributos de la relacion
         public string DiaHoraDictado { get; set; }

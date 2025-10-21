@@ -27,7 +27,14 @@ namespace API.Clients
                 return isAuth ? _currentToken : null;
             }
 
-            public async Task<string?> GetUsernameAsync()
+        public async Task<UserDTO?> GetCurrentUserAsync()
+        {
+            var isAuth = await IsAuthenticatedAsync();
+            return isAuth ? _currentUser : null;
+        }
+
+
+        public async Task<string?> GetUsernameAsync()
             {
                 var isAuth = await IsAuthenticatedAsync();
                 return isAuth ? _currentUser?.UserName : null;

@@ -55,16 +55,7 @@ namespace Data
 
                 // Seed: usuario admin inicial
                 var adminUser = new User(1,"admin", "admin123", "Juan", "Admin", "admin@tpi.com", "Juan Jose Paso 123", Domain.Model.UserType.Admin, "42789654");
-                //var admin = User.CreateAdminSeed(
-                //    1,
-                //   "admin",
-                //   "Admin",
-                //   "Admin",
-                //   "admin@admin.com",
-                //   "Calle Falsa 123",
-                //   UserType.Admin,
-                //   "admin123"
-                //   );
+
                 entity.HasData(new
                 {
                     Id = adminUser.Id,
@@ -124,6 +115,11 @@ namespace Data
 
                 entity.Property(e => e.Año_calendario)
                     .IsRequired();
+
+                entity.HasOne(p => p.Specialty)
+                .WithMany(s => s.Plans)
+                .HasForeignKey(p => p.SpecialtyId)
+                .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<Course>(entity =>
@@ -143,49 +139,43 @@ namespace Data
                 entity.Property(e => e.Comision)
                       .IsRequired()
                       .HasMaxLength(50);
-            });
 
-            // Especialidad 1 a M Planes 
-            modelBuilder.Entity<Plan>()
-                .HasOne(p => p.Specialty)
-                .WithMany(s => s.Plans)
-                .HasForeignKey(p => p.SpecialtyId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // Especialidad 1 a M Cursos 
-            modelBuilder.Entity<Course>()
-                .HasOne(c => c.Specialty)
+                entity.HasOne(c => c.Specialty)
                 .WithMany(s => s.Courses)
                 .HasForeignKey(c => c.SpecialtyId)
                 .OnDelete(DeleteBehavior.Restrict);
+            });
 
-            // Curso  Materia (M:N con atributo) 
-            modelBuilder.Entity<CourseSubject>()
-                .HasKey(cs => new { cs.CourseId, cs.SubjectId });
+            modelBuilder.Entity<CourseSubject>(entity =>
+            {
+                entity.HasKey(cs => new { cs.CourseId, cs.SubjectId });
 
-            modelBuilder.Entity<CourseSubject>()
-                .HasOne(cs => cs.Course)
-                .WithMany(c => c.CoursesSubjects)
-                .HasForeignKey(cs => cs.CourseId);
+                entity.HasOne(cs => cs.Course)
+                      .WithMany(c => c.CoursesSubjects)
+                      .HasForeignKey(cs => cs.CourseId);
 
-            modelBuilder.Entity<CourseSubject>()
-                .HasOne(cs => cs.Subject)
-                .WithMany(s => s.CoursesSubjects)
-                .HasForeignKey(cs => cs.SubjectId);
+                entity.HasOne(cs => cs.Subject)
+                      .WithMany(s => s.CoursesSubjects)
+                      .HasForeignKey(cs => cs.SubjectId);
 
-            // Usuario relación con CursoMateria (M:N con atributo)
-            modelBuilder.Entity<UserCourseSubject>()
-                .HasKey(ucs => new { ucs.UserId, ucs.CourseId, ucs.SubjectId });
+                entity.Property(e => e.DiaHoraDictado).HasMaxLength(200);
+            });
 
-            modelBuilder.Entity<UserCourseSubject>()
-                .HasOne(ucs => ucs.User)
-                .WithMany(u => u.CoursesSubjects) 
-                .HasForeignKey(ucs => ucs.UserId);
+             modelBuilder.Entity<UserCourseSubject>(entity =>
+             {
+                 entity.HasKey(e => new { e.UserId, e.CourseId, e.SubjectId });
 
-            modelBuilder.Entity<UserCourseSubject>()
-                .HasOne(ucs => ucs.CourseSubject)
-                .WithMany(cs => cs.Users)
-                .HasForeignKey(ucs => new { ucs.CourseId, ucs.SubjectId });
+                 entity.HasOne(e => e.User)
+                       .WithMany(u => u.CoursesSubjects)
+                       .HasForeignKey(e => e.UserId);
+
+                 entity.HasOne(e => e.CourseSubject)
+                       .WithMany(cs => cs.Users)
+                       .HasForeignKey(e => new { e.CourseId, e.SubjectId });
+
+                 entity.Property(e => e.FechaInscripcion).IsRequired(false);
+                 entity.Property(e => e.NotaFinal).HasColumnType("decimal(5,2)").IsRequired(false);
+             });
         }
     }
 }
