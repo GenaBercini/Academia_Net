@@ -10,6 +10,8 @@ namespace Domain.Model
         public bool Obligatoria { get; private set; }
         public bool Habilitado { get; set; }
 
+        public int PlanId { get; set; }
+
         public ICollection<Course> Courses { get; set; } = new List<Course>();
         public ICollection<CourseSubject> CoursesSubjects { get; set; } = new List<CourseSubject>();
 

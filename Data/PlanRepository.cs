@@ -57,6 +57,13 @@ namespace Data
             return false;
         }
 
+        public IEnumerable<Subject> GetSubjects(int planId)
+        {
+            using var ctx = CreateContext();
+            return ctx.Subjects
+                .Where(s => s.PlanId == planId && s.Habilitado)
+                .ToList();
+        }
 
     }
 }

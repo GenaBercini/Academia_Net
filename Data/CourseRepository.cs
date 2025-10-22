@@ -65,6 +65,38 @@ namespace Data
             return false;
         }
 
+        public bool Exists(int año_calendario, string comision, int excludeId)
+        {
+            using var contex = CreateContext();
+            return contex.Courses.Any(c =>
+                c.Id != excludeId
+                && c.Año_calendario == año_calendario
+                && c.Comision == comision
+                && !c.IsDeleted);
+        }
+
+        //Cada curso va a tener que buscar sus estudiantes y profesores asociados
+        public IEnumerable<User> GetStudents(int courseId)
+        {
+            using var ctx = CreateContext();
+            return ctx.UsersCoursesSubjects
+                .Include(ucs => ucs.User)
+                .Where(ucs => ucs.CourseId == courseId)
+                .Select(ucs => ucs.User)
+                .Distinct()
+                .ToList();
+        }
+        public IEnumerable<User> GetTeachers(int courseId)
+        {
+            using var ctx = CreateContext();
+            return ctx.UsersCoursesSubjects
+                .Include(ucs => ucs.User)
+                .Where(ucs => ucs.CourseId == courseId && ucs.User.TypeUser == UserType.Teacher)
+                .Select(ucs => ucs.User)
+                .Distinct()
+                .ToList();
+        }
+
         public IEnumerable<CourseSubject> GetCourseSubjects(int courseId)
         {
             using var ctx = CreateContext();
@@ -101,24 +133,6 @@ namespace Data
                       .Include(x => x.Subject)
                       .Include(x => x.Course)
                       .First(x => x.CourseId == courseId && x.SubjectId == subjectId);
-        }
-
-        public bool Exists(int año_calendario, string comision, int excludeId)
-        {
-            using var contex = CreateContext();
-            return contex.Courses.Any(c =>
-                c.Id != excludeId
-                && c.Año_calendario == año_calendario
-                && c.Comision == comision
-                && !c.IsDeleted);
-        }
-        public bool Exists(int año_calendario, string comision)
-        {
-            using var contex = CreateContext();
-            return contex.Courses.Any(c =>
-                c.Año_calendario == año_calendario
-                && c.Comision == comision
-                && !c.IsDeleted);
         }
     }
 }

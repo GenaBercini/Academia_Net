@@ -96,9 +96,10 @@
             // 
             // button3
             // 
-            button3.Location = new Point(12, 418);
+            button3.Dock = DockStyle.Bottom;
+            button3.Location = new Point(0, 421);
             button3.Name = "button3";
-            button3.Size = new Size(97, 29);
+            button3.Size = new Size(122, 29);
             button3.TabIndex = 2;
             button3.Text = "Cerrar Sesion";
             button3.UseVisualStyleBackColor = true;
@@ -123,14 +124,14 @@
             primaryPanel.Size = new Size(678, 450);
             primaryPanel.TabIndex = 1;
             // 
-            // Menu
+            // AdminMenu
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
             Controls.Add(primaryPanel);
             Controls.Add(panel1);
-            Name = "Menu";
+            Name = "AdminMenu";
             Text = "Menu";
             panel1.ResumeLayout(false);
             ResumeLayout(false);

@@ -32,7 +32,9 @@
             addUserButton = new Button();
             deleteButton = new Button();
             updateButton = new Button();
+            panel1 = new Panel();
             ((System.ComponentModel.ISupportInitialize)UsersDataGridView).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // UsersDataGridView
@@ -41,7 +43,8 @@
             UsersDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             UsersDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             UsersDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            UsersDataGridView.Location = new Point(11, 10);
+            UsersDataGridView.Dock = DockStyle.Fill;
+            UsersDataGridView.Location = new Point(0, 0);
             UsersDataGridView.Margin = new Padding(2, 1, 2, 1);
             UsersDataGridView.MultiSelect = false;
             UsersDataGridView.Name = "UsersDataGridView";
@@ -49,13 +52,13 @@
             UsersDataGridView.RowHeadersWidth = 82;
             UsersDataGridView.RowTemplate.Height = 41;
             UsersDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-
-            UsersDataGridView.Size = new Size(779, 389);
+            UsersDataGridView.Size = new Size(801, 403);
             UsersDataGridView.TabIndex = 0;
             // 
             // addUserButton
             // 
-            addUserButton.Location = new Point(11, 416);
+            addUserButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            addUserButton.Location = new Point(464, 9);
             addUserButton.Margin = new Padding(2, 1, 2, 1);
             addUserButton.Name = "addUserButton";
             addUserButton.Size = new Size(81, 22);
@@ -66,7 +69,8 @@
             // 
             // deleteButton
             // 
-            deleteButton.Location = new Point(233, 416);
+            deleteButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            deleteButton.Location = new Point(704, 9);
             deleteButton.Margin = new Padding(2, 1, 2, 1);
             deleteButton.Name = "deleteButton";
             deleteButton.Size = new Size(81, 22);
@@ -77,7 +81,8 @@
             // 
             // updateButton
             // 
-            updateButton.Location = new Point(121, 416);
+            updateButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            updateButton.Location = new Point(584, 9);
             updateButton.Margin = new Padding(2, 1, 2, 1);
             updateButton.Name = "updateButton";
             updateButton.Size = new Size(81, 22);
@@ -86,6 +91,18 @@
             updateButton.UseVisualStyleBackColor = true;
             updateButton.Click += UpdateUserButton_Click;
             // 
+            // panel1
+            // 
+            panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(addUserButton);
+            panel1.Controls.Add(deleteButton);
+            panel1.Controls.Add(updateButton);
+            panel1.Dock = DockStyle.Bottom;
+            panel1.Location = new Point(0, 403);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(801, 45);
+            panel1.TabIndex = 4;
+            // 
             // UserList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -93,15 +110,14 @@
             AutoSize = true;
             BackgroundImage = Properties.Resources.fondo;
             ClientSize = new Size(801, 448);
-            Controls.Add(updateButton);
-            Controls.Add(deleteButton);
-            Controls.Add(addUserButton);
             Controls.Add(UsersDataGridView);
+            Controls.Add(panel1);
             Margin = new Padding(2, 1, 2, 1);
             Name = "UserList";
             Text = "Clientes";
             Load += Users_Load;
             ((System.ComponentModel.ISupportInitialize)UsersDataGridView).EndInit();
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -111,5 +127,6 @@
         private Button addUserButton;
         private Button deleteButton;
         private Button updateButton;
+        private Panel panel1;
     }
 }

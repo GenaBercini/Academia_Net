@@ -61,6 +61,17 @@ namespace Data
             }
             return false;
         }
+
+        // Una materias que busca a un curso
+        public IEnumerable<Course> GetCourses(int subjectId)
+        {
+            using var ctx = CreateContext();
+            return ctx.CoursesSubjects
+                .Include(cs => cs.Course)
+                .Where(cs => cs.SubjectId == subjectId)
+                .Select(cs => cs.Course)
+                .ToList();
+        }
     }
 }
 
