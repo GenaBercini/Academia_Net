@@ -41,7 +41,7 @@ namespace Application.Services
 
             var courseRepository = new CourseRepository();
 
-            if (courseRepository.Exists(dto.Año_calendario, dto.Comision))
+            if (courseRepository.Exists(dto.Año_calendario, dto.Comision, 0))
             {
                 throw new ArgumentException($"Ya existe un curso en el año {dto.Año_calendario} con la comisión '{dto.Comision}'.");
             }

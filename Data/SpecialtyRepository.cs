@@ -60,6 +60,16 @@ namespace Data
             }
             return false;
         }
+
+        //Cada especialidad tiene que buscar los planes a los que esta asociados
+        public IEnumerable<Plan> GetPlans(int specialtyId)
+        {
+            using var ctx = CreateContext();
+            return ctx.Plans
+                .Where(p => p.SpecialtyId == specialtyId && !p.IsDeleted)
+                .ToList();
+        }
+
     }
 }
 

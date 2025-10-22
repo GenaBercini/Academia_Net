@@ -32,28 +32,34 @@
             eliminarButton = new Button();
             modificarButton = new Button();
             agregarButton = new Button();
+            bottomPanel = new Panel();
             ((System.ComponentModel.ISupportInitialize)coursesDataGridView).BeginInit();
+            bottomPanel.SuspendLayout();
             SuspendLayout();
             // 
             // coursesDataGridView
             // 
             coursesDataGridView.AllowUserToAddRows = false;
             coursesDataGridView.AllowUserToDeleteRows = false;
+            coursesDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            coursesDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             coursesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            coursesDataGridView.Location = new Point(11, 10);
+            coursesDataGridView.Dock = DockStyle.Fill;
+            coursesDataGridView.Location = new Point(0, 0);
             coursesDataGridView.Margin = new Padding(2, 1, 2, 1);
             coursesDataGridView.MultiSelect = false;
             coursesDataGridView.Name = "coursesDataGridView";
             coursesDataGridView.ReadOnly = true;
             coursesDataGridView.RowHeadersWidth = 82;
             coursesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            coursesDataGridView.Size = new Size(778, 392);
+            coursesDataGridView.Size = new Size(800, 405);
             coursesDataGridView.TabIndex = 1;
             // 
             // eliminarButton
             // 
+            eliminarButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             eliminarButton.Enabled = false;
-            eliminarButton.Location = new Point(252, 418);
+            eliminarButton.Location = new Point(706, 11);
             eliminarButton.Margin = new Padding(2, 1, 2, 1);
             eliminarButton.Name = "eliminarButton";
             eliminarButton.Size = new Size(81, 22);
@@ -64,8 +70,9 @@
             // 
             // modificarButton
             // 
+            modificarButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             modificarButton.Enabled = false;
-            modificarButton.Location = new Point(131, 418);
+            modificarButton.Location = new Point(586, 11);
             modificarButton.Margin = new Padding(2, 1, 2, 1);
             modificarButton.Name = "modificarButton";
             modificarButton.Size = new Size(81, 22);
@@ -73,8 +80,11 @@
             modificarButton.Text = "Modificar";
             modificarButton.UseVisualStyleBackColor = true;
             modificarButton.Click += modificarButton_Click;
-
-            agregarButton.Location = new Point(11, 418);
+            // 
+            // agregarButton
+            // 
+            agregarButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            agregarButton.Location = new Point(466, 11);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";
             agregarButton.Size = new Size(81, 22);
@@ -83,20 +93,31 @@
             agregarButton.UseVisualStyleBackColor = true;
             agregarButton.Click += Cursos;
             // 
+            // bottomPanel
+            // 
+            bottomPanel.BorderStyle = BorderStyle.FixedSingle;
+            bottomPanel.Controls.Add(eliminarButton);
+            bottomPanel.Controls.Add(agregarButton);
+            bottomPanel.Controls.Add(modificarButton);
+            bottomPanel.Dock = DockStyle.Bottom;
+            bottomPanel.Location = new Point(0, 405);
+            bottomPanel.Name = "bottomPanel";
+            bottomPanel.Size = new Size(800, 45);
+            bottomPanel.TabIndex = 6;
+            // 
             // CursosList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.fondo;
             ClientSize = new Size(800, 450);
-            Controls.Add(agregarButton);
-            Controls.Add(modificarButton);
-            Controls.Add(eliminarButton);
             Controls.Add(coursesDataGridView);
+            Controls.Add(bottomPanel);
             Name = "CursosList";
             Text = "Cursos";
             Click += Cursos;
             ((System.ComponentModel.ISupportInitialize)coursesDataGridView).EndInit();
+            bottomPanel.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -106,5 +127,6 @@
         private Button eliminarButton;
         private Button modificarButton;
         private Button agregarButton;
+        private Panel bottomPanel;
     }
 }

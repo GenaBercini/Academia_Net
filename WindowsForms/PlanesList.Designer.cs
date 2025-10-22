@@ -32,28 +32,34 @@
             eliminarButton = new Button();
             modificarButton = new Button();
             agregarButton = new Button();
+            panel1 = new Panel();
             ((System.ComponentModel.ISupportInitialize)plansDataGridView).BeginInit();
+            panel1.SuspendLayout();
             SuspendLayout();
             // 
             // plansDataGridView
             // 
             plansDataGridView.AllowUserToAddRows = false;
             plansDataGridView.AllowUserToDeleteRows = false;
+            plansDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            plansDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             plansDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            plansDataGridView.Location = new Point(11, 10);
+            plansDataGridView.Dock = DockStyle.Fill;
+            plansDataGridView.Location = new Point(0, 0);
             plansDataGridView.Margin = new Padding(2, 1, 2, 1);
             plansDataGridView.MultiSelect = false;
             plansDataGridView.Name = "plansDataGridView";
             plansDataGridView.ReadOnly = true;
             plansDataGridView.RowHeadersWidth = 82;
             plansDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            plansDataGridView.Size = new Size(778, 394);
+            plansDataGridView.Size = new Size(800, 405);
             plansDataGridView.TabIndex = 2;
             // 
             // eliminarButton
             // 
+            eliminarButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             eliminarButton.Enabled = false;
-            eliminarButton.Location = new Point(241, 418);
+            eliminarButton.Location = new Point(704, 9);
             eliminarButton.Margin = new Padding(2, 1, 2, 1);
             eliminarButton.Name = "eliminarButton";
             eliminarButton.Size = new Size(81, 22);
@@ -64,8 +70,9 @@
             // 
             // modificarButton
             // 
+            modificarButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             modificarButton.Enabled = false;
-            modificarButton.Location = new Point(127, 418);
+            modificarButton.Location = new Point(584, 9);
             modificarButton.Margin = new Padding(2, 1, 2, 1);
             modificarButton.Name = "modificarButton";
             modificarButton.Size = new Size(81, 22);
@@ -76,7 +83,8 @@
             // 
             // agregarButton
             // 
-            agregarButton.Location = new Point(11, 418);
+            agregarButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            agregarButton.Location = new Point(464, 9);
             agregarButton.Margin = new Padding(2, 1, 2, 1);
             agregarButton.Name = "agregarButton";
             agregarButton.Size = new Size(81, 22);
@@ -85,19 +93,30 @@
             agregarButton.UseVisualStyleBackColor = true;
             agregarButton.Click += agregarButton_Click;
             // 
+            // panel1
+            // 
+            panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(eliminarButton);
+            panel1.Controls.Add(modificarButton);
+            panel1.Controls.Add(agregarButton);
+            panel1.Dock = DockStyle.Bottom;
+            panel1.Location = new Point(0, 405);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(800, 45);
+            panel1.TabIndex = 7;
+            // 
             // PlanesList
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.fondo;
             ClientSize = new Size(800, 450);
-            Controls.Add(agregarButton);
-            Controls.Add(modificarButton);
-            Controls.Add(eliminarButton);
             Controls.Add(plansDataGridView);
+            Controls.Add(panel1);
             Name = "PlanesList";
             Text = "Planes";
             ((System.ComponentModel.ISupportInitialize)plansDataGridView).EndInit();
+            panel1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -107,5 +126,6 @@
         private Button eliminarButton;
         private Button modificarButton;
         private Button agregarButton;
+        private Panel panel1;
     }
 }
