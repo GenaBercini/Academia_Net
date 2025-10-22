@@ -33,6 +33,30 @@ namespace API.Clients
             throw new Exception($"Error al obtener cursos. Detalle: {error}");
         }
 
+        public static async Task<IEnumerable<CourseSubjectDTO>> GetSubjectsByCourseAsync(int courseId)
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.GetAsync($"{Endpoint}/{courseId}/subjects");
+
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<IEnumerable<CourseSubjectDTO>>() ?? Array.Empty<CourseSubjectDTO>();
+
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al obtener subjects del curso. Detalle: {error}");
+        }
+
+        public static async Task<CourseSubjectDTO> AddSubjectToCourseAsync(int courseId, CourseSubjectDTO dto)
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.PostAsJsonAsync($"{Endpoint}/{courseId}/subjects", dto);
+
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<CourseSubjectDTO>() ?? throw new Exception("Respuesta vacía al crear CourseSubject.");
+
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al agregar materia al curso. Detalle: {error}");
+        }
+
         public static async Task AddAsync(CourseDTO course)
         {
             using var client = await CreateHttpClientAsync();

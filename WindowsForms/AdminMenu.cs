@@ -12,9 +12,9 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace WindowsForms
 {
-    public partial class Menu : Form
+    public partial class AdminMenu : Form
     {
-        public Menu()
+        public AdminMenu()
         {
             InitializeComponent();
         }
@@ -57,18 +57,7 @@ namespace WindowsForms
             var authService = AuthServiceProvider.Instance;
             await authService.LogoutAsync();
 
-            this.Hide();
-            using (var loginForm = new Login())
-            {
-                if (loginForm.ShowDialog() == DialogResult.OK)
-                {
-                    this.Show();
-                }
-                else
-                {
-                    this.Close();
-                }
-            }
+            Application.Restart();
         }
 
 

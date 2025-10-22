@@ -46,8 +46,7 @@ namespace Domain.Model
         //Relacion con tabla intermedia CoursoMaterias
         public ICollection<UserCourseSubject> CoursesSubjects { get; set; } = new List<UserCourseSubject>();
 
-        public User(int id, string userName, string password, string nombre, string apellido, string email, string adress, UserType typeUser)
-        {
+        public User(
         int id,
         string userName,
         string password,
@@ -62,7 +61,6 @@ namespace Domain.Model
         DateTime? dateOfAdmission = null,
         DateTime? dateOfHire = null)
         {
-            Debug.WriteLine($"Password: {password}");
             SetId(id);
             SetUserName(userName);
             SetPassword(password);

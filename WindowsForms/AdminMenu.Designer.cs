@@ -1,6 +1,6 @@
 ﻿namespace WindowsForms
 {
-    partial class Menu
+    partial class AdminMenu
     {
         /// <summary>
         /// Required designer variable.

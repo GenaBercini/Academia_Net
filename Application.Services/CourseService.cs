@@ -101,7 +101,8 @@ namespace Application.Services
                 Cupo = course.Cupo,
                 Año_calendario = course.Año_calendario,
                 Turno = course.Turno,
-                Comision = course.Comision
+                Comision = course.Comision,
+                SpecialtyId = course.SpecialtyId
             }).ToList();
         }
 
@@ -128,6 +129,46 @@ namespace Application.Services
             );
 
             return courseRepository.Update(course);
+        }
+
+        public IEnumerable<CourseSubjectDTO> GetSubjectsByCourse(int courseId)
+        {
+            var repo = new CourseRepository();
+            var items = repo.GetCourseSubjects(courseId);
+            return items.Select(cs => new CourseSubjectDTO
+            {
+                CourseId = cs.CourseId,
+                SubjectId = cs.SubjectId,
+                DiaHoraDictado = cs.DiaHoraDictado,
+                Subject = cs.Subject == null ? null : new SubjectDTO
+                {
+                    Id = cs.Subject.Id,
+                    Desc = cs.Subject.Desc,
+                    HsSemanales = cs.Subject.HsSemanales,
+                    Obligatoria = cs.Subject.Obligatoria,
+                    Habilitado = cs.Subject.Habilitado
+                }
+            }).ToList();
+        }
+
+        public CourseSubjectDTO AddSubjectToCourse(int courseId, int subjectId, string? diaHora)
+        {
+            var repo = new CourseRepository();
+            var cs = repo.AddCourseSubject(courseId, subjectId, diaHora);
+            return new CourseSubjectDTO
+            {
+                CourseId = cs.CourseId,
+                SubjectId = cs.SubjectId,
+                DiaHoraDictado = cs.DiaHoraDictado,
+                Subject = cs.Subject == null ? null : new SubjectDTO
+                {
+                    Id = cs.Subject.Id,
+                    Desc = cs.Subject.Desc,
+                    HsSemanales = cs.Subject.HsSemanales,
+                    Obligatoria = cs.Subject.Obligatoria,
+                    Habilitado = cs.Subject.Habilitado
+                }
+            };
         }
     }
 }

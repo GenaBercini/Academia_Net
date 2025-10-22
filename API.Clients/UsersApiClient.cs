@@ -131,5 +131,35 @@ namespace API.Clients
                 throw new Exception($"Timeout al actualizar usuario con Id {user.Id}: {ex.Message}", ex);
             }
         }
+
+        public static async Task<bool> EnrollAsync(int userId, UserCourseSubjectCreateDTO enrollment)
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.PostAsJsonAsync($"users/{userId}/enroll", enrollment);
+
+            if (response.IsSuccessStatusCode)
+                return true;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
+                return false;
+
+            string err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al inscribir usuario: {err}");
+        }
+
+        public static async Task<IEnumerable<UserCourseSubjectDTO>> GetEnrollmentsAsync(int userId)
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.GetAsync($"users/{userId}/enrollments");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var dto = await response.Content.ReadFromJsonAsync<IEnumerable<UserCourseSubjectDTO>>();
+                return dto ?? Array.Empty<UserCourseSubjectDTO>();
+            }
+
+            string err = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al obtener inscripciones: {err}");
+        }
     }
 }

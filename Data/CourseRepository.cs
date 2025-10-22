@@ -1,5 +1,6 @@
-﻿using System;
-using Domain.Model;
+﻿using Domain.Model;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 
 namespace Data
@@ -29,7 +30,8 @@ namespace Data
         {
             using var context = CreateContext();
             return context.Courses
-                .Where(c => !c.IsDeleted) 
+                .Include(c => c.CoursesSubjects)
+                .ThenInclude(cs => cs.Subject)
                 .ToList();
         }
 
@@ -61,6 +63,44 @@ namespace Data
                 return true;
             }
             return false;
+        }
+
+        public IEnumerable<CourseSubject> GetCourseSubjects(int courseId)
+        {
+            using var ctx = CreateContext();
+            return ctx.CoursesSubjects
+                      .Include(cs => cs.Subject)
+                      .Where(cs => cs.CourseId == courseId)
+                      .ToList();
+        }
+
+        public CourseSubject AddCourseSubject(int courseId, int subjectId, string? diaHora)
+        {
+            using var ctx = CreateContext();
+
+            var course = ctx.Courses.FirstOrDefault(c => c.Id == courseId && !c.IsDeleted);
+            if (course == null) throw new InvalidOperationException("Curso no encontrado.");
+
+            var subject = ctx.Subjects.FirstOrDefault(s => s.Id == subjectId);
+            if (subject == null) throw new InvalidOperationException("Materia no encontrada.");
+
+            var existing = ctx.CoursesSubjects.Find(courseId, subjectId);
+            if (existing != null) throw new InvalidOperationException("La materia ya está vinculada al curso.");
+
+            var cs = new CourseSubject
+            {
+                CourseId = courseId,
+                SubjectId = subjectId,
+                DiaHoraDictado = diaHora
+            };
+
+            ctx.CoursesSubjects.Add(cs);
+            ctx.SaveChanges();
+
+            return ctx.CoursesSubjects
+                      .Include(x => x.Subject)
+                      .Include(x => x.Course)
+                      .First(x => x.CourseId == courseId && x.SubjectId == subjectId);
         }
 
         public bool Exists(int año_calendario, string comision, int excludeId)

@@ -22,7 +22,7 @@ namespace Application.Services
                 createDto.Dni,
                 createDto.TypeUser == UserType.Student ? createDto.StudentNumber : null,
                 createDto.TypeUser == UserType.Teacher ? createDto.JobPosition : null,
-                createDto.TypeUser == UserType.Teacher ? createDto.DateOfAdmission : null,
+                createDto.TypeUser == UserType.Student ? createDto.DateOfAdmission : null,
                 createDto.TypeUser == UserType.Teacher ? createDto.DateOfHire : null
             );
 

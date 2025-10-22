@@ -28,10 +28,16 @@ namespace WebAPI
             app.MapGet("/courses", () =>
             {
                 CourseService courseService = new CourseService();
+                try 
+                {
+                    var courses = courseService.GetAll();
+                    return Results.Ok(courses);
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
 
-                var dtos = courseService.GetAll();
-
-                return Results.Ok(dtos);
             })
             .WithName("GetAllCourses")
             .Produces<List<CourseDTO>>(StatusCodes.Status200OK)
@@ -99,6 +105,48 @@ namespace WebAPI
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
+
+            app.MapGet("/courses/{courseId:int}/subjects", (int courseId) =>
+            {
+
+                try
+                {
+                    var courseService = new CourseService();
+                    var subjects = courseService.GetSubjectsByCourse(courseId);
+                    return Results.Ok(subjects);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new { Message = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            })
+           .WithName("GetSubjectsByCourse")
+           .Produces<IEnumerable<CourseSubjectDTO>>(StatusCodes.Status200OK);
+
+            app.MapPost("/courses/{courseId:int}/subjects", (int courseId, CourseSubjectDTO dto) =>
+            {
+                try
+                {
+                    var courseService = new CourseService();
+                    var created = courseService.AddSubjectToCourse(courseId, dto.SubjectId, dto.DiaHoraDictado);
+                    return Results.Created($"/courses/{courseId}/subjects", created);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    return Results.BadRequest(new { Message = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            })
+            .WithName("AddSubjectToCourse")
+            .Produces<CourseSubjectDTO>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest);
         }
     }
 }

@@ -9,5 +9,7 @@ namespace DTOs
         public int Año_calendario { get; set; }
         public string Turno { get; set; } = string.Empty;
         public string Comision { get; set; } = string.Empty;
+        public int SpecialtyId { get; set; }
+        public IEnumerable<CourseSubjectDTO>? CourseSubjects { get; set; }
     }
 }

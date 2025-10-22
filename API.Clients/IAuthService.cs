@@ -1,4 +1,6 @@
-﻿namespace API.Clients
+﻿using DTOs;
+
+namespace API.Clients
 {
     public interface IAuthService
     {
@@ -7,6 +9,7 @@
         Task<bool> IsAuthenticatedAsync();
         Task<string?> GetTokenAsync();
         Task<string?> GetUsernameAsync();
+        Task<UserDTO?> GetCurrentUserAsync();
         Task<bool> LoginAsync(string username, string password);
         Task LogoutAsync();
         Task CheckTokenExpirationAsync();

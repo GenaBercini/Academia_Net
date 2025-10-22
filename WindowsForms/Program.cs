@@ -1,4 +1,5 @@
 using API.Clients;
+using Domain.Model;
 
 namespace WindowsForms
 {
@@ -25,11 +26,9 @@ namespace WindowsForms
 
         static async Task MainAsync()
         {
-            // Registrar AuthService en singleton
             var authService = new WindowsFormsAuthService();
             AuthServiceProvider.Register(authService);
 
-            // Loop principal de autenticación
             while (true)
             {
 
@@ -38,22 +37,34 @@ namespace WindowsForms
                     var loginForm = new Login();
                     if (loginForm.ShowDialog() != DialogResult.OK)
                     {
-                        // Usuario canceló login, cerrar aplicación
                         return;
                     }
                 }
 
+                var currentUser = await authService.GetCurrentUserAsync();
+                if (currentUser == null)
+                {
+                    await authService.LogoutAsync();
+                    continue;
+                }
+
                 try
                 {
-                    Application.Run(new Menu());
-                    break; // La aplicación se cerró normalmente
+                    Form menuForm = currentUser.TypeUser switch
+                    {
+                        UserType.Student => new StudentMenu(),
+                        UserType.Teacher => new TeacherMenu(),
+                        UserType.Admin => new AdminMenu(),
+                        _ => new AdminMenu()
+                    };
+
+                    Application.Run(menuForm);
+                    break;
                 }
                 catch (UnauthorizedAccessException ex)
                 {
-                    // Sesión expirada, mostrar mensaje y volver al login
                     MessageBox.Show(ex.Message, "Sesión Expirada",
                         MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    // El loop continuará y volverá a mostrar login
                 }
             }
         }
@@ -62,16 +73,13 @@ namespace WindowsForms
         {
             if (e.Exception is UnauthorizedAccessException)
             {
-                // Sesión expirada
                 MessageBox.Show("Su sesión ha expirado. Debe volver a autenticarse.", "Sesión Expirada",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                // Reiniciar la aplicación para volver al login
                 Application.Restart();
             }
             else
             {
-                // Otras excepciones, mostrar error genérico
                 MessageBox.Show($"Error inesperado: {e.Exception.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

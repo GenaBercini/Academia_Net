@@ -7,9 +7,8 @@
         public int Año_calendario { get; private set; }
         public bool IsDeleted { get;  set; }
 
-        //Tablas intermedias
         public int SpecialtyId { get; set; }
-        public Specialty Specialty { get; set; }
+        public Specialty Specialty { get; set; } = default!;
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
 
 

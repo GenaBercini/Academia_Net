@@ -9,7 +9,7 @@ namespace Domain.Model
     public class UserCourseSubject
     {
         public int UserId { get; set; }
-        public User User { get; set; }
+        public User User { get; set; } = default!;
 
         public int CourseId { get; set; }
         public int SubjectId { get; set; }
