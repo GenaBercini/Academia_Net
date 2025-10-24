@@ -1,12 +1,26 @@
 ﻿using Data;
 using Domain.Model;
 using DTOs;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using SkiaSharp;
+using System.Diagnostics;
+using System.Globalization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Application.Services
 {
-    public class UserService 
+    public class UserService
     {
+        private readonly string _outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedReports");
+
+        public UserService()
+        {
+            QuestPDF.Settings.License = LicenseType.Community;
+            if (!Directory.Exists(_outputDirectory))
+                Directory.CreateDirectory(_outputDirectory);
+        }
         public UserDTO Add(UserCreateDTO createDto)
         {
             var userRepository = new UserRepository();
@@ -70,7 +84,7 @@ namespace Application.Services
 
             return usuarios.Select(user => MapToDTO(user));
         }
-          public bool Update(UserUpdateDTO updateDto)
+        public bool Update(UserUpdateDTO updateDto)
         {
             var userRepository = new UserRepository();
             var usuario = userRepository.Get(updateDto.Id);
@@ -123,5 +137,147 @@ namespace Application.Services
             DateOfHire = user.DateOfHire,
             Status = user.Status
         };
+
+        public byte[] GenerateUsersGradesReport(bool onlyStudents = true)
+        {
+            var userRepository = new UserRepository();
+            var users = userRepository.GetAll().ToList();
+
+            if (onlyStudents)
+                users = users.Where(u => u.TypeUser == UserType.Student).ToList();
+
+            users = users.OrderBy(u => u.Id).ToList();
+
+            var document = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(24);
+                    page.Size(PageSizes.A4);
+                    page.PageColor(Colors.White);
+                    page.DefaultTextStyle(x => x.FontSize(11));
+
+                    page.Header()
+                        .Text("Listado de Usuarios")
+                        .SemiBold().FontSize(16).FontColor(Colors.Blue.Medium);
+
+                    page.Content()
+                        .Column(col =>
+                        {
+                            col.Spacing(8);
+                            col.Item().Text($"Generado: {DateTime.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}").FontSize(10).FontColor(Colors.Grey.Darken1);
+
+                            foreach (var u in users)
+                            {
+                                col.Item().Padding(8).Border(1).BorderColor(Colors.Grey.Lighten2).Column(student =>
+                                {
+                                    student.Spacing(4);
+                                    student.Item().Text($"{u.Id} - {u.UserName}").SemiBold().FontSize(12);
+                                    student.Item().Text($"{u.Name} {u.LastName}").FontSize(11);
+                                    student.Item().Text($"Email: {u.Email}    |    DNI: {u.Dni ?? "N/A"}").FontSize(10);
+                                    student.Item().Text($"Legajo: {u.StudentNumber ?? "N/A"}    |    Dirección: {u.Adress ?? "N/A"}").FontSize(10);
+
+                                    student.Item().Text($"Tipo: {u.TypeUser}    |    Cargo: {(u.JobPosition.HasValue ? u.JobPosition.Value.ToString() : "N/A")}")
+                                           .FontSize(10);
+
+                                    student.Item().Text($"Fecha de ingreso: {(u.DateOfAdmission.HasValue ? u.DateOfAdmission.Value.ToString("yyyy-MM-dd") : "N/A")}    |    Fecha de contratación: {(u.DateOfHire.HasValue ? u.DateOfHire.Value.ToString("yyyy-MM-dd") : "N/A")}")
+                                           .FontSize(10);
+
+                                    student.Item().Text($"Estado: {u.Status}").FontSize(10);
+
+                                    // var enrollments = userRepository.GetEnrollmentsByUser(u.Id).ToList();
+                                    // if (enrollments.Any())
+                                    // {
+                                    //     student.Item().Text("Inscripciones:").FontSize(10).SemiBold();
+                                    //     foreach (var e in enrollments)
+                                    //     {
+                                    //         student.Item().Text($"  Curso {e.CourseId} - Materia {e.SubjectId} - Nota: {(e.NotaFinal.HasValue ? e.NotaFinal.Value.ToString("N2") : "N/A")} - Inscripción: {(e.FechaInscripcion.HasValue ? e.FechaInscripcion.Value.ToString("yyyy-MM-dd") : "N/A")}").FontSize(9);
+                                    //     }
+                                    // }
+                                });
+                            }
+                        });
+
+                    page.Footer()
+                        .AlignCenter()
+                        .Text(text =>
+                        {
+                            text.Span("Página ");
+                            text.CurrentPageNumber();
+                            text.Span(" de ");
+                            text.TotalPages();
+                        });
+                });
+            });
+
+            var pdfBytes = document.GeneratePdf();
+
+            string filePath = Path.Combine(_outputDirectory, $"ListaEstudiantes_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+            File.WriteAllBytes(filePath, pdfBytes);
+
+            return pdfBytes;
+        }
+
+        private byte[] GenerateGradesPieChart(Dictionary<string, int> buckets)
+        {
+            const int width = 700;
+            const int height = 400;
+            using var surface = SKSurface.Create(new SKImageInfo(width, height));
+            var canvas = surface.Canvas;
+            canvas.Clear(SKColors.White);
+
+            var total = buckets.Values.Sum();
+            var rect = new SKRect(20, 20, 320, 320); // área del pie
+            float startAngle = -90f;
+
+            SKColor[] colors = new[]
+            {
+                SKColors.LightGray,
+                SKColors.IndianRed,
+                SKColors.Orange,
+                SKColors.Gold,
+                SKColors.MediumSeaGreen,
+                SKColors.SteelBlue
+            };
+
+            var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill };
+
+            int i = 0;
+            foreach (var kv in buckets)
+            {
+                var count = kv.Value;
+                float sweep = total == 0 ? 0f : 360f * count / total;
+                paint.Color = colors[i % colors.Length];
+                if (sweep > 0)
+                {
+                    canvas.DrawArc(rect, startAngle, sweep, true, paint);
+                }
+                startAngle += sweep;
+                i++;
+            }
+
+            // Leyenda
+            var legendX = 360;
+            var legendY = 40;
+            var legendPaint = new SKPaint { IsAntialias = true, TextSize = 14, Color = SKColors.Black };
+            i = 0;
+            foreach (var kv in buckets)
+            {
+                var color = colors[i % colors.Length];
+                var boxPaint = new SKPaint { IsAntialias = true, Color = color, Style = SKPaintStyle.Fill };
+                canvas.DrawRect(legendX, legendY + i * 30, 18, 18, boxPaint);
+
+                var label = kv.Key;
+                var percent = total == 0 ? 0 : Math.Round((double)kv.Value * 100.0 / total, 1);
+                canvas.DrawText($"{label} ({kv.Value}) - {percent}%", legendX + 26, legendY + 14 + i * 30, legendPaint);
+                i++;
+            }
+
+            using var image = surface.Snapshot();
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            return data.ToArray();
+        }
+
+        private record UserAverageDto(int Id, string UserName, string FullName, string Email, decimal? Average);
     }
 }

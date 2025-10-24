@@ -161,5 +161,34 @@ namespace API.Clients
             string err = await response.Content.ReadAsStringAsync();
             throw new Exception($"Error al obtener inscripciones: {err}");
         }
+
+        public static async Task<byte[]> GetUsersGradesReportAsync(bool onlyStudents = true)
+        {
+            try
+            {
+                using var client = await CreateHttpClientAsync();
+                string url = $"users/report/grades?onlyStudents={onlyStudents.ToString().ToLower()}";
+                var response = await client.GetAsync(url);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadAsByteArrayAsync();
+                }
+
+                // Manejar 401 (limpia sesión si corresponde)
+                await HandleUnauthorizedResponseAsync(response);
+
+                var errorContent = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al obtener reporte de usuarios. Status: {response.StatusCode}, Detalle: {errorContent}");
+            }
+            catch (HttpRequestException ex)
+            {
+                throw new Exception($"Error de conexión al obtener reporte de usuarios: {ex.Message}", ex);
+            }
+            catch (TaskCanceledException ex)
+            {
+                throw new Exception($"Timeout al obtener reporte de usuarios: {ex.Message}", ex);
+            }
+        }
     }
 }

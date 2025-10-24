@@ -5,23 +5,15 @@ namespace WindowsForms
 {
     internal static class Program
     {
-
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
-            // Handler para excepciones de UI no manejadas
             Application.ThreadException += Application_ThreadException;
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            // Ejecutar async main
-            Task.Run(async () => await MainAsync()).GetAwaiter().GetResult();
+            MainAsync().GetAwaiter().GetResult();
         }
 
         static async Task MainAsync()
