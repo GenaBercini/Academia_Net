@@ -45,10 +45,28 @@ namespace WindowsForms
 
             this.subjectsDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
             {
+                Name = "Año",
+                HeaderText = "Año",
+                DataPropertyName = "Año",
+                Width = 247
+            });
+
+            this.subjectsDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
+            {
                 Name = "Obligatoria",
                 HeaderText = "Obligatoria",
                 DataPropertyName = "Obligatoria",
                 Width = 247
+            });
+
+
+
+            this.subjectsDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PlanId",
+                HeaderText = "ID Plan",
+                DataPropertyName = "PlanId",
+                Width = 100
             });
         }
 

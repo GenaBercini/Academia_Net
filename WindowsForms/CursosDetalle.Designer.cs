@@ -37,11 +37,14 @@
             label3 = new Label();
             label4 = new Label();
             label5 = new Label();
-            cupoCursoTextBox = new TextBox();
-            comisionTextBox = new TextBox();
             turnoCursoTextBox = new TextBox();
             año_calendarioCursoTextBox = new TextBox();
             errorProvider1 = new ErrorProvider(components);
+            cupoCursoTextBox = new TextBox();
+            añoCursoComboBox = new ComboBox();
+            indiceCursoComboBox = new ComboBox();
+            label6 = new Label();
+            label7 = new Label();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
@@ -86,7 +89,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(77, 61);
+            label2.Location = new Point(75, 137);
             label2.Name = "label2";
             label2.Size = new Size(36, 15);
             label2.TabIndex = 21;
@@ -95,7 +98,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(75, 137);
+            label3.Location = new Point(75, 61);
             label3.Name = "label3";
             label3.Size = new Size(58, 15);
             label3.TabIndex = 22;
@@ -119,21 +122,6 @@
             label5.TabIndex = 24;
             label5.Text = "Año Calendario";
             // 
-            // cupoCursoTextBox
-            // 
-            cupoCursoTextBox.Location = new Point(228, 58);
-            cupoCursoTextBox.Name = "cupoCursoTextBox";
-            cupoCursoTextBox.Size = new Size(266, 23);
-            cupoCursoTextBox.TabIndex = 27;
-            cupoCursoTextBox.KeyPress += cupoCursoTextBox_KeyPress;
-            // 
-            // comisionTextBox
-            // 
-            comisionTextBox.Location = new Point(228, 134);
-            comisionTextBox.Name = "comisionTextBox";
-            comisionTextBox.Size = new Size(266, 23);
-            comisionTextBox.TabIndex = 28;
-            // 
             // turnoCursoTextBox
             // 
             turnoCursoTextBox.Location = new Point(228, 212);
@@ -154,14 +142,59 @@
             // 
             errorProvider1.ContainerControl = this;
             // 
+            // cupoCursoTextBox
+            // 
+            cupoCursoTextBox.Location = new Point(228, 134);
+            cupoCursoTextBox.Name = "cupoCursoTextBox";
+            cupoCursoTextBox.Size = new Size(266, 23);
+            cupoCursoTextBox.TabIndex = 27;
+            cupoCursoTextBox.KeyPress += cupoCursoTextBox_KeyPress;
+            // 
+            // añoCursoComboBox
+            // 
+            añoCursoComboBox.FormattingEnabled = true;
+            añoCursoComboBox.Location = new Point(228, 58);
+            añoCursoComboBox.Name = "añoCursoComboBox";
+            añoCursoComboBox.Size = new Size(81, 23);
+            añoCursoComboBox.TabIndex = 31;
+            // 
+            // indiceCursoComboBox
+            // 
+            indiceCursoComboBox.FormattingEnabled = true;
+            indiceCursoComboBox.Location = new Point(372, 58);
+            indiceCursoComboBox.Name = "indiceCursoComboBox";
+            indiceCursoComboBox.Size = new Size(122, 23);
+            indiceCursoComboBox.TabIndex = 32;
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(228, 30);
+            label6.Name = "label6";
+            label6.Size = new Size(29, 15);
+            label6.TabIndex = 33;
+            label6.Text = "Año";
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(372, 30);
+            label7.Name = "label7";
+            label7.Size = new Size(39, 15);
+            label7.TabIndex = 34;
+            label7.Text = "Indice";
+            // 
             // CursosDetalle
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
+            Controls.Add(label7);
+            Controls.Add(label6);
+            Controls.Add(indiceCursoComboBox);
+            Controls.Add(añoCursoComboBox);
             Controls.Add(año_calendarioCursoTextBox);
             Controls.Add(turnoCursoTextBox);
-            Controls.Add(comisionTextBox);
             Controls.Add(cupoCursoTextBox);
             Controls.Add(label5);
             Controls.Add(label4);
@@ -188,10 +221,13 @@
         private Label label3;
         private Label label4;
         private Label label5;
-        private TextBox cupoCursoTextBox;
-        private TextBox comisionTextBox;
         private TextBox turnoCursoTextBox;
         private TextBox año_calendarioCursoTextBox;
         private ErrorProvider errorProvider1;
+        private Label label7;
+        private Label label6;
+        private ComboBox indiceCursoComboBox;
+        private ComboBox añoCursoComboBox;
+        private TextBox cupoCursoTextBox;
     }
 }

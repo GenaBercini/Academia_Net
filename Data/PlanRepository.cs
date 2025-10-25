@@ -1,4 +1,5 @@
-﻿using Domain.Model;
+﻿using System.Numerics;
+using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -10,60 +11,68 @@ namespace Data
         {
             return new TPIContext();
         } 
-        public void Add (Plan plan)
+
+        public async Task AddAsync(Plan plan)
         {
             using var context = CreateContext();
-            context.Plans.Add(plan);
-            context.SaveChanges();
-        }
-        public Plan? Get(int id)
-        {
-            using var context = CreateContext();
-            return context.Plans.FirstOrDefault(p => p.Id == id && !p.IsDeleted);
+            bool specialtyExists = context.Specialties.Any(s => s.Id == plan.SpecialtyId);
+            if (!specialtyExists)
+                throw new InvalidOperationException($"No existe la especialidad con Id {plan.SpecialtyId}");
+            await context.Plans.AddAsync(plan);
+            await context.SaveChangesAsync();
         }
 
-        public IEnumerable<Plan> GetAll()
+
+        public async Task<Plan?> GetAsync(int id)
         {
             using var context = CreateContext();
-            return context.Plans
+            return await context.Plans
+                .Include(p => p.Specialty)
+                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
+        }
+
+        public async Task<IEnumerable<Plan>> GetAllAsync()
+        {
+            using var context = CreateContext();
+            return await context.Plans
                 .Where(p => !p.IsDeleted)
-                .ToList(); 
+                .Include(p => p.Specialty)
+                .ToListAsync();
         }
 
-        public bool Update(Plan plan)
+
+        public async Task<bool> UpdateAsync(Plan plan)
         {
             using var context = CreateContext();
-            var existingPlan = context.Plans.Find(plan.Id);
+            var existingPlan = await context.Plans
+                .FirstOrDefaultAsync(p => p.Id == plan.Id  );
+
             if (existingPlan != null && !existingPlan.IsDeleted)
             {
                 existingPlan.SetAño_calendario(plan.Año_calendario);
                 existingPlan.SetDescripcion(plan.Descripcion);
-                context.SaveChanges();
+                existingPlan.SetSpecialtyId(plan.SpecialtyId);
+                existingPlan.IsDeleted = plan.IsDeleted;
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        public bool Delete(int id) 
-        { 
-            using var context = CreateContext();
-            var plan = context.Plans.Find(id);
-            if (plan != null && !plan.IsDeleted) 
-            {
-                plan.IsDeleted = true; 
-                context.SaveChanges();
-                return true;
-            }
-            return false;
-        }
-
-        public IEnumerable<Subject> GetSubjects(int planId)
+        public async Task<bool> DeleteAsync(int id)
         {
-            using var ctx = CreateContext();
-            return ctx.Subjects
-                .Where(s => s.PlanId == planId && s.Habilitado)
-                .ToList();
+            using var context = CreateContext();
+            var plan = await context.Plans.FindAsync(id);
+            if (plan != null && !plan.IsDeleted)
+            {
+                plan.IsDeleted = true;
+                context.Plans.Update(plan);
+                await context.SaveChangesAsync();
+                return true;
+            }
+            return false;
         }
+
 
     }
 }

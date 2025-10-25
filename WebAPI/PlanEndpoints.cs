@@ -7,11 +7,11 @@ namespace WebAPI
     {
         public static void MapPlanEndpoints(this WebApplication app)
         {
-            app.MapGet("/plans/{id}", (int id) =>
+            app.MapGet("/plans/{id}", async (int id)  =>
             {
                 PlanService planService = new PlanService();
 
-                PlanDTO? dto = planService.Get(id);
+                PlanDTO? dto = await planService.GetAsync(id);
 
                 if (dto == null)
                 {
@@ -25,11 +25,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/plans", () =>
+            app.MapGet("/plans", async () =>
             {
                 PlanService planService = new PlanService();
 
-                var dtos = planService.GetAll();
+                var dtos = await planService.GetAllAsync();
 
                 return Results.Ok(dtos);
             })
@@ -37,13 +37,13 @@ namespace WebAPI
             .Produces<List<PlanDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/plans", (PlanDTO dto) =>
+            app.MapPost("/plans", async (PlanDTO dto) =>
             {
                 try
                 {
                     PlanService planService = new PlanService();
 
-                    PlanDTO planDTO = planService.Add(dto);
+                    PlanDTO planDTO = await planService.AddAsync(dto);
 
                     return Results.Created($"/plans/{planDTO.Id}", planDTO);
                 }
@@ -57,13 +57,13 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/plans", (PlanDTO dto) =>
+            app.MapPut("/plans", async (PlanDTO dto) =>
             {
                 try
                 {
                     PlanService planService = new PlanService();
 
-                    var found = planService.Update(dto);
+                    var found = await planService.UpdateAsync(dto);
 
                     if (!found)
                     {
@@ -82,11 +82,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/plans/{id}", (int id) =>
+            app.MapDelete("/plans/{id}", async (int id) =>
             {
                 PlanService planService = new PlanService();
 
-                var deleted = planService.Delete(id);
+                var deleted = await planService.DeleteAsync(id);
 
                 if (!deleted)
                 {

@@ -1,4 +1,5 @@
-﻿using Domain.Model;
+﻿using System.Numerics;
+using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -10,68 +11,68 @@ namespace Data
             return new TPIContext();
         }
 
-        public void Add(Subject subject)
+        public async Task AddAsync(Subject subject)
         {
             using var context = CreateContext();
-            context.Subjects.Add(subject);
-            context.SaveChanges();
+            bool planExists = context.Plans.Any(s => s.Id == subject.PlanId);
+            if (!planExists)
+                throw new InvalidOperationException($"No existe el plan con Id {subject.PlanId}");
+            await context.Subjects.AddAsync(subject);
+            await context.SaveChangesAsync();
+        }
+ 
+        public async Task<Subject?> GetAsync(int id)
+        {
+            using var context = CreateContext();
+            return await context.Subjects
+                .Include(p => p.Plan)
+                .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
-        public Subject? Get(int id)
+        public async Task<IEnumerable<Subject>> GetAllAsync()
         {
             using var context = CreateContext();
-            return context.Subjects
-                .FirstOrDefault(s => s.Id == id);
+            return await context.Subjects
+                .Where(p => !p.IsDeleted)
+                .Include(p => p.Plan)
+                .ToListAsync();
         }
+ 
 
-        public IEnumerable<Subject> GetAll()
+        public async Task<bool> UpdateAsync(Subject subject)
         {
             using var context = CreateContext();
-            return context.Subjects
-                .ToList();
-        }
+            var existingSubject = await context.Subjects
+                .FirstOrDefaultAsync(s => s.Id == subject.Id);
 
-        public bool Update(Subject subject)
-        {
-            using var context = CreateContext();
-            var existing = context.Subjects.FirstOrDefault(s => s.Id == subject.Id);
-
-            if (existing != null)
+            if (existingSubject != null && !existingSubject.IsDeleted)
             {
-                existing.SetDesc(subject.Desc);
-                existing.SetHsSemanales(subject.HsSemanales);
-                existing.SetObligatoria(subject.Obligatoria);
-                existing.Habilitado = subject.Habilitado;
-
-                context.SaveChanges();
+                existingSubject.SetDesc(subject.Desc);
+                existingSubject.SetHsSemanales(subject.HsSemanales);
+                existingSubject.SetObligatoria(subject.Obligatoria);
+                existingSubject.SetPlan(subject.PlanId);
+                existingSubject.IsDeleted = subject.IsDeleted;
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             using var context = CreateContext();
-            var subject = context.Subjects.Find(id);
-            if (subject != null)
+            var subject = await context.Subjects.FindAsync(id);
+            if (subject != null && !subject.IsDeleted)
             {
-                subject.Habilitado = false; 
-                context.SaveChanges();
+                subject.IsDeleted = false;
+                context.Subjects.Update(subject); 
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        // Una materias que busca a un curso
-        public IEnumerable<Course> GetCourses(int subjectId)
-        {
-            using var ctx = CreateContext();
-            return ctx.CoursesSubjects
-                .Include(cs => cs.Course)
-                .Where(cs => cs.SubjectId == subjectId)
-                .Select(cs => cs.Course)
-                .ToList();
-        }
+
     }
 }
 

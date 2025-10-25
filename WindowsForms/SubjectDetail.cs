@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using API.Clients;
+using Domain.Model;
 using DTOs;
 
 namespace WindowsForms
@@ -38,8 +39,38 @@ namespace WindowsForms
 
         public SubjectDetail(FormMode mode, SubjectDTO subject) : this()
         {
+           Init(mode, subject);
+        }
+
+
+        private async void Init(FormMode mode, SubjectDTO subject)
+        {
+            await Plan_Load();
             this.Mode = mode;
             this.Subject = subject;
+        }
+        private async Task Plan_Load()
+        {
+            try
+            {
+                var plan = await PlansApiClient.GetAllAsync();
+                var plansSubject = plan.Select(p => new
+                {
+                    Id = p.Id,
+                    Descripcion = p.Descripcion,
+                    Año_calendario = p.Año_calendario 
+                }).ToList();
+
+                planComboBox.DataSource = plan;
+                planComboBox.DisplayMember = "Descripcion";
+                planComboBox.ValueMember = "Id";
+                planComboBox.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar planes: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ApplyFormMode()
@@ -54,6 +85,7 @@ namespace WindowsForms
         {
             if (Subject != null && Mode == FormMode.Update)
             {
+                añoSubjectTextBox.Text = Subject.Año.ToString();
                 descripcionSubjectTextBox.Text = Subject.Desc;
                 horasSemanalesTextBox.Text = Subject.HsSemanales.ToString();
                 checkBoxObligatoriaSi.Checked = Subject.Obligatoria;
@@ -73,6 +105,7 @@ namespace WindowsForms
                 errorProvider1.SetError(horasSemanalesTextBox, "");
             }
         }
+
 
         private void DescripcionSubjectTextBox_Leave(object sender, EventArgs e)
         {
@@ -124,6 +157,12 @@ namespace WindowsForms
                 isValid = false;
             }
 
+            if (!int.TryParse(añoSubjectTextBox.Text, out int año) || año <= 0 && año>5)
+            {
+                errorProvider1.SetError(horasSemanalesTextBox, "Ingrese un número válido de año.");
+                isValid = false;
+            }
+
             if (!checkBoxObligatoriaSi.Checked && !checkBoxObligatoriaNo.Checked)
             {
                 errorProvider1.SetError(checkBoxObligatoriaSi, "Debe seleccionar si es obligatoria o no.");
@@ -149,32 +188,22 @@ namespace WindowsForms
         {
             if (!ValidateSubject())
                 return;
-
             try
             {
+                subject.Año = int.Parse(añoSubjectTextBox.Text);
+                subject.PlanId = (int)planComboBox.SelectedValue;
+                subject.Desc= descripcionSubjectTextBox.Text.Trim();
+                subject.HsSemanales= int.Parse(horasSemanalesTextBox.Text);
+                subject.Obligatoria = checkBoxObligatoriaSi.Checked;
+
+
                 if (Mode == FormMode.Add)
                 {
-                    var createSubject = new SubjectDTO
-                    {
-                        Desc = descripcionSubjectTextBox.Text.Trim(),
-                        HsSemanales = int.Parse(horasSemanalesTextBox.Text),
-                        Obligatoria = checkBoxObligatoriaSi.Checked,
-                    };
-
-                    await SubjectsApiClient.AddAsync(createSubject);
+                    await SubjectsApiClient.AddAsync(subject);
                 }
                 else
                 {
-                    var updateSubject = new SubjectDTO
-                    {
-                        Id = Subject.Id,
-                        Desc = descripcionSubjectTextBox.Text.Trim(),
-                        HsSemanales = int.Parse(horasSemanalesTextBox.Text),
-                        Obligatoria = checkBoxObligatoriaSi.Checked,
-                        Habilitado = Subject.Habilitado
-                    };
-
-                    await SubjectsApiClient.UpdateAsync(updateSubject);
+                    await SubjectsApiClient.UpdateAsync(subject);
                 }
                 this.DialogResult = DialogResult.OK;
                 this.Close();

@@ -1,9 +1,6 @@
 ﻿using API.Clients;
-using Domain.Model;
 using DTOs;
-using System;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace WindowsForms
 {
@@ -38,10 +35,16 @@ namespace WindowsForms
             InitializeComponent();
         }
 
-        public PlanesDetalle(FormMode mode, PlanDTO plan) : this()
+        private async void Init(FormMode mode, PlanDTO plan)
         {
+            await Specialty_Load();
             this.Mode = mode;
             this.Plan = plan;
+        }
+
+        public PlanesDetalle(FormMode mode, PlanDTO plan) : this()
+        {
+            Init(mode, plan);
         }
 
         private void SetFormMode()
@@ -72,6 +75,29 @@ namespace WindowsForms
             }
         }
 
+        private async Task Specialty_Load()
+        {
+            try
+            {
+                var specialty = await SpecialtiesApiClient.GetAllAsync();
+                var specialtyPlans = specialty.Select(s => new
+                {
+                    Id = s.Id,
+                    DescEspecialidad = s.DescEspecialidad
+                }).ToList();
+
+                cmbEspecialidades.DataSource = specialty;
+                cmbEspecialidades.DisplayMember = "DescEspecialidad";
+                cmbEspecialidades.ValueMember = "Id";
+                cmbEspecialidades.SelectedIndex = -1;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar especialidades: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void DescripcionTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsLetter(e.KeyChar) && e.KeyChar != ' ')
@@ -149,7 +175,11 @@ namespace WindowsForms
                 errorProvider1.SetError(añoCalendarioTextBox, "Ingrese un año calendario válido.");
                 isValid = false;
             }
-
+            if (cmbEspecialidades.SelectedIndex < 0 || cmbEspecialidades.SelectedValue == null)
+            {
+                errorProvider1.SetError(cmbEspecialidades, "Debe seleccionar una especialidad.");
+                isValid = false;
+            }
             return isValid;
         }
 
@@ -160,6 +190,7 @@ namespace WindowsForms
 
             try
             {
+                plan.SpecialtyId = (int)cmbEspecialidades.SelectedValue;
                 plan.Descripcion = descripcionTextBox.Text.Trim();
                 plan.Año_calendario = int.Parse(añoCalendarioTextBox.Text);
 
