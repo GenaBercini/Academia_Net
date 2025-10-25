@@ -6,33 +6,40 @@ namespace Data
 {
     public class SubjectRepository
     {
-        private TPIContext CreateContext()
+
+        private readonly TPIContext _context;
+
+        public SubjectRepository(TPIContext context)
         {
-            return new TPIContext();
+            _context = context;
         }
+        //private TPIContext CreateContext()
+        //{
+        //    return new TPIContext();
+        //}
 
         public async Task AddAsync(Subject subject)
         {
-            using var context = CreateContext();
-            bool planExists = context.Plans.Any(s => s.Id == subject.PlanId);
+            //using var context = CreateContext();
+            bool planExists = _context.Plans.Any(s => s.Id == subject.PlanId);
             if (!planExists)
                 throw new InvalidOperationException($"No existe el plan con Id {subject.PlanId}");
-            await context.Subjects.AddAsync(subject);
-            await context.SaveChangesAsync();
+            await _context.Subjects.AddAsync(subject);
+            await _context.SaveChangesAsync();
         }
  
         public async Task<Subject?> GetAsync(int id)
         {
-            using var context = CreateContext();
-            return await context.Subjects
+            //using var context = CreateContext();
+            return await _context.Subjects
                 .Include(p => p.Plan)
                 .FirstOrDefaultAsync(p => p.Id == id && !p.IsDeleted);
         }
 
         public async Task<IEnumerable<Subject>> GetAllAsync()
         {
-            using var context = CreateContext();
-            return await context.Subjects
+            //using var context = CreateContext();
+            return await _context.Subjects
                 .Where(p => !p.IsDeleted)
                 .Include(p => p.Plan)
                 .ToListAsync();
@@ -41,8 +48,8 @@ namespace Data
 
         public async Task<bool> UpdateAsync(Subject subject)
         {
-            using var context = CreateContext();
-            var existingSubject = await context.Subjects
+            //using var context = CreateContext();
+            var existingSubject = await _context.Subjects
                 .FirstOrDefaultAsync(s => s.Id == subject.Id);
 
             if (existingSubject != null && !existingSubject.IsDeleted)
@@ -52,7 +59,7 @@ namespace Data
                 existingSubject.SetObligatoria(subject.Obligatoria);
                 existingSubject.SetPlan(subject.PlanId);
                 existingSubject.IsDeleted = subject.IsDeleted;
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -60,13 +67,13 @@ namespace Data
 
         public async Task<bool> DeleteAsync(int id)
         {
-            using var context = CreateContext();
-            var subject = await context.Subjects.FindAsync(id);
+            //using var context = CreateContext();
+            var subject = await _context.Subjects.FindAsync(id);
             if (subject != null && !subject.IsDeleted)
             {
                 subject.IsDeleted = false;
-                context.Subjects.Update(subject); 
-                await context.SaveChangesAsync();
+                _context.Subjects.Update(subject); 
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;

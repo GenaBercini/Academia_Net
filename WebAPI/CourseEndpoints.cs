@@ -7,9 +7,9 @@ namespace WebAPI
     {
         public static void MapCourseEndpoints(this WebApplication app)
         {
-            app.MapGet("/courses/{id}",async (int id) =>
+            app.MapGet("/courses/{id}",async (int id, CourseService courseService) =>
             {
-                CourseService courseService = new CourseService();
+                //CourseService courseService = new CourseService();
 
                 CourseDTO? dto = await courseService.GetAsync(id);
 
@@ -25,9 +25,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/courses",async () =>
+            app.MapGet("/courses",async (CourseService courseService) =>
             {
-                CourseService courseService = new CourseService();
+                //CourseService courseService = new CourseService();
                 try 
                 {
                     var courses = await courseService.GetAllAsync();
@@ -43,11 +43,11 @@ namespace WebAPI
             .Produces<List<CourseDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/courses",async (CourseDTO dto) =>
+            app.MapPost("/courses",async (CourseDTO dto, CourseService courseService) =>
             {
                 try
                 {
-                    CourseService courseService = new CourseService();
+                    //CourseService courseService = new CourseService();
 
                     CourseDTO courseDTO = await courseService.AddAsync(dto);
 
@@ -63,11 +63,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/courses", async (CourseDTO dto) =>
+            app.MapPut("/courses", async (CourseDTO dto, CourseService courseService) =>
             {
                 try
                 {
-                    CourseService courseService = new CourseService();
+                    //CourseService courseService = new CourseService();
 
                     var found = await courseService.UpdateAsync(dto);
 
@@ -88,9 +88,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/courses/{id}",async (int id) =>
+            app.MapDelete("/courses/{id}",async (int id, CourseService courseService) =>
             {
-                CourseService courseService = new CourseService();
+                //CourseService courseService = new CourseService();
 
                 var deleted = await courseService.DeleteAsync(id);
 
@@ -106,12 +106,12 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/courses/{courseId:int}/subjects",async (int courseId) =>
+            app.MapGet("/courses/{courseId:int}/subjects",async (int courseId, CourseService courseService) =>
             {
 
                 try
                 {
-                    var courseService = new CourseService();
+                    //var courseService = new CourseService();
                     var subjects = await courseService.GetSubjectsByCourse(courseId);
                     return Results.Ok(subjects);
                 }
@@ -127,11 +127,11 @@ namespace WebAPI
            .WithName("GetSubjectsByCourse")
            .Produces<IEnumerable<CourseSubjectDTO>>(StatusCodes.Status200OK);
 
-            app.MapPost("/courses/{courseId:int}/subjects",async (int courseId, CourseSubjectDTO dto) =>
+            app.MapPost("/courses/{courseId:int}/subjects",async (int courseId, CourseSubjectDTO dto, CourseService courseService) =>
             {
                 try
                 {
-                    var courseService = new CourseService();
+                    //var courseService = new CourseService();
                     var created = await courseService.AddSubjectToCourse(courseId, dto.SubjectId, dto.DiaHoraDictado);
                     return Results.Created($"/courses/{courseId}/subjects", created);
                 }

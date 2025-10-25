@@ -1,12 +1,19 @@
-﻿using Domain.Model;
-using Data;
+﻿using Data;
+using Domain.Model;
 using DTOs;
+using QuestPDF.Infrastructure;
 using System.Text.RegularExpressions;
 
 namespace Application.Services
 {
     public class SubjectService
     {
+        private readonly SubjectRepository _subjectRepository;
+
+        public SubjectService(SubjectRepository subjectRepository)
+        {
+            _subjectRepository = subjectRepository;
+        }
         private void ValidarSubjectDTO(SubjectDTO dto, bool isUpdate = false)
         {
             if (dto == null)
@@ -29,9 +36,9 @@ namespace Application.Services
         public async Task<SubjectDTO> AddAsync(SubjectDTO dto)
         {
             ValidarSubjectDTO(dto);
-            var subjectRepository = new SubjectRepository();
+            //var subjectRepository = new SubjectRepository();
 
-            var existing = (await subjectRepository.GetAllAsync())
+            var existing = (await _subjectRepository.GetAllAsync())
                 .FirstOrDefault(s =>
                     s.Desc.Equals(dto.Desc, StringComparison.OrdinalIgnoreCase)
                     && s.IsDeleted);
@@ -48,27 +55,27 @@ namespace Application.Services
                 planId: dto.PlanId
             );
 
-            await subjectRepository.AddAsync(subject);
+            await _subjectRepository.AddAsync(subject);
             dto.Id = subject.Id;
             return dto;
         }
-       
 
- 
+
+
         public async Task<bool> DeleteAsync(int id)
         {
-            var subjectRepository = new SubjectRepository();
-            var subject = await subjectRepository.GetAsync(id);
+            //var subjectRepository = new SubjectRepository();
+            var subject = await _subjectRepository.GetAsync(id);
             if (subject == null)
                 return false;
-            return await subjectRepository.DeleteAsync(id);
+            return await _subjectRepository.DeleteAsync(id);
         }
 
 
         public async Task<SubjectDTO?> GetAsync(int id)
         {
-            var subjectRepository = new SubjectRepository();
-            Subject? subject = await subjectRepository.GetAsync(id);
+            //var subjectRepository = new SubjectRepository();
+            Subject? subject = await _subjectRepository.GetAsync(id);
 
             if (subject == null || !subject.IsDeleted)
                 return null;
@@ -85,8 +92,8 @@ namespace Application.Services
 
         public async Task<IEnumerable<SubjectDTO>> GetAllAsync()
         {
-            var subjectRepository = new SubjectRepository();
-            var subjects = await subjectRepository.GetAllAsync();
+            //var subjectRepository = new SubjectRepository();
+            var subjects = await _subjectRepository.GetAllAsync();
 
             return subjects
                 .Where(s => !s.IsDeleted)
@@ -103,12 +110,12 @@ namespace Application.Services
 
         public async Task<bool> UpdateAsync(SubjectDTO dto)
         {
-            var subjectRepository = new SubjectRepository();
-            var existing = await subjectRepository.GetAsync(dto.Id);
+            //var subjectRepository = new SubjectRepository();
+            var existing = await _subjectRepository.GetAsync(dto.Id);
             if (existing == null || existing.IsDeleted)
                 throw new ArgumentException("La materia no existe o está deshabilitada.");
             ValidarSubjectDTO(dto, isUpdate: true);
-            var duplicate = (await subjectRepository.GetAllAsync())
+            var duplicate = (await _subjectRepository.GetAllAsync())
                 .FirstOrDefault(s =>
                     s.Desc.Equals(dto.Desc, StringComparison.OrdinalIgnoreCase) &&
                     s.Id != dto.Id &&
@@ -124,7 +131,7 @@ namespace Application.Services
                 planId: dto.PlanId
             );
             subject.IsDeleted = existing.IsDeleted;
-            return await subjectRepository.UpdateAsync(subject);
+            return await _subjectRepository.UpdateAsync(subject);
         }
     }
 }

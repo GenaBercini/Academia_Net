@@ -14,16 +14,18 @@ namespace Application.Services
     public class UserService
     {
         private readonly string _outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedReports");
+        private readonly UserRepository _userRepository;
 
-        public UserService()
+        public UserService(UserRepository userRepository)
         {
+            _userRepository = userRepository;
             QuestPDF.Settings.License = LicenseType.Community;
             if (!Directory.Exists(_outputDirectory))
                 Directory.CreateDirectory(_outputDirectory);
         }
         public async Task<UserDTO> AddAsync(UserCreateDTO createDto)
         {
-            var userRepository = new UserRepository();
+            //var userRepository = new UserRepository();
 
             User user = new(0,
                 createDto.UserName,
@@ -55,22 +57,22 @@ namespace Application.Services
             if (!string.IsNullOrWhiteSpace(createDto.StudentNumber) && createDto.TypeUser == UserType.Student)
                 user.SetStudentNumber(createDto.StudentNumber);
 
-            await userRepository.AddAsync(user);
+            await _userRepository.AddAsync(user);
 
             return MapToDTO(user);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var userRepository = new UserRepository();
-            var specialty = await userRepository.GetAsync(id);
-            return await userRepository.DeleteAsync(id);
+            //var userRepository = new UserRepository();
+            var specialty = await _userRepository.GetAsync(id);
+            return await _userRepository.DeleteAsync(id);
         }
 
         public async Task<UserDTO?> GetAsync(int id)
         {
-            var userRepository = new UserRepository();
-            User? user = await userRepository.GetAsync(id);
+            //var userRepository = new UserRepository();
+            User? user = await _userRepository.GetAsync(id);
 
             if (user == null)
                 return null;
@@ -80,15 +82,15 @@ namespace Application.Services
    
         public async Task<IEnumerable<UserDTO>> GetAllAsync()
         {
-            var userRepository = new UserRepository();
-            var usuarios = await userRepository.GetAllAsync();
+            //var userRepository = new UserRepository();
+            var usuarios = await _userRepository.GetAllAsync();
 
             return usuarios.Select(user => MapToDTO(user));
         }
         public async Task<bool> UpdateAsync(UserUpdateDTO updateDto)
         {
-            var userRepository = new UserRepository();
-            var usuario = await userRepository.GetAsync(updateDto.Id);
+            //var userRepository = new UserRepository();
+            var usuario = await _userRepository.GetAsync(updateDto.Id);
             if (usuario == null)
                 return false;
 
@@ -120,7 +122,7 @@ namespace Application.Services
             if (!string.IsNullOrWhiteSpace(updateDto.Password))
                 usuario.SetPassword(updateDto.Password);
 
-            return await userRepository.UpdateAsync(usuario);
+            return await _userRepository.UpdateAsync(usuario);
         }
         private UserDTO MapToDTO(User user) => new UserDTO
         {
@@ -139,10 +141,10 @@ namespace Application.Services
             Status = user.Status
         };
 
-        public byte[] GenerateUsersGradesReport(bool onlyStudents = true)
+        public async  Task<byte[]> GenerateUsersGradesReport(bool onlyStudents = true)
         {
-            var userRepository = new UserRepository();
-            var users = userRepository.GetAll().ToList();
+            //var userRepository = new UserRepository();
+            var users = await _userRepository.GetAllAsync();
 
             if (onlyStudents)
                 users = users.Where(u => u.TypeUser == UserType.Student).ToList();

@@ -7,11 +7,11 @@ namespace WebAPI
     {
         public static void MapSpecialtyEndpoints(this WebApplication app)
         {
-            app.MapGet("/specialties/{id}", async (int id) =>
+            app.MapGet("/specialties/{id}", async (int id, SpecialtyService specialtyService) =>
             {
-                var service = new SpecialtyService();
+                //var service = new SpecialtyService();
 
-                SpecialtyDTO? dto =await service.GetAsync(id);
+                SpecialtyDTO? dto =await specialtyService.GetAsync(id);
 
                 if (dto == null)
                     return Results.NotFound();
@@ -23,10 +23,10 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/specialties",async () =>
+            app.MapGet("/specialties",async (SpecialtyService specialtyService) =>
             {
-                var service = new SpecialtyService();
-                var dtos = await service.GetAllAsync();
+                //var service = new SpecialtyService();
+                var dtos = await specialtyService.GetAllAsync();
 
                 return Results.Ok(dtos);
             })
@@ -34,12 +34,12 @@ namespace WebAPI
             .Produces<List<SpecialtyDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/specialties", async (SpecialtyDTO dto) =>
+            app.MapPost("/specialties", async (SpecialtyDTO dto, SpecialtyService specialtyService) =>
             {
                 try
                 {
-                    var service = new SpecialtyService();
-                    SpecialtyDTO created =await service.AddAsync(dto);
+                    //var service = new SpecialtyService();
+                    SpecialtyDTO created =await specialtyService.AddAsync(dto);
 
                     return Results.Created($"/specialties/{created.Id}", created);
                 }
@@ -53,12 +53,12 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/specialties",async (SpecialtyDTO dto) =>
+            app.MapPut("/specialties",async (SpecialtyDTO dto, SpecialtyService specialtyService) =>
             {
                 try
                 {
-                    var service = new SpecialtyService();
-                    var updated = await service.UpdateAsync(dto);
+                    //var service = new SpecialtyService();
+                    var updated = await specialtyService.UpdateAsync(dto);
 
                     if (!updated)
                         return Results.NotFound();
@@ -75,10 +75,10 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/specialties/{id}", async (int id) =>
+            app.MapDelete("/specialties/{id}", async (int id, SpecialtyService specialtyService) =>
             {
-                var service = new SpecialtyService();
-                var deleted = await service.DeleteAsync(id);
+                //var service = new SpecialtyService();
+                var deleted = await specialtyService.DeleteAsync(id);
 
                 if (!deleted)
                     return Results.NotFound();
