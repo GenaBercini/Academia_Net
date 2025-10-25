@@ -39,13 +39,17 @@
             checkBoxObligatoriaSi = new CheckBox();
             checkBoxObligatoriaNo = new CheckBox();
             errorProvider1 = new ErrorProvider(components);
+            label4 = new Label();
+            planComboBox = new ComboBox();
+            label5 = new Label();
+            añoSubjectTextBox = new TextBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(43, 95);
+            label1.Location = new Point(66, 159);
             label1.Name = "label1";
             label1.Size = new Size(69, 15);
             label1.TabIndex = 2;
@@ -54,7 +58,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(43, 150);
+            label2.Location = new Point(66, 214);
             label2.Name = "label2";
             label2.Size = new Size(97, 15);
             label2.TabIndex = 3;
@@ -63,7 +67,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(43, 206);
+            label3.Location = new Point(66, 270);
             label3.Name = "label3";
             label3.Size = new Size(66, 15);
             label3.TabIndex = 4;
@@ -71,7 +75,7 @@
             // 
             // descripcionSubjectTextBox
             // 
-            descripcionSubjectTextBox.Location = new Point(191, 95);
+            descripcionSubjectTextBox.Location = new Point(214, 159);
             descripcionSubjectTextBox.Name = "descripcionSubjectTextBox";
             descripcionSubjectTextBox.Size = new Size(274, 23);
             descripcionSubjectTextBox.TabIndex = 7;
@@ -80,7 +84,7 @@
             // 
             // horasSemanalesTextBox
             // 
-            horasSemanalesTextBox.Location = new Point(191, 142);
+            horasSemanalesTextBox.Location = new Point(214, 206);
             horasSemanalesTextBox.Name = "horasSemanalesTextBox";
             horasSemanalesTextBox.Size = new Size(274, 23);
             horasSemanalesTextBox.TabIndex = 8;
@@ -89,7 +93,7 @@
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(384, 269);
+            aceptarButton.Location = new Point(407, 333);
             aceptarButton.Margin = new Padding(2, 1, 2, 1);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(81, 22);
@@ -100,7 +104,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(191, 269);
+            cancelarButton.Location = new Point(214, 333);
             cancelarButton.Margin = new Padding(2, 1, 2, 1);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(81, 22);
@@ -112,7 +116,7 @@
             // checkBoxObligatoriaSi
             // 
             checkBoxObligatoriaSi.AutoSize = true;
-            checkBoxObligatoriaSi.Location = new Point(237, 205);
+            checkBoxObligatoriaSi.Location = new Point(260, 269);
             checkBoxObligatoriaSi.Name = "checkBoxObligatoriaSi";
             checkBoxObligatoriaSi.Size = new Size(35, 19);
             checkBoxObligatoriaSi.TabIndex = 19;
@@ -123,7 +127,7 @@
             // checkBoxObligatoriaNo
             // 
             checkBoxObligatoriaNo.AutoSize = true;
-            checkBoxObligatoriaNo.Location = new Point(384, 206);
+            checkBoxObligatoriaNo.Location = new Point(407, 270);
             checkBoxObligatoriaNo.Name = "checkBoxObligatoriaNo";
             checkBoxObligatoriaNo.Size = new Size(42, 19);
             checkBoxObligatoriaNo.TabIndex = 20;
@@ -135,11 +139,50 @@
             // 
             errorProvider1.ContainerControl = this;
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(66, 55);
+            label4.Name = "label4";
+            label4.Size = new Size(30, 15);
+            label4.TabIndex = 21;
+            label4.Text = "Plan";
+            // 
+            // planComboBox
+            // 
+            planComboBox.FormattingEnabled = true;
+            planComboBox.Location = new Point(214, 52);
+            planComboBox.Name = "planComboBox";
+            planComboBox.Size = new Size(274, 23);
+            planComboBox.TabIndex = 22;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(66, 109);
+            label5.Name = "label5";
+            label5.Size = new Size(29, 15);
+            label5.TabIndex = 23;
+            label5.Text = "Año";
+            // 
+            // añoSubjectTextBox
+            // 
+            añoSubjectTextBox.Location = new Point(214, 109);
+            añoSubjectTextBox.Name = "añoSubjectTextBox";
+            añoSubjectTextBox.Size = new Size(274, 23);
+            añoSubjectTextBox.TabIndex = 24;
+            añoSubjectTextBox.Text = "Ingrese un año entre el 1 y 5";
+            añoSubjectTextBox.KeyPress += HorasSemanalesTextBox_KeyPress;
+            // 
             // SubjectDetail
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
+            Controls.Add(añoSubjectTextBox);
+            Controls.Add(label5);
+            Controls.Add(planComboBox);
+            Controls.Add(label4);
             Controls.Add(checkBoxObligatoriaNo);
             Controls.Add(checkBoxObligatoriaSi);
             Controls.Add(cancelarButton);
@@ -168,5 +211,9 @@
         private CheckBox checkBoxObligatoriaSi;
         private CheckBox checkBoxObligatoriaNo;
         private ErrorProvider errorProvider1;
+        private ComboBox planComboBox;
+        private Label label4;
+        private TextBox añoSubjectTextBox;
+        private Label label5;
     }
 }

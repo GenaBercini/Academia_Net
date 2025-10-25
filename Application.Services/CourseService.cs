@@ -1,13 +1,14 @@
 ﻿using Data;
 using Domain.Model;
 using DTOs;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace Application.Services
 {
     public class CourseService
     {
-        private void ValidarCourseDTO(CourseDTO dto)
+        private void ValidarCourseDTO(CourseDTO dto, bool isUpdate = false)
         {
             if (dto == null)
                 throw new ArgumentException("Los datos del curso no pueden ser nulos.");
@@ -35,17 +36,11 @@ namespace Application.Services
                 throw new ArgumentException("La comisión solo puede contener letras y números (sin espacios ni símbolos).");
         }
 
-        public CourseDTO Add(CourseDTO dto)
+
+        public async Task<CourseDTO> AddAsync(CourseDTO dto)
         {
             ValidarCourseDTO(dto);
-
             var courseRepository = new CourseRepository();
-
-            if (courseRepository.Exists(dto.Año_calendario, dto.Comision, 0))
-            {
-                throw new ArgumentException($"Ya existe un curso en el año {dto.Año_calendario} con la comisión '{dto.Comision}'.");
-            }
-
             Course course = new Course(
                 0,
                 dto.Cupo,
@@ -53,29 +48,26 @@ namespace Application.Services
                 dto.Turno,
                 dto.Comision
             );
-
-            courseRepository.Add(course);
-
+            await courseRepository.AddAsync(course);
             dto.Id = course.Id;
             return dto;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El Id debe ser mayor que cero.");
-
             var courseRepository = new CourseRepository();
-            return courseRepository.Delete(id);
+            var course = await courseRepository.GetAsync(id);
+            if (course == null)
+                return false;
+            return await courseRepository.DeleteAsync(id);
         }
 
-        public CourseDTO? Get(int id)
+     
+        public async Task<CourseDTO?> GetAsync(int id)
         {
-            if (id <= 0)
-                return null;
-
+       
             var courseRepository = new CourseRepository();
-            Course? course = courseRepository.Get(id);
+            Course? course = await courseRepository.GetAsync(id);
 
             if (course == null)
                 return null;
@@ -90,36 +82,36 @@ namespace Application.Services
             };
         }
 
-        public IEnumerable<CourseDTO> GetAll()
+
+        public async Task<IEnumerable<CourseDTO>> GetAllAsync()
         {
             var courseRepository = new CourseRepository();
-            var courses = courseRepository.GetAll();
-
-            return courses.Select(course => new CourseDTO
+            var courses = await courseRepository.GetAllAsync();
+            return courses
+                .Where(c => !c.IsDeleted)
+                .Select(course => new CourseDTO
             {
                 Id = course.Id,
                 Cupo = course.Cupo,
                 Año_calendario = course.Año_calendario,
                 Turno = course.Turno,
                 Comision = course.Comision,
-                SpecialtyId = course.SpecialtyId
             }).ToList();
         }
-
-        public bool Update(CourseDTO dto)
+      
+        public async Task<bool> UpdateAsync(CourseDTO dto)
         {
-            if (dto == null)
-                throw new ArgumentException("Los datos del curso no pueden ser nulos.");
-
-            ValidarCourseDTO(dto);
-
             var courseRepository = new CourseRepository();
-
-            if (courseRepository.Exists(dto.Año_calendario, dto.Comision, dto.Id))
-            {
-                throw new ArgumentException($"Ya existe otro curso en el año {dto.Año_calendario} con la comisión '{dto.Comision}'.");
-            }
-
+            var existing = await courseRepository.GetAsync(dto.Id);
+            if (existing == null || existing.IsDeleted)
+                throw new ArgumentException("El curso no existe o está deshabilitado.");
+            ValidarCourseDTO(dto, isUpdate:true);
+            var duplicate = (await courseRepository.GetAllAsync())
+                .FirstOrDefault(c =>
+                    c.Id != dto.Id &&
+                    !c.IsDeleted);
+            if (duplicate != null)
+                throw new ArgumentException("Ya existe un curso con esa descripción y año.");
             Course course = new Course(
                 dto.Id,
                 dto.Cupo,
@@ -127,14 +119,15 @@ namespace Application.Services
                 dto.Turno,
                 dto.Comision
             );
+            course.IsDeleted = existing.IsDeleted;
 
-            return courseRepository.Update(course);
+            return await courseRepository.UpdateAsync(course);
         }
 
-        public IEnumerable<CourseSubjectDTO> GetSubjectsByCourse(int courseId)
+        public async Task<IEnumerable<CourseSubjectDTO>> GetSubjectsByCourse(int courseId)
         {
             var repo = new CourseRepository();
-            var items = repo.GetCourseSubjects(courseId);
+            var items = await repo.GetCourseSubjects(courseId);
             return items.Select(cs => new CourseSubjectDTO
             {
                 CourseId = cs.CourseId,
@@ -146,15 +139,14 @@ namespace Application.Services
                     Desc = cs.Subject.Desc,
                     HsSemanales = cs.Subject.HsSemanales,
                     Obligatoria = cs.Subject.Obligatoria,
-                    Habilitado = cs.Subject.Habilitado
                 }
             }).ToList();
         }
 
-        public CourseSubjectDTO AddSubjectToCourse(int courseId, int subjectId, string? diaHora)
+        public async Task<CourseSubjectDTO> AddSubjectToCourse(int courseId, int subjectId, string? diaHora)
         {
             var repo = new CourseRepository();
-            var cs = repo.AddCourseSubject(courseId, subjectId, diaHora);
+            var cs = await repo.AddCourseSubject(courseId, subjectId, diaHora);
             return new CourseSubjectDTO
             {
                 CourseId = cs.CourseId,
@@ -166,7 +158,6 @@ namespace Application.Services
                     Desc = cs.Subject.Desc,
                     HsSemanales = cs.Subject.HsSemanales,
                     Obligatoria = cs.Subject.Obligatoria,
-                    Habilitado = cs.Subject.Habilitado
                 }
             };
         }

@@ -1,6 +1,7 @@
 ﻿using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Numerics;
 
 
 namespace Data
@@ -12,33 +13,32 @@ namespace Data
             return new TPIContext();
         }
 
-        public void Add(Course curso)
+        public async Task AddAsync(Course curso)
         {
             using var context = CreateContext();
-            context.Courses.Add(curso);
-            context.SaveChanges();
+            await context.Courses.AddAsync(curso);
+            await context.SaveChangesAsync();
         }
 
-        public Course? Get(int id)
+        public async Task<Course?> GetAsync(int id)
         {
             using var context = CreateContext();
-            return context.Courses
-                .FirstOrDefault(c => c.Id == id && !c.IsDeleted); 
+            return await context.Courses
+                .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted); 
         }
 
-        public IEnumerable<Course> GetAll()
+        public async Task<IEnumerable<Course>> GetAllAsync()
         {
             using var context = CreateContext();
-            return context.Courses
-                .Include(c => c.CoursesSubjects)
-                .ThenInclude(cs => cs.Subject)
-                .ToList();
+            return await context.Courses
+                .ToListAsync();
         }
-
-        public bool Update(Course curso)
+ 
+        public async Task<bool> UpdateAsync(Course curso)
         {
             using var context = CreateContext();
-            var existingCurso = context.Courses.Find(curso.Id);
+            var existingCurso = await context.Courses
+                .FindAsync(curso.Id);
             if (existingCurso != null && !existingCurso.IsDeleted)
             {
                 existingCurso.SetCupo(curso.Cupo);
@@ -46,37 +46,40 @@ namespace Data
                 existingCurso.SetTurno(curso.Turno);
                 existingCurso.SetComision(curso.Comision);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             using var context = CreateContext();
-            var curso = context.Courses.Find(id);
-            if (curso != null && !curso.IsDeleted)
+            var course = await context.Courses
+                .FindAsync(id);
+            if (course != null && !course.IsDeleted)
             {
-                curso.IsDeleted = true;  
-                context.SaveChanges();
+                course.IsDeleted = true;
+                context.Courses.Update(course);
+
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        public bool Exists(int año_calendario, string comision, int excludeId)
-        {
-            using var contex = CreateContext();
-            return contex.Courses.Any(c =>
-                c.Id != excludeId
-                && c.Año_calendario == año_calendario
-                && c.Comision == comision
-                && !c.IsDeleted);
-        }
+        //public bool exists(int año_calendario, string comision, int excludeid)
+        //{
+        //    using var contex = createcontext();
+        //    return contex.courses.any(c =>
+        //        c.id != excludeid
+        //        && c.año_calendario == año_calendario
+        //        && c.comision == comision
+        //        && !c.isdeleted);
+        //}
 
         //Cada curso va a tener que buscar sus estudiantes y profesores asociados
-        public IEnumerable<User> GetStudents(int courseId)
+        public async Task<IEnumerable<User>> GetStudents(int courseId)
         {
             using var ctx = CreateContext();
             return ctx.UsersCoursesSubjects
@@ -86,7 +89,7 @@ namespace Data
                 .Distinct()
                 .ToList();
         }
-        public IEnumerable<User> GetTeachers(int courseId)
+        public async Task<IEnumerable<User>> GetTeachers(int courseId)
         {
             using var ctx = CreateContext();
             return ctx.UsersCoursesSubjects
@@ -97,7 +100,7 @@ namespace Data
                 .ToList();
         }
 
-        public IEnumerable<CourseSubject> GetCourseSubjects(int courseId)
+        public async Task<IEnumerable<CourseSubject?>> GetCourseSubjects(int courseId)
         {
             using var ctx = CreateContext();
             return ctx.CoursesSubjects
@@ -106,7 +109,7 @@ namespace Data
                       .ToList();
         }
 
-        public CourseSubject AddCourseSubject(int courseId, int subjectId, string? diaHora)
+        public async Task<CourseSubject> AddCourseSubject(int courseId, int subjectId, string? diaHora)
         {
             using var ctx = CreateContext();
 
@@ -126,8 +129,8 @@ namespace Data
                 DiaHoraDictado = diaHora
             };
 
-            ctx.CoursesSubjects.Add(cs);
-            ctx.SaveChanges();
+            await ctx.CoursesSubjects.AddAsync(cs);
+            await ctx.SaveChangesAsync();
 
             return ctx.CoursesSubjects
                       .Include(x => x.Subject)

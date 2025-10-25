@@ -36,12 +36,14 @@
             label2 = new Label();
             añoCalendarioTextBox = new TextBox();
             errorProvider1 = new ErrorProvider(components);
+            label3 = new Label();
+            cmbEspecialidades = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
             // descripcionTextBox
             // 
-            descripcionTextBox.Location = new Point(245, 93);
+            descripcionTextBox.Location = new Point(237, 186);
             descripcionTextBox.Margin = new Padding(2, 1, 2, 1);
             descripcionTextBox.Name = "descripcionTextBox";
             descripcionTextBox.Size = new Size(251, 23);
@@ -51,7 +53,7 @@
             // 
             // aceptarButton
             // 
-            aceptarButton.Location = new Point(415, 253);
+            aceptarButton.Location = new Point(407, 335);
             aceptarButton.Margin = new Padding(2, 1, 2, 1);
             aceptarButton.Name = "aceptarButton";
             aceptarButton.Size = new Size(81, 22);
@@ -62,7 +64,7 @@
             // 
             // cancelarButton
             // 
-            cancelarButton.Location = new Point(245, 253);
+            cancelarButton.Location = new Point(237, 335);
             cancelarButton.Margin = new Padding(2, 1, 2, 1);
             cancelarButton.Name = "cancelarButton";
             cancelarButton.Size = new Size(81, 22);
@@ -74,7 +76,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(63, 172);
+            label1.Location = new Point(63, 250);
             label1.Margin = new Padding(2, 0, 2, 0);
             label1.Name = "label1";
             label1.Size = new Size(89, 15);
@@ -84,7 +86,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(63, 96);
+            label2.Location = new Point(63, 189);
             label2.Margin = new Padding(2, 0, 2, 0);
             label2.Name = "label2";
             label2.Size = new Size(69, 15);
@@ -93,7 +95,7 @@
             // 
             // añoCalendarioTextBox
             // 
-            añoCalendarioTextBox.Location = new Point(245, 169);
+            añoCalendarioTextBox.Location = new Point(237, 250);
             añoCalendarioTextBox.Margin = new Padding(2, 1, 2, 1);
             añoCalendarioTextBox.Name = "añoCalendarioTextBox";
             añoCalendarioTextBox.Size = new Size(251, 23);
@@ -105,11 +107,31 @@
             // 
             errorProvider1.ContainerControl = this;
             // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(63, 113);
+            label3.Margin = new Padding(2, 0, 2, 0);
+            label3.Name = "label3";
+            label3.Size = new Size(72, 15);
+            label3.TabIndex = 21;
+            label3.Text = "Especialidad";
+            // 
+            // cmbEspecialidades
+            // 
+            cmbEspecialidades.FormattingEnabled = true;
+            cmbEspecialidades.Location = new Point(237, 113);
+            cmbEspecialidades.Name = "cmbEspecialidades";
+            cmbEspecialidades.Size = new Size(251, 23);
+            cmbEspecialidades.TabIndex = 22;
+            // 
             // PlanesDetalle
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
+            Controls.Add(cmbEspecialidades);
+            Controls.Add(label3);
             Controls.Add(añoCalendarioTextBox);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -131,5 +153,7 @@
         private Label label2;
         private TextBox añoCalendarioTextBox;
         private ErrorProvider errorProvider1;
+        private Label label3;
+        private ComboBox cmbEspecialidades;
     }
 }

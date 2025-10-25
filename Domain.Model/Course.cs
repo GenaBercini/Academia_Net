@@ -8,12 +8,14 @@
         public string Turno { get; private set; }
         public string Comision { get; private set; }
         public bool IsDeleted { get;  set; }
-
-        public Specialty Specialty { get; set; } = default!;
-        public int SpecialtyId { get; set; }   
-
         public ICollection<CourseSubject> CoursesSubjects { get; set; } = new List<CourseSubject>();
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+
+        public int SpecialtyId;
+
+        public Specialty Specialty;
+
+      
 
 
 
@@ -24,16 +26,14 @@
             SetCupo(cupo);
             SetAño_calendario(año_calendario);
             SetTurno(turno);
-            SetComision(comision);  
+            SetComision(comision);
         }
 
         public void SetId (int id)
         {
             if (id < 0)
-            
                      throw new ArgumentException("El Id debe ser mayor que 0.", nameof(id));
                 Id = id;
-            
         }
 
         public void SetCupo(int cupo)
@@ -63,6 +63,7 @@
                 throw new ArgumentException("Las comisiones de los cursos no puede ser nulo o vacío.", nameof(comision));
             Comision = comision;
         }
-      
+
+
     }
 }

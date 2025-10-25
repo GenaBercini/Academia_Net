@@ -7,11 +7,11 @@ namespace WebAPI
     {
         public static void MapSubjectEndpoints(this WebApplication app)
         {
-            app.MapGet("/subjects/{id}", (int id) =>
+            app.MapGet("/subjects/{id}", async (int id) =>
             {
                 var service = new SubjectService();
 
-                SubjectDTO? dto = service.Get(id);
+                SubjectDTO? dto = await service.GetAsync(id);
 
                 if (dto == null)
                     return Results.NotFound();
@@ -23,10 +23,10 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/subjects", () =>
+            app.MapGet("/subjects", async () =>
             {
                 var service = new SubjectService();
-                var dtos = service.GetAll();
+                var dtos = await service.GetAllAsync();
 
                 return Results.Ok(dtos);
             })
@@ -34,12 +34,12 @@ namespace WebAPI
             .Produces<List<SubjectDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/subjects", (SubjectDTO dto) =>
+            app.MapPost("/subjects", async (SubjectDTO dto) =>
             {
                 try
                 {
                     var service = new SubjectService();
-                    SubjectDTO created = service.Add(dto);
+                    SubjectDTO created = await service.AddAsync(dto);
 
                     return Results.Created($"/subjects/{created.Id}", created);
                 }
@@ -53,12 +53,12 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/subjects", (SubjectDTO dto) =>
+            app.MapPut("/subjects", async (SubjectDTO dto) =>
             {
                 try
                 {
                     var service = new SubjectService();
-                    var updated = service.Update(dto);
+                    var updated = await service.UpdateAsync(dto);
 
                     if (!updated)
                         return Results.NotFound();
@@ -75,10 +75,10 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/subjects/{id}", (int id) =>
+            app.MapDelete("/subjects/{id}", async (int id) =>
             {
                 var service = new SubjectService();
-                var deleted = service.Delete(id);
+                var deleted = await service.DeleteAsync(id);
 
                 if (!deleted)
                     return Results.NotFound();

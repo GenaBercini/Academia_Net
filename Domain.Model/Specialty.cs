@@ -7,17 +7,17 @@ namespace Domain.Model
         public int Id { get; private set; }
         public string DescEspecialidad { get; private set; }
         public int DuracionAnios { get; private set; }
-        public bool Habilitado { get; set; }
+        public bool IsDeleted { get; set; }
         public ICollection<Plan> Plans { get; set; } = new List<Plan>();
         public ICollection<Course> Courses { get; set; } = new List<Course>();
+        
 
-
-        public Specialty(int id, string descEspecialidad, int duracionAnios, bool habilitado = true)
+        public Specialty(int id, string descEspecialidad, int duracionAnios, bool isDeleted = false)
         {
             SetId(id);
             SetDescEspecialidad(descEspecialidad);
             SetDuracionAnios(duracionAnios);
-            Habilitado = habilitado;
+            IsDeleted = isDeleted;
         }
 
         public void SetId(int id)
@@ -40,6 +40,7 @@ namespace Domain.Model
                 throw new ArgumentException("La duración en años debe ser mayor que 0.", nameof(duracionAnios));
             DuracionAnios = duracionAnios;
         }
+
     }
 }
 

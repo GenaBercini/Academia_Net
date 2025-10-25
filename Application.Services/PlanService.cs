@@ -1,12 +1,13 @@
 ﻿using Domain.Model;
 using Data;
 using DTOs;
+using System.Numerics;
 
 namespace Application.Services
 {
     public class PlanService
     {
-        private void ValidarPlanDTO(PlanDTO dto)
+        private void ValidarPlanDTO(PlanDTO dto ,bool isUpdate = false)
         {
             if (string.IsNullOrWhiteSpace(dto.Descripcion))
                 throw new ArgumentException("La descripción es obligatoria.");
@@ -17,35 +18,33 @@ namespace Application.Services
             int añoActual = DateTime.Now.Year;
             if (dto.Año_calendario < 2000 || dto.Año_calendario > añoActual + 1)
                 throw new ArgumentException("Año calendario inválido.");
+
+            if (dto == null)
+                throw new ArgumentException("Los datos del plan no pueden ser nulos.");
         }
 
-        public PlanDTO Add(PlanDTO dto)
+        public async Task<PlanDTO> AddAsync(PlanDTO dto)
         {
-            ValidarPlanDTO(dto);
             var planRepository = new PlanRepository();
-
-            var plan = new Plan(
-                0,
-                dto.Descripcion,
-                dto.Año_calendario
-            );
-
-            planRepository.Add(plan);
-
+            var plan = new Plan(0, dto.Descripcion, dto.Año_calendario, dto.SpecialtyId);
+            await planRepository.AddAsync(plan);
             dto.Id = plan.Id;
             return dto;
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var planRepository = new PlanRepository();
-            return planRepository.Delete(id);
+            var plan = await planRepository.GetAsync(id);
+            if (plan == null)
+                return false;
+            return await planRepository.DeleteAsync(id);
         }
-
-        public PlanDTO? Get(int id)
+    
+        public async Task<PlanDTO?> GetAsync(int id)
         {
             var planRepository = new PlanRepository();
-            Plan? plan = planRepository.Get(id);
+            Plan? plan = await planRepository.GetAsync(id);
 
             if (plan == null)
                 return null;
@@ -54,43 +53,49 @@ namespace Application.Services
             {
                 Id = plan.Id,
                 Año_calendario = plan.Año_calendario,
-                Descripcion = plan.Descripcion
+                Descripcion = plan.Descripcion,
+                SpecialtyId = plan.SpecialtyId,
             };
         }
 
-        public IEnumerable<PlanDTO> GetAll()
+        public async Task<IEnumerable<PlanDTO>> GetAllAsync()
         {
             var planRepository = new PlanRepository();
-            var planes = planRepository.GetAll();
-
-            return planes.Select(plan => new PlanDTO
+            var plans = await planRepository.GetAllAsync();
+            return plans
+                .Where(s => !s.IsDeleted)
+                .Select(plan => new PlanDTO
             {
                 Id = plan.Id,
                 Año_calendario = plan.Año_calendario,
-                Descripcion = plan.Descripcion
+                Descripcion = plan.Descripcion,
+                SpecialtyId = plan.SpecialtyId,
             }).ToList();
         }
 
-        public bool Update(PlanDTO dto)
+        public async Task<bool> UpdateAsync(PlanDTO dto)
         {
-            if (dto == null)
-                throw new ArgumentException("Los datos del plan no pueden ser nulos.");
-
-            ValidarPlanDTO(dto);
-
             var planRepository = new PlanRepository();
-
-            var existingPlan = planRepository.Get(dto.Id);
-            if (existingPlan == null)
-                throw new ArgumentException("El plan no existe.");
-
+            var existing = await planRepository.GetAsync(dto.Id);
+            if (existing == null || existing.IsDeleted)
+                throw new ArgumentException("El plan no existe o está deshabilitado.");
+            ValidarPlanDTO(dto, isUpdate: true);
+            var duplicate = (await planRepository.GetAllAsync())
+                .FirstOrDefault(p =>
+                    p.Descripcion.Equals(dto.Descripcion, StringComparison.OrdinalIgnoreCase) &&
+                    p.Año_calendario == dto.Año_calendario &&
+                    p.Id != dto.Id &&
+                    !p.IsDeleted);
+            if (duplicate != null)
+                throw new ArgumentException("Ya existe un plan con esa descripción y año.");
             var plan = new Plan(
-                dto.Id,
-                dto.Descripcion,
-                dto.Año_calendario
+                id: dto.Id,
+                descripcion: dto.Descripcion,
+                año_calendario: dto.Año_calendario,
+                specialtyId: dto.SpecialtyId
             );
-
-            return planRepository.Update(plan);
+            plan.IsDeleted = existing.IsDeleted;
+            return await planRepository.UpdateAsync(plan);
         }
 
     }

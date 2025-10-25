@@ -7,11 +7,11 @@ namespace WebAPI
     {
         public static void MapUserEndpoints(this WebApplication app)
         {
-            app.MapGet("/users/{id}", (int id) =>
+            app.MapGet("/users/{id}", async (int id) =>
             {
                 UserService userService = new UserService();
 
-                UserDTO? user = userService.Get(id);
+                UserDTO? user = await userService.GetAsync(id);
 
                 if (user == null)
                 {
@@ -25,11 +25,11 @@ namespace WebAPI
                 .Produces(StatusCodes.Status404NotFound)
                 .WithOpenApi();
 
-            app.MapGet("/users", () =>
+            app.MapGet("/users", async () =>
             {
                 UserService userService = new UserService();
 
-                var users = userService.GetAll();
+                var users = await userService.GetAllAsync();
 
                 return Results.Ok(users);
             })
@@ -37,13 +37,13 @@ namespace WebAPI
             .Produces<List<UserDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/users", (UserCreateDTO user) =>
+            app.MapPost("/users",async (UserCreateDTO user) =>
             {
                 try
                 {
                     UserService userService = new UserService();
 
-                    UserDTO userDTO = userService.Add(user);
+                    UserDTO userDTO = await userService.AddAsync(user);
 
                     return Results.Created($"/clientes/{userDTO.Id}", userDTO);
                 }
@@ -57,13 +57,13 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/users", (UserUpdateDTO user) =>
+            app.MapPut("/users", async (UserUpdateDTO user) =>
             {
                 try
                 {
                     UserService userService = new UserService();
 
-                    var userFound = userService.Update(user);
+                    var userFound = await userService.UpdateAsync(user);
 
                     if (!userFound)
                     {
@@ -83,11 +83,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPatch("/users/{id}", (int id) =>
+            app.MapPatch("/users/{id}", async (int id) =>
             {
                 UserService userService = new UserService();
 
-                var userDeleted = userService.Delete(id);
+                var userDeleted = await userService.DeleteAsync(id);
 
                 if (!userDeleted)
                 {
@@ -102,12 +102,12 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapPost("/users/{userId:int}/enroll", (int userId, UserCourseSubjectCreateDTO dto) =>
+            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectCreateDTO dto) =>
             {
                 EnrollmentService enrollmentService = new EnrollmentService();
                 try
                 {
-                    bool created = enrollmentService.EnrollUserInCourseSubject(userId, dto.CourseId, dto.SubjectId);
+                    bool created = await enrollmentService.EnrollUserInCourseSubject(userId, dto.CourseId, dto.SubjectId);
                     if (!created)
                         return Results.Conflict(new { Message = "El usuario ya está inscripto en esa materia." });
 
@@ -127,7 +127,7 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status409Conflict);
 
-            app.MapGet("/users/{userId:int}/enrollments", (int userId) =>
+            app.MapGet("/users/{userId:int}/enrollments", async (int userId) =>
             {
                 EnrollmentService enrollmentService = new EnrollmentService();
                 try

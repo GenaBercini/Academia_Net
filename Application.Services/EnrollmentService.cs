@@ -16,9 +16,9 @@ namespace Application.Services
             userRepository = new UserRepository();
         }
 
-        public bool EnrollUserInCourseSubject(int userId, int courseId, int subjectId)
+        public async Task<bool> EnrollUserInCourseSubject(int userId, int courseId, int subjectId)
         {
-            var user = userRepository.Get(userId);
+            var user = await userRepository.GetAsync(userId);
             if (user == null || user.Status != UserStatus.Active)
                 throw new InvalidOperationException("Usuario no encontrado o inactivo.");
 

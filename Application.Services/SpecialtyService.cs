@@ -21,54 +21,40 @@ namespace Application.Services
 
             if (dto.DuracionAnios <= 0 || dto.DuracionAnios > 100)
                 throw new ArgumentException("La duración debe estar entre 1 y 100 años.");
-
-            var specialtyRepository = new SpecialtyRepository();
-
-            var duplicado = specialtyRepository.GetAll()
-                .FirstOrDefault(s =>
-                    s.DescEspecialidad.Equals(dto.DescEspecialidad, StringComparison.OrdinalIgnoreCase) &&
-                    s.Habilitado &&
-                    (!isUpdate || s.Id != dto.Id));
-
-            if (duplicado != null)
-                throw new ArgumentException("Ya existe una especialidad con esa descripción.");
         }
-        public SpecialtyDTO Add(SpecialtyDTO dto)
+        public async Task <SpecialtyDTO> AddAsync(SpecialtyDTO dto)
         {
             ValidarSpecialtyDTO(dto);
             var specialtyRepository = new SpecialtyRepository();
 
-            var specialty = new Specialty(0, dto.DescEspecialidad, dto.DuracionAnios);
-            specialtyRepository.Add(specialty);
-            dto.Id = specialty.Id;
+            var existing = (await specialtyRepository.GetAllAsync())
+                       .FirstOrDefault(s => s.DescEspecialidad.Equals(dto.DescEspecialidad, StringComparison.OrdinalIgnoreCase) && !s.IsDeleted);
+            if (existing != null)
+                throw new ArgumentException("Ya existe una especialidad con esa descripción.");
 
+            Specialty specialty = new Specialty(0, dto.DescEspecialidad, dto.DuracionAnios);
+            await specialtyRepository.AddAsync(specialty);
+            dto.Id = specialty.Id;
             return dto;
         }
 
-        public bool Delete(int id)
+  
+        public async Task<bool> DeleteAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El Id debe ser mayor que cero.");
-
             var specialtyRepository = new SpecialtyRepository();
-            var specialty = specialtyRepository.Get(id);
-
+            var specialty = await specialtyRepository.GetAsync(id);
             if (specialty == null)
                 return false;
-
-            specialty.Habilitado = false;
-            return specialtyRepository.Update(specialty);
+            return await specialtyRepository.DeleteAsync(id);
         }
+  
 
-        public SpecialtyDTO? Get(int id)
+        public async Task<SpecialtyDTO> GetAsync(int id)
         {
-            if (id <= 0)
-                return null;
-
             var specialtyRepository = new SpecialtyRepository();
-            Specialty? specialty = specialtyRepository.Get(id);
+            Specialty? specialty = await specialtyRepository.GetAsync(id);
 
-            if (specialty == null || !specialty.Habilitado)
+            if (specialty == null || !specialty.IsDeleted)
                 return null;
 
             return new SpecialtyDTO
@@ -76,42 +62,49 @@ namespace Application.Services
                 Id = specialty.Id,
                 DescEspecialidad = specialty.DescEspecialidad,
                 DuracionAnios = specialty.DuracionAnios,
-                Habilitado = specialty.Habilitado
             };
         }
 
-        public IEnumerable<SpecialtyDTO> GetAll()
+
+        public async Task<IEnumerable<SpecialtyDTO>> GetAllAsync()
         {
             var specialtyRepository = new SpecialtyRepository();
-            var specialties = specialtyRepository.GetAll();
+            var specialties = await specialtyRepository.GetAllAsync();
 
             return specialties
-                .Where(s => s.Habilitado)
+                .Where(s => !s.IsDeleted)
                 .Select(specialty => new SpecialtyDTO
                 {
                     Id = specialty.Id,
                     DescEspecialidad = specialty.DescEspecialidad,
                     DuracionAnios = specialty.DuracionAnios,
-                    Habilitado = specialty.Habilitado
                 }).ToList();
         }
 
-        public bool Update(SpecialtyDTO dto)
+
+
+
+        public async Task<bool> UpdateAsync(SpecialtyDTO dto)
         {
             var specialtyRepository = new SpecialtyRepository();
-            var existing = specialtyRepository.Get(dto.Id);
-
-            if (existing == null || !existing.Habilitado)
-                throw new ArgumentException("La especialidad no existe o está deshabilitada.");
-
+            var existing = await specialtyRepository.GetAsync(dto.Id);
+            if (existing == null || existing.IsDeleted)
+                throw new ArgumentException("La especialidad no existe o esta deshabilitada.");
             ValidarSpecialtyDTO(dto, isUpdate: true);
-
-            var specialty = new Specialty(dto.Id, dto.DescEspecialidad, dto.DuracionAnios)
-            {
-                Habilitado = dto.Habilitado
-            };
-
-            return specialtyRepository.Update(specialty);
+            var duplicate = (await specialtyRepository.GetAllAsync())
+                .FirstOrDefault(s =>
+                    s.DescEspecialidad.Equals(dto.DescEspecialidad, StringComparison.OrdinalIgnoreCase) &&
+                    s.Id != dto.Id &&
+                    !s.IsDeleted);
+            if (duplicate != null)
+                throw new ArgumentException("Ya existe un especialidad con esa descripcion.");
+            var specialty = new Specialty(
+                id: dto.Id,
+                descEspecialidad: dto.DescEspecialidad,
+                duracionAnios: dto.DuracionAnios
+            );
+            specialty.IsDeleted = existing.IsDeleted;
+            return await specialtyRepository.UpdateAsync(specialty);
         }
 
     }

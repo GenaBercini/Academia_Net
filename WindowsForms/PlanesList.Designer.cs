@@ -114,7 +114,7 @@
             Controls.Add(plansDataGridView);
             Controls.Add(panel1);
             Name = "PlanesList";
-            Text = "Planes";
+            Text = "Listado de Planes";
             ((System.ComponentModel.ISupportInitialize)plansDataGridView).EndInit();
             panel1.ResumeLayout(false);
             ResumeLayout(false);
