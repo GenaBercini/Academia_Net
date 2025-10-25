@@ -21,7 +21,7 @@ namespace Application.Services
             if (!Directory.Exists(_outputDirectory))
                 Directory.CreateDirectory(_outputDirectory);
         }
-        public UserDTO Add(UserCreateDTO createDto)
+        public async Task<UserDTO> AddAsync(UserCreateDTO createDto)
         {
             var userRepository = new UserRepository();
 
@@ -55,39 +55,40 @@ namespace Application.Services
             if (!string.IsNullOrWhiteSpace(createDto.StudentNumber) && createDto.TypeUser == UserType.Student)
                 user.SetStudentNumber(createDto.StudentNumber);
 
-            userRepository.Add(user);
+            await userRepository.AddAsync(user);
 
             return MapToDTO(user);
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             var userRepository = new UserRepository();
-            return userRepository.Delete(id);
+            var specialty = await userRepository.GetAsync(id);
+            return await userRepository.DeleteAsync(id);
         }
 
-        public UserDTO? Get(int id)
+        public async Task<UserDTO?> GetAsync(int id)
         {
             var userRepository = new UserRepository();
-            User? user = userRepository.Get(id);
+            User? user = await userRepository.GetAsync(id);
 
             if (user == null)
                 return null;
 
             return MapToDTO(user);
         }
-
-        public IEnumerable<UserDTO> GetAll()
+   
+        public async Task<IEnumerable<UserDTO>> GetAllAsync()
         {
             var userRepository = new UserRepository();
-            var usuarios = userRepository.GetAll();
+            var usuarios = await userRepository.GetAllAsync();
 
             return usuarios.Select(user => MapToDTO(user));
         }
-        public bool Update(UserUpdateDTO updateDto)
+        public async Task<bool> UpdateAsync(UserUpdateDTO updateDto)
         {
             var userRepository = new UserRepository();
-            var usuario = userRepository.Get(updateDto.Id);
+            var usuario = await userRepository.GetAsync(updateDto.Id);
             if (usuario == null)
                 return false;
 
@@ -119,7 +120,7 @@ namespace Application.Services
             if (!string.IsNullOrWhiteSpace(updateDto.Password))
                 usuario.SetPassword(updateDto.Password);
 
-            return userRepository.Update(usuario);
+            return await userRepository.UpdateAsync(usuario);
         }
         private UserDTO MapToDTO(User user) => new UserDTO
         {

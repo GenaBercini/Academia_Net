@@ -1,4 +1,5 @@
-﻿using Domain.Model;
+﻿using System.Numerics;
+using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data
@@ -10,65 +11,58 @@ namespace Data
             return new TPIContext();
         }
 
-        public void Add(Specialty specialty)
+        public async Task AddAsync(Specialty specialty)
         {
             using var context = CreateContext();
-            context.Specialties.Add(specialty);
-            context.SaveChanges();
+            await context.Specialties.AddAsync(specialty);
+            await context.SaveChangesAsync();
         }
 
-        public Specialty? Get(int id)
+        public async Task <Specialty?> GetAsync(int id)
         {
             using var context = CreateContext();
-            return context.Specialties
-                .FirstOrDefault(s => s.Id == id);
+            return await context.Specialties
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
 
-        public IEnumerable<Specialty> GetAll()
+        public async Task<IEnumerable<Specialty>> GetAllAsync()
         {
             using var context = CreateContext();
-            return context.Specialties
-                .ToList();
+            return await context.Specialties
+                .ToListAsync();
         }
-
-        public bool Update(Specialty specialty)
+        public async Task<bool> UpdateAsync(Specialty specialty)
         {
             using var context = CreateContext();
-            var existing = context.Specialties.FirstOrDefault(s => s.Id == specialty.Id);
-
+            var existing = await context.Specialties.FindAsync(specialty.Id);
             if (existing != null)
             {
                 existing.SetDescEspecialidad(specialty.DescEspecialidad);
                 existing.SetDuracionAnios(specialty.DuracionAnios);
-                existing.Habilitado = specialty.Habilitado;
-
-                context.SaveChanges();
+                existing.IsDeleted = specialty.IsDeleted;
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        public bool Delete(int id)
+     
+
+        public async Task<bool> DeleteAsync(int id)
         {
             using var context = CreateContext();
-            var specialty = context.Specialties.Find(id);
-            if (specialty != null)
+            var specialty = await context.Specialties.FindAsync(id);
+            if (specialty != null && !specialty.IsDeleted)
             {
-                specialty.Habilitado = false; 
-                context.SaveChanges();
+                specialty.IsDeleted = false;
+                context.Specialties.Update(specialty);
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
 
-        //Cada especialidad tiene que buscar los planes a los que esta asociados
-        public IEnumerable<Plan> GetPlans(int specialtyId)
-        {
-            using var ctx = CreateContext();
-            return ctx.Plans
-                .Where(p => p.SpecialtyId == specialtyId && !p.IsDeleted)
-                .ToList();
-        }
+
 
     }
 }

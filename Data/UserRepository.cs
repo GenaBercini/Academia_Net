@@ -79,17 +79,17 @@ namespace Data
                           .ToList();
         }
 
-        public void Add(User user)
+        public async Task AddAsync(User user)
         {
             using var context = CreateContext();
-            context.Users.Add(user);
-            context.SaveChanges();
+            await context.Users.AddAsync(user);
+            await context.SaveChangesAsync();
         }
 
-        public bool Delete(int id)
+        public async Task<bool> DeleteAsync(int id)
         {
             using var context = CreateContext();
-            var usuario = context.Users.Find(id);
+            var usuario = await context.Users.FindAsync(id);
             if (usuario != null)
             {
                 usuario.SetStatus(UserStatus.Deleted);
@@ -99,28 +99,31 @@ namespace Data
             return false;
         }
 
-        public User? Get(int id)
+        public async Task<User?> GetAsync(int id)
         {
             using var context = CreateContext();
-            return context.Users.FirstOrDefault(u => u.Id == id);
+            return await context.Users
+                .FirstOrDefaultAsync(u => u.Id == id);
         }
 
-        public User? GetByUsername(string username)
+        public  User? GetByUsername(string username)
         {
             using var context = CreateContext();
-            return context.Users.FirstOrDefault(u => u.UserName == username && u.Status == UserStatus.Active);
+            return  context.Users.FirstOrDefault(u => u.UserName == username && u.Status == UserStatus.Active);
         }
 
-        public IEnumerable<User> GetAll()
+        public async Task<IEnumerable<User>> GetAllAsync()
         {
             using var context = CreateContext();
-            return context.Users.Where(u => u.Status == UserStatus.Active).ToList();
+            return await context.Users
+                .Where(u => u.Status == UserStatus.Active)
+                .ToListAsync();
         }
-
-        public bool Update(User user)
+       
+        public async Task<bool> UpdateAsync(User user)
         {
             using var context = CreateContext();
-            var existingUsuario = context.Users.Find(user.Id);
+            var existingUsuario = await context.Users.FindAsync(user.Id);
             if (existingUsuario != null)
             {
                 existingUsuario.SetUserName(user.UserName);
@@ -148,7 +151,7 @@ namespace Data
                 if (user.JobPosition.HasValue && user.TypeUser == UserType.Teacher)
                     existingUsuario.SetJobPosition(user.JobPosition.Value);
 
-                context.SaveChanges();
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;

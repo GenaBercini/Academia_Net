@@ -26,15 +26,15 @@ namespace Application.Services
             if (dto.HsSemanales <= 0 || dto.HsSemanales > 100)
                 throw new ArgumentException("Las horas semanales deben estar entre 1 y 100.");
         }
-        public SubjectDTO Add(SubjectDTO dto)
+        public async Task<SubjectDTO> AddAsync(SubjectDTO dto)
         {
             ValidarSubjectDTO(dto);
             var subjectRepository = new SubjectRepository();
 
-            var existing = subjectRepository.GetAll()
+            var existing = (await subjectRepository.GetAllAsync())
                 .FirstOrDefault(s =>
                     s.Desc.Equals(dto.Desc, StringComparison.OrdinalIgnoreCase)
-                    && s.Habilitado);
+                    && s.IsDeleted);
 
             if (existing != null)
                 throw new ArgumentException("Ya existe una materia con esa descripción.");
@@ -43,97 +43,88 @@ namespace Application.Services
                 id: 0,
                 desc: dto.Desc,
                 hsSemanales: dto.HsSemanales,
-                obligatoria: dto.Obligatoria
+                obligatoria: dto.Obligatoria,
+                año: dto.Año,
+                planId: dto.PlanId
             );
 
-            subjectRepository.Add(subject);
+            await subjectRepository.AddAsync(subject);
             dto.Id = subject.Id;
             return dto;
         }
+       
 
-        public bool Delete(int id)
+ 
+        public async Task<bool> DeleteAsync(int id)
         {
-            if (id <= 0)
-                throw new ArgumentException("El Id debe ser mayor que cero.");
-
             var subjectRepository = new SubjectRepository();
-            var subject = subjectRepository.Get(id);
-
+            var subject = await subjectRepository.GetAsync(id);
             if (subject == null)
                 return false;
-
-            subject.Habilitado = false; 
-            return subjectRepository.Update(subject);
+            return await subjectRepository.DeleteAsync(id);
         }
 
-        public SubjectDTO? Get(int id)
+
+        public async Task<SubjectDTO?> GetAsync(int id)
         {
-            if (id <= 0)
-                return null;
-
             var subjectRepository = new SubjectRepository();
-            Subject? subject = subjectRepository.Get(id);
+            Subject? subject = await subjectRepository.GetAsync(id);
 
-            if (subject == null || !subject.Habilitado)
+            if (subject == null || !subject.IsDeleted)
                 return null;
-
+            
             return new SubjectDTO
             {
                 Id = subject.Id,
                 Desc = subject.Desc,
                 HsSemanales = subject.HsSemanales,
                 Obligatoria = subject.Obligatoria,
-                Habilitado = subject.Habilitado
+                PlanId = subject.PlanId
             };
         }
 
-        public IEnumerable<SubjectDTO> GetAll()
+        public async Task<IEnumerable<SubjectDTO>> GetAllAsync()
         {
             var subjectRepository = new SubjectRepository();
-            var subjects = subjectRepository.GetAll();
+            var subjects = await subjectRepository.GetAllAsync();
 
             return subjects
-                .Where(s => s.Habilitado)
+                .Where(s => !s.IsDeleted)
                 .Select(subject => new SubjectDTO
                 {
                     Id = subject.Id,
                     Desc = subject.Desc,
                     HsSemanales = subject.HsSemanales,
                     Obligatoria = subject.Obligatoria,
-                    Habilitado = subject.Habilitado
+                    Año= subject.Año,
+                    PlanId = subject.PlanId,
                 }).ToList();
         }
 
-        public bool Update(SubjectDTO dto)
+        public async Task<bool> UpdateAsync(SubjectDTO dto)
         {
             var subjectRepository = new SubjectRepository();
-
-            var existing = subjectRepository.Get(dto.Id);
-            if (existing == null || !existing.Habilitado)
+            var existing = await subjectRepository.GetAsync(dto.Id);
+            if (existing == null || existing.IsDeleted)
                 throw new ArgumentException("La materia no existe o está deshabilitada.");
-
             ValidarSubjectDTO(dto, isUpdate: true);
-
-            var duplicate = subjectRepository.GetAll()
+            var duplicate = (await subjectRepository.GetAllAsync())
                 .FirstOrDefault(s =>
                     s.Desc.Equals(dto.Desc, StringComparison.OrdinalIgnoreCase) &&
                     s.Id != dto.Id &&
-                    s.Habilitado);
-
+                    !s.IsDeleted);
             if (duplicate != null)
                 throw new ArgumentException("Ya existe una materia con esa descripción.");
-
             var subject = new Subject(
                 id: dto.Id,
                 desc: dto.Desc,
                 hsSemanales: dto.HsSemanales,
-                obligatoria: dto.Obligatoria
-            )
-            {
-                Habilitado = dto.Habilitado
-            };
-
-            return subjectRepository.Update(subject);
+                obligatoria: dto.Obligatoria,
+                año: dto.Año,
+                planId: dto.PlanId
+            );
+            subject.IsDeleted = existing.IsDeleted;
+            return await subjectRepository.UpdateAsync(subject);
         }
     }
 }

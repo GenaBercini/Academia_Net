@@ -7,11 +7,11 @@ namespace WebAPI
     {
         public static void MapCourseEndpoints(this WebApplication app)
         {
-            app.MapGet("/courses/{id}", (int id) =>
+            app.MapGet("/courses/{id}",async (int id) =>
             {
                 CourseService courseService = new CourseService();
 
-                CourseDTO? dto = courseService.Get(id);
+                CourseDTO? dto = await courseService.GetAsync(id);
 
                 if (dto == null)
                 {
@@ -25,12 +25,12 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/courses", () =>
+            app.MapGet("/courses",async () =>
             {
                 CourseService courseService = new CourseService();
                 try 
                 {
-                    var courses = courseService.GetAll();
+                    var courses = await courseService.GetAllAsync();
                     return Results.Ok(courses);
                 }
                 catch (Exception ex)
@@ -43,13 +43,13 @@ namespace WebAPI
             .Produces<List<CourseDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/courses", (CourseDTO dto) =>
+            app.MapPost("/courses",async (CourseDTO dto) =>
             {
                 try
                 {
                     CourseService courseService = new CourseService();
 
-                    CourseDTO courseDTO = courseService.Add(dto);
+                    CourseDTO courseDTO = await courseService.AddAsync(dto);
 
                     return Results.Created($"/courses/{courseDTO.Id}", courseDTO);
                 }
@@ -63,13 +63,13 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/courses", (CourseDTO dto) =>
+            app.MapPut("/courses", async (CourseDTO dto) =>
             {
                 try
                 {
                     CourseService courseService = new CourseService();
 
-                    var found = courseService.Update(dto);
+                    var found = await courseService.UpdateAsync(dto);
 
                     if (!found)
                     {
@@ -88,11 +88,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/courses/{id}", (int id) =>
+            app.MapDelete("/courses/{id}",async (int id) =>
             {
                 CourseService courseService = new CourseService();
 
-                var deleted = courseService.Delete(id);
+                var deleted = await courseService.DeleteAsync(id);
 
                 if (!deleted)
                 {
@@ -106,13 +106,13 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/courses/{courseId:int}/subjects", (int courseId) =>
+            app.MapGet("/courses/{courseId:int}/subjects",async (int courseId) =>
             {
 
                 try
                 {
                     var courseService = new CourseService();
-                    var subjects = courseService.GetSubjectsByCourse(courseId);
+                    var subjects = await courseService.GetSubjectsByCourse(courseId);
                     return Results.Ok(subjects);
                 }
                 catch (InvalidOperationException ex)
@@ -127,12 +127,12 @@ namespace WebAPI
            .WithName("GetSubjectsByCourse")
            .Produces<IEnumerable<CourseSubjectDTO>>(StatusCodes.Status200OK);
 
-            app.MapPost("/courses/{courseId:int}/subjects", (int courseId, CourseSubjectDTO dto) =>
+            app.MapPost("/courses/{courseId:int}/subjects",async (int courseId, CourseSubjectDTO dto) =>
             {
                 try
                 {
                     var courseService = new CourseService();
-                    var created = courseService.AddSubjectToCourse(courseId, dto.SubjectId, dto.DiaHoraDictado);
+                    var created = await courseService.AddSubjectToCourse(courseId, dto.SubjectId, dto.DiaHoraDictado);
                     return Results.Created($"/courses/{courseId}/subjects", created);
                 }
                 catch (InvalidOperationException ex)
