@@ -33,6 +33,7 @@
             deleteButton = new Button();
             updateButton = new Button();
             panel1 = new Panel();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)UsersDataGridView).BeginInit();
             panel1.SuspendLayout();
             SuspendLayout();
@@ -94,6 +95,7 @@
             // panel1
             // 
             panel1.BorderStyle = BorderStyle.FixedSingle;
+            panel1.Controls.Add(button1);
             panel1.Controls.Add(addUserButton);
             panel1.Controls.Add(deleteButton);
             panel1.Controls.Add(updateButton);
@@ -102,6 +104,16 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(801, 45);
             panel1.TabIndex = 4;
+            // 
+            // button1
+            // 
+            button1.Location = new Point(16, 11);
+            button1.Name = "button1";
+            button1.Size = new Size(75, 23);
+            button1.TabIndex = 4;
+            button1.Text = "Reporte";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += ExportReportButton_Click;
             // 
             // UserList
             // 
@@ -128,5 +140,6 @@
         private Button deleteButton;
         private Button updateButton;
         private Panel panel1;
+        private Button button1;
     }
 }

@@ -142,6 +142,25 @@ namespace WebAPI
             })
             .WithName("GetUserEnrollments")
             .Produces<IEnumerable<UserCourseSubjectDTO>>(StatusCodes.Status200OK);
+
+            // Nuevo endpoint: genera y retorna PDF con listado de usuarios y distribución de notas
+            app.MapGet("/users/report/grades", (bool onlyStudents = true) =>
+            {
+                try
+                {
+                    var userService = new UserService();
+                    var pdfBytes = userService.GenerateUsersGradesReport(onlyStudents);
+                    return Results.File(pdfBytes, "application/pdf", "ReporteUsuariosNotas.pdf");
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            })
+            .WithName("GetUsersGradesReport")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .WithOpenApi();
         }
     }
 }

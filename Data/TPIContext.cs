@@ -17,12 +17,13 @@ namespace Data
         public DbSet<CourseSubject> CoursesSubjects { get; set; }
         public DbSet<UserCourseSubject> UsersCoursesSubjects { get; set; }
 
-        internal TPIContext()
+        public TPIContext()
         {
             //this.Database.EnsureDeleted();
-            this.Database.EnsureCreated();
+            //this.Database.EnsureCreated();
         }
 
+        public TPIContext(DbContextOptions<TPIContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)

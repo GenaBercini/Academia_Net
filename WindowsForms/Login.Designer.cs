@@ -37,6 +37,7 @@
             loginButton = new Button();
             button2 = new Button();
             errorProvider = new ErrorProvider(components);
+            btnTogglePassword = new Button();
             ((System.ComponentModel.ISupportInitialize)errorProvider).BeginInit();
             SuspendLayout();
             // 
@@ -54,7 +55,7 @@
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label2.Location = new Point(30, 63);
+            label2.Location = new Point(12, 69);
             label2.Name = "label2";
             label2.Size = new Size(52, 15);
             label2.TabIndex = 1;
@@ -64,7 +65,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label3.Location = new Point(30, 113);
+            label3.Location = new Point(12, 113);
             label3.Name = "label3";
             label3.Size = new Size(72, 15);
             label3.TabIndex = 2;
@@ -72,22 +73,22 @@
             // 
             // usernameTextBox
             // 
-            usernameTextBox.Location = new Point(30, 87);
+            usernameTextBox.Location = new Point(12, 87);
             usernameTextBox.Name = "usernameTextBox";
-            usernameTextBox.Size = new Size(215, 23);
+            usernameTextBox.Size = new Size(244, 23);
             usernameTextBox.TabIndex = 3;
             // 
             // passwordTextBox
             // 
-            passwordTextBox.Location = new Point(30, 131);
+            passwordTextBox.Location = new Point(12, 131);
             passwordTextBox.Name = "passwordTextBox";
-            passwordTextBox.Size = new Size(215, 23);
+            passwordTextBox.Size = new Size(244, 23);
             passwordTextBox.TabIndex = 4;
             passwordTextBox.KeyPress += passwordTextBox_KeyPress;
             // 
             // loginButton
             // 
-            loginButton.Location = new Point(30, 173);
+            loginButton.Location = new Point(12, 173);
             loginButton.Name = "loginButton";
             loginButton.Size = new Size(75, 23);
             loginButton.TabIndex = 5;
@@ -97,7 +98,7 @@
             // 
             // button2
             // 
-            button2.Location = new Point(170, 173);
+            button2.Location = new Point(181, 173);
             button2.Name = "button2";
             button2.Size = new Size(75, 23);
             button2.TabIndex = 6;
@@ -109,12 +110,25 @@
             // 
             errorProvider.ContainerControl = this;
             // 
+            // btnTogglePassword
+            // 
+            btnTogglePassword.BackColor = Color.White;
+            btnTogglePassword.Location = new Point(231, 130);
+            btnTogglePassword.Name = "btnTogglePassword";
+            btnTogglePassword.Size = new Size(25, 25);
+            btnTogglePassword.TabIndex = 7;
+            btnTogglePassword.TabStop = false;
+            btnTogglePassword.Text = "👁";
+            btnTogglePassword.UseVisualStyleBackColor = false;
+            btnTogglePassword.Click += BtnTogglePassword_Click;
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackgroundImage = Properties.Resources.fondo;
-            ClientSize = new Size(273, 241);
+            ClientSize = new Size(268, 241);
+            Controls.Add(btnTogglePassword);
             Controls.Add(button2);
             Controls.Add(loginButton);
             Controls.Add(passwordTextBox);
@@ -139,5 +153,6 @@
         private Button loginButton;
         private Button button2;
         private ErrorProvider errorProvider;
+        private Button btnTogglePassword;
     }
 }

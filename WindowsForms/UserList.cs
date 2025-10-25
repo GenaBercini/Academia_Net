@@ -211,6 +211,58 @@ namespace WindowsForms
 
             return (UserDTO)UsersDataGridView.SelectedRows[0].Tag;
         }
+        private async void ExportReportButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                button1.Enabled = false;
+                Cursor.Current = Cursors.WaitCursor;
+
+                var pdfBytes = await UsersApiClient.GetUsersGradesReportAsync(true);
+                if (pdfBytes == null || pdfBytes.Length == 0)
+                    throw new Exception("El servidor devolvió un documento vacío.");
+
+                string selectedPath = null;
+                this.Invoke(() =>
+                {
+                    using var sfd = new SaveFileDialog
+                    {
+                        Filter = "PDF (*.pdf)|*.pdf",
+                        FileName = $"ReporteUsuariosNotas_{DateTime.Now:yyyyMMdd_HHmmss}.pdf",
+                        Title = "Guardar reporte de usuarios como",
+                        OverwritePrompt = true,
+                        RestoreDirectory = true,
+                        InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                    };
+
+                    if (sfd.ShowDialog(this) == DialogResult.OK)
+                        selectedPath = sfd.FileName;
+                });
+
+                if (string.IsNullOrEmpty(selectedPath))
+                    return;
+
+                await Task.Run(() => File.WriteAllBytes(selectedPath, pdfBytes));
+
+                MessageBox.Show($"Reporte guardado en:\n{selectedPath}", "Reporte generado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                try { Process.Start(new ProcessStartInfo { FileName = selectedPath, UseShellExecute = true }); }
+                catch { }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("Su sesión ha expirado. Inicie sesión de nuevo.", "Sesión inválida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al descargar el reporte:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                button1.Enabled = true;
+                Cursor.Current = Cursors.Default;
+            }
+        }
 
     }
 }

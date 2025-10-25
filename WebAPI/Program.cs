@@ -1,7 +1,11 @@
 
+using Data;
+using Microsoft.EntityFrameworkCore;
 using WebAPI;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<TPIContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpLogging(o => { });
@@ -34,6 +38,25 @@ builder.Services.AddHttpLogging(o => { });
 //});
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var config = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+    var applyOnStart = config.GetValue<bool>("Migrations:ApplyOnStartup", app.Environment.IsDevelopment());
+    var seedOnStart = config.GetValue<bool>("Migrations:SeedOnStartup", app.Environment.IsDevelopment());
+
+    var db = scope.ServiceProvider.GetRequiredService<TPIContext>();
+
+    if (applyOnStart)
+    {
+        db.Database.Migrate();
+    }
+
+    if (seedOnStart)
+    {
+        DbSeeder.Initialize(db);
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

@@ -7,6 +7,16 @@ namespace WindowsForms
         public Login()
         {
             InitializeComponent();
+            passwordTextBox.UseSystemPasswordChar = true;
+            var location = new Point(passwordTextBox.Right - btnTogglePassword.Width - 2, passwordTextBox.Top);
+            btnTogglePassword.Location = location;
+            btnTogglePassword.Anchor = passwordTextBox.Anchor | AnchorStyles.Right;
+        }
+
+        private void BtnTogglePassword_Click(object? sender, EventArgs e)
+        {
+            passwordTextBox.UseSystemPasswordChar = !passwordTextBox.UseSystemPasswordChar;
+            btnTogglePassword.Text = passwordTextBox.UseSystemPasswordChar ? "👁" : "🙈";
         }
 
         private async void loginButton_Click(object sender, EventArgs e)
