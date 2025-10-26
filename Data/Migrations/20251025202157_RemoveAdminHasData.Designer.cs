@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(TPIContext))]
-    partial class TPIContextModelSnapshot : ModelSnapshot
+    [Migration("20251025202157_RemoveAdminHasData")]
+    partial class RemoveAdminHasData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,7 +61,8 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-                    b.Property<int?>("SpecialtyId")
+
+                    b.Property<int>("SpecialtyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Turno")
@@ -249,22 +253,6 @@ namespace Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Adress = "Juan Jose Paso 123",
-                            Dni = "42789654",
-                            Email = "admin@tpi.com",
-                            LastName = "Admin",
-                            Name = "Juan",
-                            PasswordHash = "79Bo0VgN2uldNFDg+aOW2Ae1XnoLImXqIflCAhe/JpY=",
-                            Salt = "880Ggq0oev0tVIUJ4gfRAgoZpnh84B+PA+kcRSw8ai0=",
-                            Status = 1,
-                            TypeUser = 1,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Model.UserCourseSubject", b =>

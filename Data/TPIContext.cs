@@ -17,12 +17,6 @@ namespace Data
         public DbSet<CourseSubject> CoursesSubjects { get; set; }
         public DbSet<UserCourseSubject> UsersCoursesSubjects { get; set; }
 
-        public TPIContext()
-        {
-            //this.Database.EnsureDeleted();
-            this.Database.EnsureCreated();
-        }
-
         public TPIContext(DbContextOptions<TPIContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -37,6 +31,26 @@ namespace Data
                 optionsBuilder.UseSqlServer(connectionString);
             }
         }
+
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        var configuration = new ConfigurationBuilder()
+        //            .SetBasePath(Directory.GetCurrentDirectory())
+        //            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+        //            .Build();
+
+        //        string connectionString = configuration.GetConnectionString("DefaultConnection");
+        //        optionsBuilder.UseSqlServer(connectionString);
+        //    }
+        //}
+
+        //public TPIContext()
+        //{
+        //    this.Database.EnsureDeleted();
+        //    this.Database.EnsureCreated();
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,23 +68,7 @@ namespace Data
                 entity.Property(entity => entity.JobPosition).HasConversion<int>();
                 entity.Property(entity => entity.Status).HasConversion<int>();
 
-                // Seed: usuario admin inicial
-                var adminUser = new User(1,"admin", "admin123", "Juan", "Admin", "admin@tpi.com", "Juan Jose Paso 123", Domain.Model.UserType.Admin, "42789654");
 
-                entity.HasData(new
-                {
-                    Id = adminUser.Id,
-                    UserName = adminUser.UserName,
-                    Name = adminUser.Name,
-                    LastName = adminUser.LastName,
-                    Email = adminUser.Email,
-                    Dni = adminUser.Dni,
-                    Adress = adminUser.Adress,
-                    TypeUser = adminUser.TypeUser,
-                    Status = adminUser.Status,
-                    PasswordHash = adminUser.PasswordHash,
-                    Salt = adminUser.Salt
-                });
             });
 
             modelBuilder.Entity<Specialty>(entity =>

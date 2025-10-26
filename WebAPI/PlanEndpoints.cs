@@ -7,9 +7,9 @@ namespace WebAPI
     {
         public static void MapPlanEndpoints(this WebApplication app)
         {
-            app.MapGet("/plans/{id}", async (int id)  =>
+            app.MapGet("/plans/{id}", async (int id, PlanService planService)  =>
             {
-                PlanService planService = new PlanService();
+                //PlanService planService = new PlanService();
 
                 PlanDTO? dto = await planService.GetAsync(id);
 
@@ -25,9 +25,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapGet("/plans", async () =>
+            app.MapGet("/plans", async (PlanService planService) =>
             {
-                PlanService planService = new PlanService();
+                //PlanService planService = new PlanService();
 
                 var dtos = await planService.GetAllAsync();
 
@@ -37,11 +37,11 @@ namespace WebAPI
             .Produces<List<PlanDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/plans", async (PlanDTO dto) =>
+            app.MapPost("/plans", async (PlanDTO dto, PlanService planService) =>
             {
                 try
                 {
-                    PlanService planService = new PlanService();
+                    //PlanService planService = new PlanService();
 
                     PlanDTO planDTO = await planService.AddAsync(dto);
 
@@ -57,11 +57,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/plans", async (PlanDTO dto) =>
+            app.MapPut("/plans", async (PlanDTO dto, PlanService planService) =>
             {
                 try
                 {
-                    PlanService planService = new PlanService();
+                    //PlanService planService = new PlanService();
 
                     var found = await planService.UpdateAsync(dto);
 
@@ -82,9 +82,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapDelete("/plans/{id}", async (int id) =>
+            app.MapDelete("/plans/{id}", async (int id, PlanService planService) =>
             {
-                PlanService planService = new PlanService();
+                //PlanService planService = new PlanService();
 
                 var deleted = await planService.DeleteAsync(id);
 

@@ -11,11 +11,11 @@ namespace Application.Services
 {
     public class AuthService
     {
-        private readonly UserRepository userRepository;
+        private readonly UserRepository _userRepository;
         private readonly IConfiguration configuration;
-        public AuthService(IConfiguration configuration)
+        public AuthService(IConfiguration configuration, UserRepository userRepository)
         {
-            userRepository = new UserRepository();
+            _userRepository = userRepository;
             this.configuration = configuration;
         }
         public async Task<LoginResponse?> LoginAsync(LoginRequest request)
@@ -23,7 +23,7 @@ namespace Application.Services
             if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
                 return null;
 
-            var user = userRepository.GetByUsername(request.Username);
+            var user = _userRepository.GetByUsername(request.Username);
 
             if (user == null || !user.ValidatePassword(request.Password))
                 return null;

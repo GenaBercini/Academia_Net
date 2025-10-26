@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(TPIContext))]
-    partial class TPIContextModelSnapshot : ModelSnapshot
+    [Migration("20251025200654_AddIsDeletedColumns")]
+    partial class AddIsDeletedColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,7 +61,8 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-                    b.Property<int?>("SpecialtyId")
+
+                    b.Property<int>("SpecialtyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Turno")
@@ -259,8 +263,8 @@ namespace Data.Migrations
                             Email = "admin@tpi.com",
                             LastName = "Admin",
                             Name = "Juan",
-                            PasswordHash = "79Bo0VgN2uldNFDg+aOW2Ae1XnoLImXqIflCAhe/JpY=",
-                            Salt = "880Ggq0oev0tVIUJ4gfRAgoZpnh84B+PA+kcRSw8ai0=",
+                            PasswordHash = "VIaTwx4tNyNfsVeQma/oipr3HFCgTm3k/TpMR7HYtfM=",
+                            Salt = "Wqy2R6Fb1uSq6nM9Pc52VlPCsPJYk4SyN85OyjOBTes=",
                             Status = 1,
                             TypeUser = 1,
                             UserName = "admin"

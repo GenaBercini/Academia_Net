@@ -7,6 +7,14 @@ namespace Application.Services
 {
     public class PlanService
     {
+        private readonly PlanRepository _planRepository;
+        private readonly SpecialtyRepository _specialtyRepository;
+
+        public PlanService(PlanRepository planRepository, SpecialtyRepository specialtyRepository)
+        {
+            _specialtyRepository = specialtyRepository;
+            _planRepository = planRepository;
+        }
         private void ValidarPlanDTO(PlanDTO dto ,bool isUpdate = false)
         {
             if (string.IsNullOrWhiteSpace(dto.Descripcion))
@@ -25,26 +33,26 @@ namespace Application.Services
 
         public async Task<PlanDTO> AddAsync(PlanDTO dto)
         {
-            var planRepository = new PlanRepository();
+            //var planRepository = new PlanRepository();
             var plan = new Plan(0, dto.Descripcion, dto.Año_calendario, dto.SpecialtyId);
-            await planRepository.AddAsync(plan);
+            await _planRepository.AddAsync(plan);
             dto.Id = plan.Id;
             return dto;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var planRepository = new PlanRepository();
-            var plan = await planRepository.GetAsync(id);
+            //var planRepository = new PlanRepository();
+            var plan = await _planRepository.GetAsync(id);
             if (plan == null)
                 return false;
-            return await planRepository.DeleteAsync(id);
+            return await _planRepository.DeleteAsync(id);
         }
     
         public async Task<PlanDTO?> GetAsync(int id)
         {
-            var planRepository = new PlanRepository();
-            Plan? plan = await planRepository.GetAsync(id);
+            //var planRepository = new PlanRepository();
+            Plan? plan = await _planRepository.GetAsync(id);
 
             if (plan == null)
                 return null;
@@ -60,10 +68,8 @@ namespace Application.Services
 
         public async Task<IEnumerable<PlanDTO>> GetAllAsync()
         {
-            var planRepository = new PlanRepository();
-            var plans = await planRepository.GetAllAsync();
-            var specialtyRepository = new SpecialtyRepository();
-            var specialties = await specialtyRepository.GetAllAsync();
+            var specialties = await _specialtyRepository.GetAllAsync();
+            var plans = await _planRepository.GetAllAsync();
             return plans
                 .Where(s => !s.IsDeleted)
                 .Select(plan => new PlanDTO
@@ -79,12 +85,12 @@ namespace Application.Services
 
         public async Task<bool> UpdateAsync(PlanDTO dto)
         {
-            var planRepository = new PlanRepository();
-            var existing = await planRepository.GetAsync(dto.Id);
+            //var planRepository = new PlanRepository();
+            var existing = await _planRepository.GetAsync(dto.Id);
             if (existing == null || existing.IsDeleted)
                 throw new ArgumentException("El plan no existe o está deshabilitado.");
             ValidarPlanDTO(dto, isUpdate: true);
-            var duplicate = (await planRepository.GetAllAsync())
+            var duplicate = (await _planRepository.GetAllAsync())
                 .FirstOrDefault(p =>
                     p.Descripcion.Equals(dto.Descripcion, StringComparison.OrdinalIgnoreCase) &&
                     p.Año_calendario == dto.Año_calendario &&
@@ -99,7 +105,7 @@ namespace Application.Services
                 specialtyId: dto.SpecialtyId
             );
             plan.IsDeleted = existing.IsDeleted;
-            return await planRepository.UpdateAsync(plan);
+            return await _planRepository.UpdateAsync(plan);
         }
 
     }

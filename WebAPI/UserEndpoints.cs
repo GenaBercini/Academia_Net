@@ -7,9 +7,9 @@ namespace WebAPI
     {
         public static void MapUserEndpoints(this WebApplication app)
         {
-            app.MapGet("/users/{id}", async (int id) =>
+            app.MapGet("/users/{id}", async (int id, UserService userService) =>
             {
-                UserService userService = new UserService();
+                //UserService userService = new UserService();
 
                 UserDTO? user = await userService.GetAsync(id);
 
@@ -25,9 +25,9 @@ namespace WebAPI
                 .Produces(StatusCodes.Status404NotFound)
                 .WithOpenApi();
 
-            app.MapGet("/users", async () =>
+            app.MapGet("/users", async (UserService userService) =>
             {
-                UserService userService = new UserService();
+                //UserService userService = new UserService();
 
                 var users = await userService.GetAllAsync();
 
@@ -37,11 +37,11 @@ namespace WebAPI
             .Produces<List<UserDTO>>(StatusCodes.Status200OK)
             .WithOpenApi();
 
-            app.MapPost("/users",async (UserCreateDTO user) =>
+            app.MapPost("/users",async (UserCreateDTO user, UserService userService) =>
             {
                 try
                 {
-                    UserService userService = new UserService();
+                    //UserService userService = new UserService();
 
                     UserDTO userDTO = await userService.AddAsync(user);
 
@@ -57,11 +57,11 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPut("/users", async (UserUpdateDTO user) =>
+            app.MapPut("/users", async (UserUpdateDTO user, UserService userService) =>
             {
                 try
                 {
-                    UserService userService = new UserService();
+                    //UserService userService = new UserService();
 
                     var userFound = await userService.UpdateAsync(user);
 
@@ -83,9 +83,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .WithOpenApi();
 
-            app.MapPatch("/users/{id}", async (int id) =>
+            app.MapPatch("/users/{id}", async (int id, UserService userService) =>
             {
-                UserService userService = new UserService();
+                //UserService userService = new UserService();
 
                 var userDeleted = await userService.DeleteAsync(id);
 
@@ -102,9 +102,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectDTO dto) =>
+            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectDTO dto, EnrollmentService enrollmentService) =>
             {
-                EnrollmentService enrollmentService = new EnrollmentService();
+                //EnrollmentService enrollmentService = new EnrollmentService();
                 try
                 {
                     bool created = await enrollmentService.EnrollUserInCourseSubject(userId, dto.CourseId, dto.SubjectId);
@@ -127,9 +127,9 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status409Conflict);
 
-            app.MapGet("/users/{userId:int}/enrollments", async (int userId) =>
+            app.MapGet("/users/{userId:int}/enrollments", async (int userId, EnrollmentService enrollmentService) =>
             {
-                EnrollmentService enrollmentService = new EnrollmentService();
+                //EnrollmentService enrollmentService = new EnrollmentService();
                 try
                 {
                     var enrollments = enrollmentService.GetEnrollmentsByUser(userId);
@@ -143,13 +143,11 @@ namespace WebAPI
             .WithName("GetUserEnrollments")
             .Produces<IEnumerable<UserCourseSubjectDTO>>(StatusCodes.Status200OK);
 
-            // Nuevo endpoint: genera y retorna PDF con listado de usuarios y distribución de notas
-            app.MapGet("/users/report/grades", async (bool onlyStudents = true) =>
+            app.MapGet("/users/report/grades", async (UserService userService, bool onlyStudents = true) =>
             {
                 try
                 {
-                    var userService = new UserService();
-                    var pdfBytes = await userService.GenerateUsersGradesReportAsync(onlyStudents);
+                    var pdfBytes = await userService.GenerateUsersGradesReport(onlyStudents);
                     return Results.File(pdfBytes, "application/pdf", "ReporteUsuariosNotas.pdf");
                 }
                 catch (Exception ex)

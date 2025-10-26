@@ -1,4 +1,4 @@
-
+using Application.Services;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using WebAPI;
@@ -6,6 +6,25 @@ using WebAPI;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<TPIContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<SubjectRepository>();
+builder.Services.AddScoped<PlanRepository>();
+builder.Services.AddScoped<CourseRepository>();
+builder.Services.AddScoped<SpecialtyRepository>();
+//builder.Services.AddScoped<CourseSubjectRepository>();
+//builder.Services.AddScoped<UserCourseSubjectRepository>();
+
+builder.Services.AddScoped<UserService>(); 
+builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<PlanService>();
+builder.Services.AddScoped<CourseService>();
+builder.Services.AddScoped<SpecialtyService>();
+builder.Services.AddScoped<EnrollmentService>();
+builder.Services.AddScoped<AuthService>();
+//builder.Services.AddScoped<CourseSubjectService>();
+//builder.Services.AddScoped<UserCourseSubjectService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpLogging(o => { });

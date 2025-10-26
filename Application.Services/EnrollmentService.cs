@@ -10,18 +10,18 @@ namespace Application.Services
 {
     public class EnrollmentService
     {
-        private readonly UserRepository userRepository;
-        private readonly UserCourseSubjectRepository userCourseSubjectRepository;
+        private readonly UserCourseSubjectRepository _userCourseSubjectRepository;
+        private readonly UserRepository _userRepository;
 
-        public EnrollmentService()
+        public EnrollmentService(UserRepository userRepository. UserCourseSubjectRepository userCourseSubjectRepository)
         {
-            userRepository = new UserRepository();
-            userCourseSubjectRepository = new UserCourseSubjectRepository();
+            _userRepository = userRepository;
+            _userCourseSubjectRepository = userCourseSubjectRepository;
         }
 
         public async Task<bool> EnrollUserInCourseSubject(int userId, int courseId, int subjectId)
         {
-            var user = await userRepository.GetAsync(userId);
+            var user = await _userRepository.GetAsync(userId);
             if (user == null || user.Status != UserStatus.Active)
                 throw new InvalidOperationException("Usuario no encontrado o inactivo.");
 
@@ -33,7 +33,6 @@ namespace Application.Services
             var existing = await userCourseSubjectRepository.GetAsync(userId, courseId, subjectId);
             if (existing != null)
                 throw new InvalidOperationException("El usuario ya está inscripto en esta materia.");
-
             var enrollment = new UserCourseSubject
             {
                 UserId = userId,
@@ -42,13 +41,13 @@ namespace Application.Services
                 FechaInscripcion = DateTime.Now
             };
 
-            await userCourseSubjectRepository.AddAsync(enrollment);
+            await _userCourseSubjectRepository.AddAsync(enrollment);
             return true;
         }
 
         public IEnumerable<UserCourseSubjectDTO> GetEnrollmentsByUser(int userId)
         {
-            var enrollments = userCourseSubjectRepository.GetByUser(userId);
+            var enrollments = _userCourseSubjectRepository.GetByUser(userId);
             return enrollments.Select(MapToDto).ToList();
         }
 
