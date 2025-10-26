@@ -52,7 +52,7 @@ namespace Data
                 existingCourse.SetComision(course.Comision);
                 existingCourse.SetSpecialtyId(course.SpecialtyId);
                 existingCourse.IsDeleted = course.IsDeleted;
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 return true;
             }
             return false;

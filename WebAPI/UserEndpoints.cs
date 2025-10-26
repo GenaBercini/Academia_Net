@@ -147,7 +147,7 @@ namespace WebAPI
             {
                 try
                 {
-                    var pdfBytes = await userService.GenerateUsersGradesReport(onlyStudents);
+                    var pdfBytes = await userService.GenerateUsersGradesReportAsync(onlyStudents);
                     return Results.File(pdfBytes, "application/pdf", "ReporteUsuariosNotas.pdf");
                 }
                 catch (Exception ex)

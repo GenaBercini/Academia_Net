@@ -9,6 +9,7 @@ namespace Application.Services
     public class CourseService
     {
         private readonly CourseRepository _courseRepository;
+        private readonly SpecialtyRepository _specialtyRepository;
 
         public CourseService(CourseRepository courseRepository, SpecialtyRepository specialtyRepository)
         {
@@ -92,7 +93,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<CourseDTO>> GetAllAsync()
         {
-            var specialties = await _specialtiesRepository.GetAllAsync();
+            var specialties = await _specialtyRepository.GetAllAsync();
             var courses = await _courseRepository.GetAllAsync();
             return courses
                 .Where(c => !c.IsDeleted)

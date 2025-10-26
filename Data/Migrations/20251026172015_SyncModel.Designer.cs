@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(TPIContext))]
-    [Migration("20251025181855_AddAñoColumn")]
-    partial class AddAñoColumn
+    [Migration("20251026172015_SyncModel")]
+    partial class SyncModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,7 +62,7 @@ namespace Data.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("SpecialtyId")
+                    b.Property<int>("SpecialtyId")
                         .HasColumnType("int");
 
                     b.Property<string>("Turno")
@@ -253,22 +253,6 @@ namespace Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Adress = "Juan Jose Paso 123",
-                            Dni = "42789654",
-                            Email = "admin@tpi.com",
-                            LastName = "Admin",
-                            Name = "Juan",
-                            PasswordHash = "79Bo0VgN2uldNFDg+aOW2Ae1XnoLImXqIflCAhe/JpY=",
-                            Salt = "880Ggq0oev0tVIUJ4gfRAgoZpnh84B+PA+kcRSw8ai0=",
-                            Status = 1,
-                            TypeUser = 1,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Domain.Model.UserCourseSubject", b =>
@@ -312,9 +296,13 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Model.Course", b =>
                 {
-                    b.HasOne("Domain.Model.Specialty", null)
+                    b.HasOne("Domain.Model.Specialty", "Specialty")
                         .WithMany("Courses")
-                        .HasForeignKey("SpecialtyId");
+                        .HasForeignKey("SpecialtyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Specialty");
                 });
 
             modelBuilder.Entity("Domain.Model.CourseSubject", b =>
