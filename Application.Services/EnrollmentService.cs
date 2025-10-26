@@ -13,7 +13,7 @@ namespace Application.Services
         private readonly UserCourseSubjectRepository _userCourseSubjectRepository;
         private readonly UserRepository _userRepository;
 
-        public EnrollmentService(UserRepository userRepository. UserCourseSubjectRepository userCourseSubjectRepository)
+        public EnrollmentService(UserRepository userRepository, UserCourseSubjectRepository userCourseSubjectRepository)
         {
             _userRepository = userRepository;
             _userCourseSubjectRepository = userCourseSubjectRepository;
@@ -30,7 +30,7 @@ namespace Application.Services
                 throw new InvalidOperationException("Solo docentes o estudiantes pueden inscribirse en materias.");
 
             // Evitar duplicados
-            var existing = await userCourseSubjectRepository.GetAsync(userId, courseId, subjectId);
+            var existing = await _userCourseSubjectRepository.GetAsync(userId, courseId, subjectId);
             if (existing != null)
                 throw new InvalidOperationException("El usuario ya está inscripto en esta materia.");
             var enrollment = new UserCourseSubject

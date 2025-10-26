@@ -12,10 +12,10 @@ namespace Application.Services
         private readonly SubjectRepository _subjectRepository;
         private readonly PlanRepository _planRepository;
 
-        public SubjectService(SubjectRepository subjectRepository. PlanRepository planRepository)
+        public SubjectService(SubjectRepository subjectRepository, PlanRepository planRepository)
         {
             _subjectRepository = subjectRepository;
-            _planRepository = planRepository
+            _planRepository = planRepository;
         }
         private void ValidarSubjectDTO(SubjectDTO dto, bool isUpdate = false)
         {

@@ -13,7 +13,7 @@ builder.Services.AddScoped<PlanRepository>();
 builder.Services.AddScoped<CourseRepository>();
 builder.Services.AddScoped<SpecialtyRepository>();
 //builder.Services.AddScoped<CourseSubjectRepository>();
-//builder.Services.AddScoped<UserCourseSubjectRepository>();
+builder.Services.AddScoped<UserCourseSubjectRepository>();
 
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SubjectService>();
@@ -66,15 +66,15 @@ using (var scope = app.Services.CreateScope())
 
     var db = scope.ServiceProvider.GetRequiredService<TPIContext>();
 
-    //if (applyOnStart)
-    //{
-    //    db.Database.Migrate();
-    //}
+    if (applyOnStart)
+    {
+        db.Database.Migrate();
+    }
 
-    //if (seedOnStart)
-    //{
-    //    DbSeeder.Initialize(db);
-    //}
+    if (seedOnStart)
+    {
+        DbSeeder.Initialize(db);
+    }
 }
 
 if (app.Environment.IsDevelopment())

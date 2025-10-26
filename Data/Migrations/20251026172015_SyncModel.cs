@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddAñoColumn : Migration
+    public partial class SyncModel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -63,7 +63,7 @@ namespace Data.Migrations
                     Turno = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Comision = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    SpecialtyId = table.Column<int>(type: "int", nullable: true)
+                    SpecialtyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,7 +72,8 @@ namespace Data.Migrations
                         name: "FK_Courses_Specialties_SpecialtyId",
                         column: x => x.SpecialtyId,
                         principalTable: "Specialties",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,11 +197,6 @@ namespace Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Adress", "DateOfAdmission", "DateOfHire", "Dni", "Email", "JobPosition", "LastName", "Name", "PasswordHash", "Salt", "Status", "StudentNumber", "TypeUser", "UserName" },
-                values: new object[] { 1, "Juan Jose Paso 123", null, null, "42789654", "admin@tpi.com", null, "Admin", "Juan", "79Bo0VgN2uldNFDg+aOW2Ae1XnoLImXqIflCAhe/JpY=", "880Ggq0oev0tVIUJ4gfRAgoZpnh84B+PA+kcRSw8ai0=", 1, null, 1, "admin" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Courses_SpecialtyId",

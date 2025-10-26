@@ -7,9 +7,9 @@ namespace Data
     {
         private readonly TPIContext _context;
 
-        public UserCourseSubjectRepository()
+        public UserCourseSubjectRepository(TPIContext context)
         {
-            _context = new TPIContext();
+            _context = context;
         }
 
         public async Task<UserCourseSubject?> GetAsync(int userId, int courseId, int subjectId)
