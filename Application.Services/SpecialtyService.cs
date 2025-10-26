@@ -6,6 +6,12 @@ namespace Application.Services
 {
     public class SpecialtyService
     {
+        private readonly SpecialtyRepository _specialtyRepository;
+
+        public SpecialtyService(SpecialtyRepository specialtyRepository)
+        {
+            _specialtyRepository = specialtyRepository;
+        }
         private void ValidarSpecialtyDTO(SpecialtyDTO dto, bool isUpdate = false)
         {
             if (dto == null)
@@ -25,15 +31,15 @@ namespace Application.Services
         public async Task <SpecialtyDTO> AddAsync(SpecialtyDTO dto)
         {
             ValidarSpecialtyDTO(dto);
-            var specialtyRepository = new SpecialtyRepository();
+            //var specialtyRepository = new SpecialtyRepository();
 
-            var existing = (await specialtyRepository.GetAllAsync())
+            var existing = (await _specialtyRepository.GetAllAsync())
                        .FirstOrDefault(s => s.DescEspecialidad.Equals(dto.DescEspecialidad, StringComparison.OrdinalIgnoreCase) && !s.IsDeleted);
             if (existing != null)
                 throw new ArgumentException("Ya existe una especialidad con esa descripción.");
 
             Specialty specialty = new Specialty(0, dto.DescEspecialidad, dto.DuracionAnios);
-            await specialtyRepository.AddAsync(specialty);
+            await _specialtyRepository.AddAsync(specialty);
             dto.Id = specialty.Id;
             return dto;
         }
@@ -41,18 +47,18 @@ namespace Application.Services
   
         public async Task<bool> DeleteAsync(int id)
         {
-            var specialtyRepository = new SpecialtyRepository();
-            var specialty = await specialtyRepository.GetAsync(id);
+            //var specialtyRepository = new SpecialtyRepository();
+            var specialty = await _specialtyRepository.GetAsync(id);
             if (specialty == null)
                 return false;
-            return await specialtyRepository.DeleteAsync(id);
+            return await _specialtyRepository.DeleteAsync(id);
         }
   
 
         public async Task<SpecialtyDTO> GetAsync(int id)
         {
-            var specialtyRepository = new SpecialtyRepository();
-            Specialty? specialty = await specialtyRepository.GetAsync(id);
+            //var specialtyRepository = new SpecialtyRepository();
+            Specialty? specialty = await _specialtyRepository.GetAsync(id);
 
             if (specialty == null || !specialty.IsDeleted)
                 return null;
@@ -68,8 +74,8 @@ namespace Application.Services
 
         public async Task<IEnumerable<SpecialtyDTO>> GetAllAsync()
         {
-            var specialtyRepository = new SpecialtyRepository();
-            var specialties = await specialtyRepository.GetAllAsync();
+            //var specialtyRepository = new SpecialtyRepository();
+            var specialties = await _specialtyRepository.GetAllAsync();
 
             return specialties
                 .Where(s => !s.IsDeleted)
@@ -86,12 +92,12 @@ namespace Application.Services
 
         public async Task<bool> UpdateAsync(SpecialtyDTO dto)
         {
-            var specialtyRepository = new SpecialtyRepository();
-            var existing = await specialtyRepository.GetAsync(dto.Id);
+            //var specialtyRepository = new SpecialtyRepository();
+            var existing = await _specialtyRepository.GetAsync(dto.Id);
             if (existing == null || existing.IsDeleted)
                 throw new ArgumentException("La especialidad no existe o esta deshabilitada.");
             ValidarSpecialtyDTO(dto, isUpdate: true);
-            var duplicate = (await specialtyRepository.GetAllAsync())
+            var duplicate = (await _specialtyRepository.GetAllAsync())
                 .FirstOrDefault(s =>
                     s.DescEspecialidad.Equals(dto.DescEspecialidad, StringComparison.OrdinalIgnoreCase) &&
                     s.Id != dto.Id &&
@@ -104,7 +110,7 @@ namespace Application.Services
                 duracionAnios: dto.DuracionAnios
             );
             specialty.IsDeleted = existing.IsDeleted;
-            return await specialtyRepository.UpdateAsync(specialty);
+            return await _specialtyRepository.UpdateAsync(specialty);
         }
 
     }
