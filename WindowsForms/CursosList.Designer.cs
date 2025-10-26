@@ -33,6 +33,7 @@
             modificarButton = new Button();
             agregarButton = new Button();
             bottomPanel = new Panel();
+            inscribirButton = new Button();
             ((System.ComponentModel.ISupportInitialize)coursesDataGridView).BeginInit();
             bottomPanel.SuspendLayout();
             SuspendLayout();
@@ -96,6 +97,7 @@
             // bottomPanel
             // 
             bottomPanel.BorderStyle = BorderStyle.FixedSingle;
+            bottomPanel.Controls.Add(inscribirButton);
             bottomPanel.Controls.Add(eliminarButton);
             bottomPanel.Controls.Add(agregarButton);
             bottomPanel.Controls.Add(modificarButton);
@@ -104,6 +106,16 @@
             bottomPanel.Name = "bottomPanel";
             bottomPanel.Size = new Size(800, 45);
             bottomPanel.TabIndex = 6;
+            // 
+            // inscribirButton
+            // 
+            inscribirButton.Location = new Point(11, 11);
+            inscribirButton.Name = "inscribirButton";
+            inscribirButton.Size = new Size(186, 21);
+            inscribirButton.TabIndex = 6;
+            inscribirButton.Text = "Inscribir";
+            inscribirButton.UseVisualStyleBackColor = true;
+            inscribirButton.Click += inscribirButton_Click;
             // 
             // CursosList
             // 
@@ -128,5 +140,6 @@
         private Button modificarButton;
         private Button agregarButton;
         private Panel bottomPanel;
+        private Button inscribirButton;
     }
 }

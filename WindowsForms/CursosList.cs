@@ -7,6 +7,7 @@ using API.Clients;
 using DTOs;
 using static WindowsForms.CursosDetalle;
 
+
 namespace WindowsForms
 {
     public partial class CursosList : Form
@@ -20,7 +21,9 @@ namespace WindowsForms
 
         private void ConfigurarColumnas()
         {
-            this.coursesDataGridView.AutoGenerateColumns = false;
+            coursesDataGridView.AutoGenerateColumns = false;
+            coursesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            coursesDataGridView.MultiSelect = false;
 
             this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -60,6 +63,22 @@ namespace WindowsForms
                 HeaderText = "Comisión",
                 DataPropertyName = "Comision",
                 Width = 186
+            });
+
+            this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "SpecialtyId",
+                HeaderText = "ID especialidad",
+                DataPropertyName = "SpecialtyId",
+                Width = 100
+            });
+
+            this.coursesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "SpecialtyDescripcion",
+                HeaderText = "Descripción de la Especialidad",
+                DataPropertyName = "SpecialtyDescripcion",
+                Width = 200
             });
         }
 
@@ -155,5 +174,20 @@ namespace WindowsForms
                 MessageBox.Show($"Error al cargar curso para modificar: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void inscribirButton_Click(object sender, EventArgs e)
+        {
+            if (coursesDataGridView.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Seleccione un curso primero.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int courseId = (int)coursesDataGridView.SelectedRows[0].Cells["Id"].Value;
+
+            var form = new EnrollmentUser(courseId);
+            form.ShowDialog();
+        }
+
     }
 }

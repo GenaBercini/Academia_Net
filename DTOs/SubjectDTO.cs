@@ -8,5 +8,6 @@
         public bool Obligatoria { get; set; }
         public int Año { get;  set; }
         public int PlanId { get; set; }
+        public string? PlanDescripcion { get; set; }
     }
 }

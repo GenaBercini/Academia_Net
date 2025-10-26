@@ -50,7 +50,7 @@ namespace Data
                 existingSubject.SetDesc(subject.Desc);
                 existingSubject.SetHsSemanales(subject.HsSemanales);
                 existingSubject.SetObligatoria(subject.Obligatoria);
-                existingSubject.SetPlan(subject.PlanId);
+                existingSubject.SetPlanId(subject.PlanId);
                 existingSubject.IsDeleted = subject.IsDeleted;
                 await context.SaveChangesAsync();
                 return true;

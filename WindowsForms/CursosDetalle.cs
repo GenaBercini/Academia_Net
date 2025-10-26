@@ -3,6 +3,7 @@ using Domain.Model;
 using DTOs;
 using System;
 using System.Linq;
+using System.Numerics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -26,7 +27,7 @@ namespace WindowsForms
             set
             {
                 course = value;
-                SetFormFields();
+                SetCourse();
             }
         }
 
@@ -52,8 +53,31 @@ namespace WindowsForms
             this.Mode = mode;
             this.course = course;
             await Task.CompletedTask;
+            await Specialty_Load();
         }
+        private async Task Specialty_Load()
+        {
+            try
+            {
+                var specialty = await SpecialtiesApiClient.GetAllAsync();
+                var specialtyPlans = specialty.Select(s => new
+                {
+                    Id = s.Id,
+                    DescEspecialidad = s.DescEspecialidad
+                }).ToList();
 
+                specialtyComboBox.DataSource = specialty;
+                specialtyComboBox.DisplayMember = "DescEspecialidad";
+                specialtyComboBox.ValueMember = "Id";
+                specialtyComboBox.SelectedIndex = -1;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar especialidades: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void LoadCombos()
         {
             añoCursoComboBox.Items.Clear();
@@ -78,7 +102,7 @@ namespace WindowsForms
             }
         }
 
-        private void SetFormFields()
+        private void SetCourse()
         {
             cupoCursoTextBox.Text = course.Cupo.ToString();
             año_calendarioCursoTextBox.Text = course.Año_calendario.ToString();
@@ -98,6 +122,7 @@ namespace WindowsForms
 
             try
             {
+                course.SpecialtyId = (int)specialtyComboBox.SelectedValue;
                 course.Cupo = int.Parse(cupoCursoTextBox.Text.Trim());
                 course.Año_calendario = int.Parse(año_calendarioCursoTextBox.Text.Trim());
                 course.Turno = turnoCursoTextBox.Text.Trim();

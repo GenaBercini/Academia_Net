@@ -62,6 +62,8 @@ namespace Application.Services
         {
             var planRepository = new PlanRepository();
             var plans = await planRepository.GetAllAsync();
+            var specialtyRepository = new SpecialtyRepository();
+            var specialties = await specialtyRepository.GetAllAsync();
             return plans
                 .Where(s => !s.IsDeleted)
                 .Select(plan => new PlanDTO
@@ -70,7 +72,9 @@ namespace Application.Services
                 Año_calendario = plan.Año_calendario,
                 Descripcion = plan.Descripcion,
                 SpecialtyId = plan.SpecialtyId,
-            }).ToList();
+                SpecialtyDescripcion = specialties.FirstOrDefault(p => p.Id == plan.SpecialtyId)?.DescEspecialidad
+
+                }).ToList();
         }
 
         public async Task<bool> UpdateAsync(PlanDTO dto)

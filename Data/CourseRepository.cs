@@ -13,10 +13,13 @@ namespace Data
             return new TPIContext();
         }
 
-        public async Task AddAsync(Course curso)
+        public async Task AddAsync(Course course)
         {
             using var context = CreateContext();
-            await context.Courses.AddAsync(curso);
+            bool specialtyExists = context.Specialties.Any(s => s.Id == course.SpecialtyId);
+            if (!specialtyExists)
+                throw new InvalidOperationException($"No existe la especialidad con Id {course.SpecialtyId}");
+            await context.Courses.AddAsync(course);
             await context.SaveChangesAsync();
         }
 
@@ -24,6 +27,7 @@ namespace Data
         {
             using var context = CreateContext();
             return await context.Courses
+                .Include(c => c.Specialty)
                 .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted); 
         }
 
@@ -31,21 +35,24 @@ namespace Data
         {
             using var context = CreateContext();
             return await context.Courses
+                .Where(p => !p.IsDeleted)
+                .Include(p => p.Specialty)
                 .ToListAsync();
         }
  
-        public async Task<bool> UpdateAsync(Course curso)
+        public async Task<bool> UpdateAsync(Course course)
         {
             using var context = CreateContext();
-            var existingCurso = await context.Courses
-                .FindAsync(curso.Id);
-            if (existingCurso != null && !existingCurso.IsDeleted)
+            var existingCourse = await context.Courses
+                .FirstOrDefaultAsync(c => c.Id == course.Id);
+            if (existingCourse != null && !existingCourse.IsDeleted)
             {
-                existingCurso.SetCupo(curso.Cupo);
-                existingCurso.SetAño_calendario(curso.Año_calendario);
-                existingCurso.SetTurno(curso.Turno);
-                existingCurso.SetComision(curso.Comision);
-
+                existingCourse.SetCupo(course.Cupo);
+                existingCourse.SetAño_calendario(course.Año_calendario);
+                existingCourse.SetTurno(course.Turno);
+                existingCourse.SetComision(course.Comision);
+                existingCourse.SetSpecialtyId(course.SpecialtyId);
+                existingCourse.IsDeleted = course.IsDeleted;
                 await context.SaveChangesAsync();
                 return true;
             }
@@ -61,22 +68,11 @@ namespace Data
             {
                 course.IsDeleted = true;
                 context.Courses.Update(course);
-
                 await context.SaveChangesAsync();
                 return true;
             }
             return false;
         }
-
-        //public bool exists(int año_calendario, string comision, int excludeid)
-        //{
-        //    using var contex = createcontext();
-        //    return contex.courses.any(c =>
-        //        c.id != excludeid
-        //        && c.año_calendario == año_calendario
-        //        && c.comision == comision
-        //        && !c.isdeleted);
-        //}
 
         //Cada curso va a tener que buscar sus estudiantes y profesores asociados
         public async Task<IEnumerable<User>> GetStudents(int courseId)

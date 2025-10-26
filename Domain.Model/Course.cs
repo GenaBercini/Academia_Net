@@ -10,23 +10,43 @@
         public bool IsDeleted { get;  set; }
         public ICollection<CourseSubject> CoursesSubjects { get; set; } = new List<CourseSubject>();
         public ICollection<Subject> Subjects { get; set; } = new List<Subject>();
+        private int _specialtyId;
+        private Specialty? _specialty;
 
-        public int SpecialtyId;
+        public int SpecialtyId
+        {
+            get => _specialty?.Id ?? _specialtyId;
+            private set => _specialtyId = value;
+        }
 
-        public Specialty Specialty;
+        public Specialty? Specialty
+        {
+            get => _specialty;
+            private set
+            {
+                _specialty = value;
+                if (value != null && _specialtyId != value.Id)
+                {
+                    _specialtyId = value.Id;
+                }
+            }
+        }
 
-      
 
 
 
 
-        public Course (int id, int cupo, int año_calendario, string turno, string comision)
+
+
+        public Course (int id, int cupo, int año_calendario, string turno, string comision, int specialtyId, bool isDeleted = false)
         {
             SetId(id);
             SetCupo(cupo);
             SetAño_calendario(año_calendario);
             SetTurno(turno);
             SetComision(comision);
+            SetSpecialtyId(specialtyId);
+            IsDeleted = isDeleted;
         }
 
         public void SetId (int id)
@@ -62,6 +82,18 @@
             if (string.IsNullOrWhiteSpace(comision))
                 throw new ArgumentException("Las comisiones de los cursos no puede ser nulo o vacío.", nameof(comision));
             Comision = comision;
+        }
+        public void SetSpecialtyId(int specialtyId)
+        {
+            if (specialtyId <= 0)
+                throw new ArgumentException("El SpecialtyId debe ser mayor que 0.", nameof(specialtyId));
+
+            _specialtyId = specialtyId;
+
+            if (_specialty != null && _specialty.Id != specialtyId)
+            {
+                _specialty = null;
+            }
         }
 
 

@@ -6,11 +6,6 @@ using System.Threading.Tasks;
 
 namespace DTOs
 {
-    public class UserCourseSubjectCreateDTO
-    {
-        public int CourseId { get; set; }
-        public int SubjectId { get; set; }
-    }
 
     public class UserCourseSubjectDTO
     {

@@ -102,7 +102,7 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectCreateDTO dto) =>
+            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectDTO dto) =>
             {
                 EnrollmentService enrollmentService = new EnrollmentService();
                 try
@@ -144,12 +144,12 @@ namespace WebAPI
             .Produces<IEnumerable<UserCourseSubjectDTO>>(StatusCodes.Status200OK);
 
             // Nuevo endpoint: genera y retorna PDF con listado de usuarios y distribución de notas
-            app.MapGet("/users/report/grades", (bool onlyStudents = true) =>
+            app.MapGet("/users/report/grades", async (bool onlyStudents = true) =>
             {
                 try
                 {
                     var userService = new UserService();
-                    var pdfBytes = userService.GenerateUsersGradesReport(onlyStudents);
+                    var pdfBytes = await userService.GenerateUsersGradesReportAsync(onlyStudents);
                     return Results.File(pdfBytes, "application/pdf", "ReporteUsuariosNotas.pdf");
                 }
                 catch (Exception ex)

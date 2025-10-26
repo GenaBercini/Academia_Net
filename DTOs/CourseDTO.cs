@@ -10,6 +10,8 @@ namespace DTOs
         public string Turno { get; set; } = string.Empty;
         public string Comision { get; set; } = string.Empty;
         public int SpecialtyId { get; set; }
+        public string? SpecialtyDescripcion { get; set; }
+
         public IEnumerable<CourseSubjectDTO>? CourseSubjects { get; set; }
     }
 }

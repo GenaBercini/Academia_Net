@@ -2,6 +2,7 @@
 using Data;
 using DTOs;
 using System.Text.RegularExpressions;
+using System.Numerics;
 
 namespace Application.Services
 {
@@ -87,7 +88,8 @@ namespace Application.Services
         {
             var subjectRepository = new SubjectRepository();
             var subjects = await subjectRepository.GetAllAsync();
-
+            var planRepository = new PlanRepository(); 
+            var plans = await planRepository.GetAllAsync();
             return subjects
                 .Where(s => !s.IsDeleted)
                 .Select(subject => new SubjectDTO
@@ -98,6 +100,7 @@ namespace Application.Services
                     Obligatoria = subject.Obligatoria,
                     Año= subject.Año,
                     PlanId = subject.PlanId,
+                    PlanDescripcion = plans.FirstOrDefault(p => p.Id == subject.PlanId)?.Descripcion
                 }).ToList();
         }
 

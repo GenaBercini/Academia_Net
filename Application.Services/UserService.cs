@@ -139,10 +139,10 @@ namespace Application.Services
             Status = user.Status
         };
 
-        public byte[] GenerateUsersGradesReport(bool onlyStudents = true)
+        public async Task<byte[]> GenerateUsersGradesReportAsync(bool onlyStudents = true)
         {
             var userRepository = new UserRepository();
-            var users = userRepository.GetAll().ToList();
+            var users = await userRepository.GetAllAsync();
 
             if (onlyStudents)
                 users = users.Where(u => u.TypeUser == UserType.Student).ToList();

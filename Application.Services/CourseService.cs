@@ -46,7 +46,8 @@ namespace Application.Services
                 dto.Cupo,
                 dto.Año_calendario,
                 dto.Turno,
-                dto.Comision
+                dto.Comision,
+                dto.SpecialtyId
             );
             await courseRepository.AddAsync(course);
             dto.Id = course.Id;
@@ -61,7 +62,6 @@ namespace Application.Services
                 return false;
             return await courseRepository.DeleteAsync(id);
         }
-
      
         public async Task<CourseDTO?> GetAsync(int id)
         {
@@ -78,15 +78,17 @@ namespace Application.Services
                 Cupo = course.Cupo,
                 Año_calendario = course.Año_calendario,
                 Turno = course.Turno,
-                Comision = course.Comision
+                Comision = course.Comision,
+                SpecialtyId = course.SpecialtyId,
             };
         }
-
 
         public async Task<IEnumerable<CourseDTO>> GetAllAsync()
         {
             var courseRepository = new CourseRepository();
             var courses = await courseRepository.GetAllAsync();
+            var specialtiesRepository = new SpecialtyRepository();
+            var specialties = await specialtiesRepository.GetAllAsync();
             return courses
                 .Where(c => !c.IsDeleted)
                 .Select(course => new CourseDTO
@@ -96,7 +98,9 @@ namespace Application.Services
                 Año_calendario = course.Año_calendario,
                 Turno = course.Turno,
                 Comision = course.Comision,
-            }).ToList();
+                SpecialtyId = course.SpecialtyId,
+                SpecialtyDescripcion = specialties.FirstOrDefault(p => p.Id == course.SpecialtyId)?.DescEspecialidad
+                }).ToList();
         }
       
         public async Task<bool> UpdateAsync(CourseDTO dto)
@@ -108,8 +112,11 @@ namespace Application.Services
             ValidarCourseDTO(dto, isUpdate:true);
             var duplicate = (await courseRepository.GetAllAsync())
                 .FirstOrDefault(c =>
-                    c.Id != dto.Id &&
-                    !c.IsDeleted);
+                        c.Id != dto.Id &&
+                        c.Comision == dto.Comision &&
+                        c.Turno == dto.Turno &&
+                        c.Año_calendario == dto.Año_calendario &&
+                        !c.IsDeleted);
             if (duplicate != null)
                 throw new ArgumentException("Ya existe un curso con esa descripción y año.");
             Course course = new Course(
@@ -117,7 +124,8 @@ namespace Application.Services
                 dto.Cupo,
                 dto.Año_calendario,
                 dto.Turno,
-                dto.Comision
+                dto.Comision,
+                dto.SpecialtyId
             );
             course.IsDeleted = existing.IsDeleted;
 

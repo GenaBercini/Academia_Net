@@ -132,7 +132,7 @@
             Controls.Add(primaryPanel);
             Controls.Add(panel1);
             Name = "AdminMenu";
-            Text = "Menu";
+            Text = "Menu Principal";
             panel1.ResumeLayout(false);
             ResumeLayout(false);
         }
