@@ -8,9 +8,11 @@ namespace Application.Services
     public class PlanService
     {
         private readonly PlanRepository _planRepository;
+        private readonly SpecialtyRepository _specialtyRepository;
 
-        public PlanService(PlanRepository planRepository)
+        public PlanService(PlanRepository planRepository, SpecialtyRepository specialtyRepository)
         {
+            _specialtyRepository = specialtyRepository;
             _planRepository = planRepository;
         }
         private void ValidarPlanDTO(PlanDTO dto ,bool isUpdate = false)
@@ -66,7 +68,7 @@ namespace Application.Services
 
         public async Task<IEnumerable<PlanDTO>> GetAllAsync()
         {
-            //var planRepository = new PlanRepository();
+            var specialties = await _specialtyRepository.GetAllAsync();
             var plans = await _planRepository.GetAllAsync();
             return plans
                 .Where(s => !s.IsDeleted)
@@ -76,7 +78,9 @@ namespace Application.Services
                 Año_calendario = plan.Año_calendario,
                 Descripcion = plan.Descripcion,
                 SpecialtyId = plan.SpecialtyId,
-            }).ToList();
+                SpecialtyDescripcion = specialties.FirstOrDefault(p => p.Id == plan.SpecialtyId)?.DescEspecialidad
+
+                }).ToList();
         }
 
         public async Task<bool> UpdateAsync(PlanDTO dto)

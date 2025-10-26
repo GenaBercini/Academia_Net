@@ -66,15 +66,15 @@ using (var scope = app.Services.CreateScope())
 
     var db = scope.ServiceProvider.GetRequiredService<TPIContext>();
 
-    if (applyOnStart)
-    {
-        db.Database.Migrate();
-    }
+    //if (applyOnStart)
+    //{
+    //    db.Database.Migrate();
+    //}
 
-    if (seedOnStart)
-    {
-        DbSeeder.Initialize(db);
-    }
+    //if (seedOnStart)
+    //{
+    //    DbSeeder.Initialize(db);
+    //}
 }
 
 if (app.Environment.IsDevelopment())

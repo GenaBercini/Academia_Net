@@ -8,10 +8,6 @@ namespace Data
 {
     public class CourseRepository
     {
-        //private TPIContext CreateContext()
-        //{
-        //    return new TPIContext();
-        //}
 
         private readonly TPIContext _context;
 
@@ -20,40 +16,43 @@ namespace Data
             _context = context;
         }
 
-        public async Task AddAsync(Course curso)
+        public async Task AddAsync(Course course)
         {
-            //using var context = CreateContext();
-            await _context.Courses.AddAsync(curso);
+            bool specialtyExists = _context.Specialties.Any(s => s.Id == course.SpecialtyId);
+            if (!specialtyExists)
+                throw new InvalidOperationException($"No existe la especialidad con Id {course.SpecialtyId}");
+            await _context.Courses.AddAsync(course);
             await _context.SaveChangesAsync();
         }
 
         public async Task<Course?> GetAsync(int id)
         {
-            //using var context = CreateContext();
             return await _context.Courses
+                .Include(c => c.Specialty)
                 .FirstOrDefaultAsync(c => c.Id == id && !c.IsDeleted); 
         }
 
         public async Task<IEnumerable<Course>> GetAllAsync()
         {
-            //using var context = CreateContext();
             return await _context.Courses
+                .Where(p => !p.IsDeleted)
+                .Include(p => p.Specialty)
                 .ToListAsync();
         }
  
-        public async Task<bool> UpdateAsync(Course curso)
+        public async Task<bool> UpdateAsync(Course course)
         {
-            //using var context = CreateContext();
-            var existingCurso = await _context.Courses
-                .FindAsync(curso.Id);
-            if (existingCurso != null && !existingCurso.IsDeleted)
+            var existingCourse = await _context.Courses
+                .FirstOrDefaultAsync(c => c.Id == course.Id);
+            if (existingCourse != null && !existingCourse.IsDeleted)
             {
-                existingCurso.SetCupo(curso.Cupo);
-                existingCurso.SetAño_calendario(curso.Año_calendario);
-                existingCurso.SetTurno(curso.Turno);
-                existingCurso.SetComision(curso.Comision);
-
-                await _context.SaveChangesAsync();
+                existingCourse.SetCupo(course.Cupo);
+                existingCourse.SetAño_calendario(course.Año_calendario);
+                existingCourse.SetTurno(course.Turno);
+                existingCourse.SetComision(course.Comision);
+                existingCourse.SetSpecialtyId(course.SpecialtyId);
+                existingCourse.IsDeleted = course.IsDeleted;
+                await context.SaveChangesAsync();
                 return true;
             }
             return false;
@@ -74,16 +73,6 @@ namespace Data
             }
             return false;
         }
-
-        //public bool exists(int año_calendario, string comision, int excludeid)
-        //{
-        //    using var contex = createcontext();
-        //    return contex.courses.any(c =>
-        //        c.id != excludeid
-        //        && c.año_calendario == año_calendario
-        //        && c.comision == comision
-        //        && !c.isdeleted);
-        //}
 
         //Cada curso va a tener que buscar sus estudiantes y profesores asociados
         public async Task<IEnumerable<User>> GetStudents(int courseId)

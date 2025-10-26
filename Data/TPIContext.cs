@@ -17,7 +17,6 @@ namespace Data
         public DbSet<CourseSubject> CoursesSubjects { get; set; }
         public DbSet<UserCourseSubject> UsersCoursesSubjects { get; set; }
 
-
         public TPIContext(DbContextOptions<TPIContext> options) : base(options) { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -101,6 +100,10 @@ namespace Data
 
                 entity.Property(e => e.Obligatoria)
                     .IsRequired();
+
+                entity.Property(e => e.Año)
+                   .IsRequired();
+
             });
 
             modelBuilder.Entity<Plan>(entity =>
@@ -124,25 +127,25 @@ namespace Data
 
             modelBuilder.Entity<Course>(entity =>
             {
-                entity.HasKey(e => e.Id);
+                entity.HasKey(c => c.Id);
 
-                entity.Property(e => e.Id).ValueGeneratedOnAdd();
+                entity.Property(c => c.Id).ValueGeneratedOnAdd();
 
-                entity.Property(e => e.Cupo).IsRequired();
+                entity.Property(c => c.Cupo).IsRequired();
 
-                entity.Property(e => e.Año_calendario).IsRequired();
+                entity.Property(c => c.Año_calendario).IsRequired();
 
-                entity.Property(e => e.Turno)
+                entity.Property(c => c.Turno)
                       .IsRequired()
                       .HasMaxLength(50);
 
-                entity.Property(e => e.Comision)
+                entity.Property(c => c.Comision)
                       .IsRequired()
                       .HasMaxLength(50);
 
                 entity.HasOne(c => c.Specialty)
                 .WithMany(s => s.Courses)
-                .HasForeignKey(c => c.SpecialtyId)
+                .HasForeignKey(p => p.SpecialtyId)
                 .OnDelete(DeleteBehavior.Restrict);
             });
 

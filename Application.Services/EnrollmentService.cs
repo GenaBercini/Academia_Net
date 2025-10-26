@@ -5,15 +5,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace Application.Services
 {
     public class EnrollmentService
     {
+        private readonly UserCourseSubjectRepository _userCourseSubjectRepository;
         private readonly UserRepository _userRepository;
 
-        public EnrollmentService(UserRepository userRepository)
+        public EnrollmentService(UserRepository userRepository. UserCourseSubjectRepository userCourseSubjectRepository)
         {
             _userRepository = userRepository;
+            _userCourseSubjectRepository = userCourseSubjectRepository;
         }
 
         public async Task<bool> EnrollUserInCourseSubject(int userId, int courseId, int subjectId)
@@ -22,19 +25,29 @@ namespace Application.Services
             if (user == null || user.Status != UserStatus.Active)
                 throw new InvalidOperationException("Usuario no encontrado o inactivo.");
 
-            if (user.TypeUser != UserType.Student)
-                throw new InvalidOperationException("Solo los estudiantes pueden inscribirse en materias.");
+            // permite tanto docentes como estudiantes
+            if (user.TypeUser != UserType.Student && user.TypeUser != UserType.Teacher)
+                throw new InvalidOperationException("Solo docentes o estudiantes pueden inscribirse en materias.");
 
-            var enrollment = _userRepository.EnrollUserInCourseSubject(userId, courseId, subjectId);
-            if (enrollment == null)
-                throw new InvalidOperationException("No se pudo crear la inscripción.");
+            // Evitar duplicados
+            var existing = await userCourseSubjectRepository.GetAsync(userId, courseId, subjectId);
+            if (existing != null)
+                throw new InvalidOperationException("El usuario ya está inscripto en esta materia.");
+            var enrollment = new UserCourseSubject
+            {
+                UserId = userId,
+                CourseId = courseId,
+                SubjectId = subjectId,
+                FechaInscripcion = DateTime.Now
+            };
 
-            return enrollment != null;
+            await _userCourseSubjectRepository.AddAsync(enrollment);
+            return true;
         }
 
         public IEnumerable<UserCourseSubjectDTO> GetEnrollmentsByUser(int userId)
         {
-            var enrollments = _userRepository.GetEnrollmentsByUser(userId);
+            var enrollments = _userCourseSubjectRepository.GetByUser(userId);
             return enrollments.Select(MapToDto).ToList();
         }
 
@@ -46,7 +59,7 @@ namespace Application.Services
                 CourseId = e.CourseId,
                 SubjectId = e.SubjectId,
                 NotaFinal = e.NotaFinal,
-                FechaInscripcion = e.FechaInscripcion.Value,
+                FechaInscripcion = e.FechaInscripcion ?? DateTime.MinValue
             };
         }
     }

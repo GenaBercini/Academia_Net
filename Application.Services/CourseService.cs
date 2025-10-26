@@ -10,9 +10,10 @@ namespace Application.Services
     {
         private readonly CourseRepository _courseRepository;
 
-        public CourseService(CourseRepository courseRepository)
+        public CourseService(CourseRepository courseRepository, SpecialtyRepository specialtyRepository)
         {
             _courseRepository = courseRepository;
+            _specialtyRepository = specialtyRepository;
         }
         private void ValidarCourseDTO(CourseDTO dto, bool isUpdate = false)
         {
@@ -52,7 +53,8 @@ namespace Application.Services
                 dto.Cupo,
                 dto.Año_calendario,
                 dto.Turno,
-                dto.Comision
+                dto.Comision,
+                dto.SpecialtyId
             );
             await _courseRepository.AddAsync(course);
             dto.Id = course.Id;
@@ -67,7 +69,6 @@ namespace Application.Services
                 return false;
             return await _courseRepository.DeleteAsync(id);
         }
-
      
         public async Task<CourseDTO?> GetAsync(int id)
         {
@@ -84,14 +85,14 @@ namespace Application.Services
                 Cupo = course.Cupo,
                 Año_calendario = course.Año_calendario,
                 Turno = course.Turno,
-                Comision = course.Comision
+                Comision = course.Comision,
+                SpecialtyId = course.SpecialtyId,
             };
         }
 
-
         public async Task<IEnumerable<CourseDTO>> GetAllAsync()
         {
-            //var courseRepository = new CourseRepository();
+            var specialties = await _specialtiesRepository.GetAllAsync();
             var courses = await _courseRepository.GetAllAsync();
             return courses
                 .Where(c => !c.IsDeleted)
@@ -102,7 +103,9 @@ namespace Application.Services
                 Año_calendario = course.Año_calendario,
                 Turno = course.Turno,
                 Comision = course.Comision,
-            }).ToList();
+                SpecialtyId = course.SpecialtyId,
+                SpecialtyDescripcion = specialties.FirstOrDefault(p => p.Id == course.SpecialtyId)?.DescEspecialidad
+                }).ToList();
         }
       
         public async Task<bool> UpdateAsync(CourseDTO dto)
@@ -114,8 +117,11 @@ namespace Application.Services
             ValidarCourseDTO(dto, isUpdate:true);
             var duplicate = (await _courseRepository.GetAllAsync())
                 .FirstOrDefault(c =>
-                    c.Id != dto.Id &&
-                    !c.IsDeleted);
+                        c.Id != dto.Id &&
+                        c.Comision == dto.Comision &&
+                        c.Turno == dto.Turno &&
+                        c.Año_calendario == dto.Año_calendario &&
+                        !c.IsDeleted);
             if (duplicate != null)
                 throw new ArgumentException("Ya existe un curso con esa descripción y año.");
             Course course = new Course(
@@ -123,7 +129,8 @@ namespace Application.Services
                 dto.Cupo,
                 dto.Año_calendario,
                 dto.Turno,
-                dto.Comision
+                dto.Comision,
+                dto.SpecialtyId
             );
             course.IsDeleted = existing.IsDeleted;
 

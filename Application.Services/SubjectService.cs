@@ -3,16 +3,19 @@ using Domain.Model;
 using DTOs;
 using QuestPDF.Infrastructure;
 using System.Text.RegularExpressions;
+using System.Numerics;
 
 namespace Application.Services
 {
     public class SubjectService
     {
         private readonly SubjectRepository _subjectRepository;
+        private readonly PlanRepository _planRepository;
 
-        public SubjectService(SubjectRepository subjectRepository)
+        public SubjectService(SubjectRepository subjectRepository. PlanRepository planRepository)
         {
             _subjectRepository = subjectRepository;
+            _planRepository = planRepository
         }
         private void ValidarSubjectDTO(SubjectDTO dto, bool isUpdate = false)
         {
@@ -92,9 +95,8 @@ namespace Application.Services
 
         public async Task<IEnumerable<SubjectDTO>> GetAllAsync()
         {
-            //var subjectRepository = new SubjectRepository();
+            var plans = await _planRepository.GetAllAsync();
             var subjects = await _subjectRepository.GetAllAsync();
-
             return subjects
                 .Where(s => !s.IsDeleted)
                 .Select(subject => new SubjectDTO
@@ -105,6 +107,7 @@ namespace Application.Services
                     Obligatoria = subject.Obligatoria,
                     Año= subject.Año,
                     PlanId = subject.PlanId,
+                    PlanDescripcion = plans.FirstOrDefault(p => p.Id == subject.PlanId)?.Descripcion
                 }).ToList();
         }
 

@@ -8,6 +8,8 @@ namespace DTOs
         public int Año_calendario { get; set; }
         public string Descripcion { get; set; } = string.Empty;
         public int SpecialtyId { get; set; }
+        public string? SpecialtyDescripcion { get; set; }
+
 
     }
 }

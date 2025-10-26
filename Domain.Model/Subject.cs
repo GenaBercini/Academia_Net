@@ -10,7 +10,6 @@ namespace Domain.Model
         public bool Obligatoria { get; private set; }
         public int Año { get; private set; }
         public bool IsDeleted { get; set; }  
-
         public ICollection<Course> Courses { get; set; } = new List<Course>();
         public ICollection<CourseSubject> CoursesSubjects { get; set; } = new List<CourseSubject>();
 
@@ -43,7 +42,7 @@ namespace Domain.Model
             SetHsSemanales(hsSemanales);
             SetObligatoria(obligatoria);
             SetAño(año);
-            SetPlan(planId);
+            SetPlanId(planId);
             IsDeleted = isDeleted;  
         }
 
@@ -78,7 +77,7 @@ namespace Domain.Model
                 throw new ArgumentException("El año debe ser un numero entre 0 y 5.", nameof(año));
             Año = año;
         }
-        public void SetPlan(int planId)
+        public void SetPlanId(int planId)
         {
             if (planId <= 0)
                 throw new ArgumentException("El PlanId debe ser mayor que 0.", nameof(planId));

@@ -47,9 +47,17 @@ namespace WindowsForms
             this.plansDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "SpecialtyId",
-                HeaderText = "ID especialidad",
+                HeaderText = "ID de la Especialidad",
                 DataPropertyName = "SpecialtyId",
                 Width = 100
+            });
+
+            this.plansDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "SpecialtyDescripcion",
+                HeaderText = "Descripción de la Especialidad",
+                DataPropertyName = "SpecialtyDescripcion",
+                Width = 200
             });
         }
 

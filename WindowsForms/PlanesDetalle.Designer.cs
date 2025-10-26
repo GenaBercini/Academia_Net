@@ -32,11 +32,11 @@
             descripcionTextBox = new TextBox();
             aceptarButton = new Button();
             cancelarButton = new Button();
-            label1 = new Label();
-            label2 = new Label();
+            añoCalendarioLabel = new Label();
+            descripcionLabel = new Label();
             añoCalendarioTextBox = new TextBox();
             errorProvider1 = new ErrorProvider(components);
-            label3 = new Label();
+            especialidadLabel = new Label();
             cmbEspecialidades = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
@@ -73,25 +73,25 @@
             cancelarButton.UseVisualStyleBackColor = true;
             cancelarButton.Click += cancelarButton_Click;
             // 
-            // label1
+            // añoCalendarioLabel
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(63, 250);
-            label1.Margin = new Padding(2, 0, 2, 0);
-            label1.Name = "label1";
-            label1.Size = new Size(89, 15);
-            label1.TabIndex = 18;
-            label1.Text = "Año Calendario";
+            añoCalendarioLabel.AutoSize = true;
+            añoCalendarioLabel.Location = new Point(63, 250);
+            añoCalendarioLabel.Margin = new Padding(2, 0, 2, 0);
+            añoCalendarioLabel.Name = "añoCalendarioLabel";
+            añoCalendarioLabel.Size = new Size(89, 15);
+            añoCalendarioLabel.TabIndex = 18;
+            añoCalendarioLabel.Text = "Año Calendario";
             // 
-            // label2
+            // descripcionLabel
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(63, 189);
-            label2.Margin = new Padding(2, 0, 2, 0);
-            label2.Name = "label2";
-            label2.Size = new Size(69, 15);
-            label2.TabIndex = 19;
-            label2.Text = "Descripcion";
+            descripcionLabel.AutoSize = true;
+            descripcionLabel.Location = new Point(63, 189);
+            descripcionLabel.Margin = new Padding(2, 0, 2, 0);
+            descripcionLabel.Name = "descripcionLabel";
+            descripcionLabel.Size = new Size(69, 15);
+            descripcionLabel.TabIndex = 19;
+            descripcionLabel.Text = "Descripcion";
             // 
             // añoCalendarioTextBox
             // 
@@ -107,15 +107,15 @@
             // 
             errorProvider1.ContainerControl = this;
             // 
-            // label3
+            // especialidadLabel
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(63, 113);
-            label3.Margin = new Padding(2, 0, 2, 0);
-            label3.Name = "label3";
-            label3.Size = new Size(72, 15);
-            label3.TabIndex = 21;
-            label3.Text = "Especialidad";
+            especialidadLabel.AutoSize = true;
+            especialidadLabel.Location = new Point(63, 113);
+            especialidadLabel.Margin = new Padding(2, 0, 2, 0);
+            especialidadLabel.Name = "especialidadLabel";
+            especialidadLabel.Size = new Size(72, 15);
+            especialidadLabel.TabIndex = 21;
+            especialidadLabel.Text = "Especialidad";
             // 
             // cmbEspecialidades
             // 
@@ -131,10 +131,10 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
             Controls.Add(cmbEspecialidades);
-            Controls.Add(label3);
+            Controls.Add(especialidadLabel);
             Controls.Add(añoCalendarioTextBox);
-            Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(descripcionLabel);
+            Controls.Add(añoCalendarioLabel);
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
             Controls.Add(descripcionTextBox);
@@ -149,11 +149,11 @@
         private TextBox descripcionTextBox;
         private Button aceptarButton;
         private Button cancelarButton;
-        private Label label1;
-        private Label label2;
+        private Label añoCalendarioLabel;
+        private Label descripcionLabel;
         private TextBox añoCalendarioTextBox;
         private ErrorProvider errorProvider1;
-        private Label label3;
+        private Label especialidadLabel;
         private ComboBox cmbEspecialidades;
     }
 }

@@ -33,6 +33,18 @@ namespace API.Clients
             throw new Exception($"Error al obtener materias. Detalle: {error}");
         }
 
+        public static async Task<IEnumerable<SubjectDTO>> GetByCourseIdAsync(int courseId)
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.GetAsync($"{Endpoint}/byCourse/{courseId}");
+
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadFromJsonAsync<IEnumerable<SubjectDTO>>();
+
+            string error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al obtener materias del curso {courseId}. Detalle: {error}");
+        }
+
         public static async Task AddAsync(SubjectDTO subject)
         {
             using var client = await CreateHttpClientAsync();

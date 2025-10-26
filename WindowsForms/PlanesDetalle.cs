@@ -1,4 +1,8 @@
-﻿using API.Clients;
+﻿using System;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using API.Clients;
+using Domain.Model;
 using DTOs;
 using System.Text.RegularExpressions;
 
@@ -15,7 +19,7 @@ namespace WindowsForms
             set
             {
                 plan = value;
-                SetFormFields();
+                SetPlans();
             }
         }
 
@@ -24,9 +28,7 @@ namespace WindowsForms
             get => mode;
             set 
             { 
-                mode = value;
-                SetFormMode();
-
+                SetFormMode(value);
             }
         }
 
@@ -47,21 +49,22 @@ namespace WindowsForms
             Init(mode, plan);
         }
 
-        private void SetFormMode()
+        private void SetFormMode(FormMode value)
         {
-            if (mode == FormMode.Add)
+            mode = value;
+
+            if (Mode == FormMode.Add)
             {
                 this.Text = "Agregar Plan";
-
             }
-            else if (mode == FormMode.Update)
+
+            if (Mode == FormMode.Update)
             {
                 this.Text = "Editar Plan";
-
             }
         }
 
-        private void SetFormFields()
+        private void SetPlans()
         {
             if (plan == null)
             {

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using API.Clients;
+using Domain.Model;
 using DTOs;
 using static WindowsForms.CursosDetalle;
 
@@ -28,7 +30,7 @@ namespace WindowsForms
             set
             {
                 specialty = value;
-                LoadFormData();
+                SetSpecialty();
             }
         }
 
@@ -37,13 +39,14 @@ namespace WindowsForms
             get => mode;
             set
             {
-                mode = value;
-                ApplyFormMode();
+                SetFormMode(value);
             }
         }
 
-        private void ApplyFormMode()
+        private void SetFormMode(FormMode value)
         {
+            mode = value;
+
 
             if (Mode == FormMode.Add)
             {
@@ -55,7 +58,7 @@ namespace WindowsForms
             }
         }
 
-        private void LoadFormData()
+        private void SetSpecialty()
         {
             if (Specialty != null)
             {

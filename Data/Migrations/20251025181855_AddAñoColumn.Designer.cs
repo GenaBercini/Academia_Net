@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(TPIContext))]
-    partial class TPIContextModelSnapshot : ModelSnapshot
+    [Migration("20251025181855_AddAñoColumn")]
+    partial class AddAñoColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -58,6 +61,7 @@ namespace Data.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
                     b.Property<int?>("SpecialtyId")
                         .HasColumnType("int");
 
@@ -308,13 +312,9 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Model.Course", b =>
                 {
-                    b.HasOne("Domain.Model.Specialty", "Specialty")
+                    b.HasOne("Domain.Model.Specialty", null)
                         .WithMany("Courses")
-                        .HasForeignKey("SpecialtyId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Specialty");
+                        .HasForeignKey("SpecialtyId");
                 });
 
             modelBuilder.Entity("Domain.Model.CourseSubject", b =>

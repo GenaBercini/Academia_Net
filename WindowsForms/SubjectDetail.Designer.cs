@@ -171,7 +171,6 @@
             añoSubjectTextBox.Name = "añoSubjectTextBox";
             añoSubjectTextBox.Size = new Size(274, 23);
             añoSubjectTextBox.TabIndex = 24;
-            añoSubjectTextBox.Text = "Ingrese un año entre el 1 y 5";
             añoSubjectTextBox.KeyPress += HorasSemanalesTextBox_KeyPress;
             // 
             // SubjectDetail

@@ -102,7 +102,7 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
-            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectCreateDTO dto, EnrollmentService enrollmentService) =>
+            app.MapPost("/users/{userId:int}/enroll", async (int userId, UserCourseSubjectDTO dto, EnrollmentService enrollmentService) =>
             {
                 //EnrollmentService enrollmentService = new EnrollmentService();
                 try
@@ -143,12 +143,10 @@ namespace WebAPI
             .WithName("GetUserEnrollments")
             .Produces<IEnumerable<UserCourseSubjectDTO>>(StatusCodes.Status200OK);
 
-
             app.MapGet("/users/report/grades", async (UserService userService, bool onlyStudents = true) =>
             {
                 try
                 {
-                    //var userService = new UserService();
                     var pdfBytes = await userService.GenerateUsersGradesReport(onlyStudents);
                     return Results.File(pdfBytes, "application/pdf", "ReporteUsuariosNotas.pdf");
                 }

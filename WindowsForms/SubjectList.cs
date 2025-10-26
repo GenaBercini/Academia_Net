@@ -1,8 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using API.Clients;
+﻿using API.Clients;
+using Domain.Model;
 using DTOs;
+using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace WindowsForms
 {
@@ -43,7 +46,7 @@ namespace WindowsForms
                 Width = 247
             });
 
-            this.subjectsDataGridView.Columns.Add(new DataGridViewCheckBoxColumn
+            this.subjectsDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Año",
                 HeaderText = "Año",
@@ -59,14 +62,20 @@ namespace WindowsForms
                 Width = 247
             });
 
-
-
             this.subjectsDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "PlanId",
-                HeaderText = "ID Plan",
+                HeaderText = "ID del Plan",
                 DataPropertyName = "PlanId",
                 Width = 100
+            });
+
+            this.subjectsDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PlanDescripcion",
+                HeaderText = "Descripción del Plan",
+                DataPropertyName = "PlanDescripcion",
+                Width = 200
             });
         }
 

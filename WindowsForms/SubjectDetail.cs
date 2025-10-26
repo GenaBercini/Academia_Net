@@ -9,7 +9,7 @@ namespace WindowsForms
 {
     public partial class SubjectDetail : Form
     {
-        private SubjectDTO? subject;
+        private SubjectDTO subject = null!;
         private FormMode mode;
 
         public SubjectDTO Subject

@@ -132,7 +132,7 @@ namespace API.Clients
             }
         }
 
-        public static async Task<bool> EnrollAsync(int userId, UserCourseSubjectCreateDTO enrollment)
+        public static async Task<bool> EnrollAsync(int userId, UserCourseSubjectDTO enrollment)
         {
             using var client = await CreateHttpClientAsync();
             var response = await client.PostAsJsonAsync($"users/{userId}/enroll", enrollment);
