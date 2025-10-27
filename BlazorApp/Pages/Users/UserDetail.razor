@@ -1,0 +1,126 @@
+﻿@page "/admin/users/{Id:int?}"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+
+<h3 class="card">@Title</h3>
+
+<div class="card">
+    @if (user == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <EditForm Model="user" OnValidSubmit="Save">
+            <div class="form-row">
+                <input class="input" @bind="user.UserName" placeholder="Usuario" />
+                <input class="input" @bind="user.Email" placeholder="Email" />
+            </div>
+
+            <div class="form-row">
+                <input class="input" @bind="user.Name" placeholder="Nombre" />
+                <input class="input" @bind="user.LastName" placeholder="Apellido" />
+            </div>
+
+            <div class="form-row">
+                <input class="input" @bind="user.Dni" placeholder="DNI" />
+                <input class="input" @bind="user.StudentNumber" placeholder="Legajo (si aplica)" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Contraseña</label>
+                <input class="form-control" type="password" @bind="Contrasena" />
+            </div>
+
+            <div class="form-row">
+                <select class="input" @bind="user.TypeUser">
+                    @foreach (var t in Enum.GetValues(typeof(Shared.Types.UserType)))
+                    {
+                        <option value="@t">@t</option>
+                    }
+                </select>
+
+                <select class="input" @bind="user.JobPosition">
+                    @foreach (var j in Enum.GetValues(typeof(Shared.Types.JobPositionType)))
+                    {
+                        <option value="@j">@j</option>
+                    }
+                </select>
+            </div>
+
+            <div class="top-row">
+                <div>
+                    <button class="btn" type="submit">Guardar</button>
+                    <button class="btn-ghost" type="button" @onclick="Cancel">Cancelar</button>
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+
+    [Parameter] public int? Id { get; set; }
+    private UserDTO? user;
+    private string Contrasena { get; set; } = string.Empty;
+    private string Title => Id.HasValue ? "Editar usuario" : "Nuevo usuario";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            user = await API.Clients.UsersApiClient.GetAsync(Id.Value);
+        }
+        else
+        {
+            user = new UserDTO();
+        }
+    }
+
+    async Task Save()
+    {
+        if(Id.HasValue)
+        {
+             var updateUser = new UserUpdateDTO
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Dni = user.Dni,
+                Adress = user.Adress,
+                TypeUser = user.TypeUser,
+                JobPosition = user.JobPosition,
+                StudentNumber = user.StudentNumber,
+                DateOfAdmission = user.DateOfAdmission,
+                DateOfHire = user.DateOfHire,
+                Status = user.Status,
+                Password = string.IsNullOrWhiteSpace(Contrasena) ? null : Contrasena
+            };
+            await API.Clients.UsersApiClient.UpdateAsync(updateUser);
+        }
+        else
+        {
+            var createUser = new UserCreateDTO
+
+            {
+                UserName = user.UserName,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Dni = user.Dni,
+                Adress = user.Adress,
+                TypeUser = user.TypeUser,
+                StudentNumber = user.StudentNumber,
+                JobPosition = user.JobPosition,
+                Password = Contrasena
+            };
+            await API.Clients.UsersApiClient.AddAsync(createUser);
+        }
+
+        Nav.NavigateTo("/admin/users");
+    }
+
+    void Cancel() => Nav.NavigateTo("/admin/users");
+}

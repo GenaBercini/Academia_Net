@@ -1,4 +1,4 @@
-html, body {
+/*html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
@@ -100,4 +100,167 @@ a, .btn-link {
 
 code {
     color: #c02d76;
+}
+*/
+
+:root {
+    --bg: #f7f8fb;
+    --panel: #ffffff;
+    --accent: #2f6fcb;
+    --muted: #6b7280;
+    --shadow: 0 6px 18px rgba(45,55,72,0.08);
+    --radius: 8px;
+    --gap: 14px;
+    --font: "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.admin-layout {
+    display: flex;
+    height: 100vh;
+    font-family: var(--font);
+    background: linear-gradient(180deg,var(--bg),#fff);
+}
+
+.admin-sidebar {
+    width: 240px;
+    background: var(--panel);
+    padding: 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap);
+}
+
+.brand {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--accent);
+    margin-bottom: 8px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.nav-link {
+    padding: 10px 12px;
+    border-radius: 6px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: background .12s,color .12s;
+    display: block;
+}
+
+    .nav-link:hover {
+        background: #f1f5f9;
+        color: #111827;
+    }
+
+.admin-main {
+    flex: 1;
+    padding: 28px;
+    overflow: auto;
+}
+
+.card {
+    background: var(--panel);
+    border-radius: var(--radius);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    margin-bottom: 18px;
+}
+
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-ghost {
+    background: transparent;
+    border: 1px solid #e6e9ef;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+    .table th, .table td {
+        text-align: left;
+        padding: 10px 8px;
+        border-bottom: 1px solid #eef2f7;
+    }
+
+.actions button {
+    margin-right: 6px;
+    background: transparent;
+    border: 1px solid #e6e9ef;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+}
+
+.form-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.input, textarea {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #e6e9ef;
+    background: transparent;
+}
+
+/* Auth / login styles */
+.auth-background {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(180deg,var(--bg),#fff);
+    padding: 24px;
+}
+
+.auth-card {
+    width: 420px;
+    max-width: calc(100% - 48px);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    background: var(--panel);
+}
+
+.login-header {
+    text-align: center;
+    color: var(--accent);
+    margin-bottom: 12px;
+}
+
+.auth-main {
+    width: 100%;
+    max-width: 520px;
 }

@@ -1,58 +1,98 @@
 ﻿@page "/login"
-@using API.Clients
+@layout AuthLayout
+@using System.ComponentModel.DataAnnotations
+@using Shared.Types
 @inject NavigationManager Nav
 @inject IAuthService AuthService
 
-<h3>Login</h3>
+<EditForm Model="model" OnValidSubmit="OnSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-<div class="card p-4" style="max-width: 400px;">
-    <div class="mb-3">
-        <label>Usuario</label>
-        <input @bind="Username" class="form-control" />
+    <div class="auth-card">
+        <div class="login-header">
+            <img src="favicon.png" alt="logo" style="width:48px;height:48px" />
+            <h4>Academia — Iniciar sesión</h4>
+        </div>
+
+        <div class="form-row">
+            <input class="input" placeholder="Usuario" @bind="model.Username" />
+            <ValidationMessage For="@(() => model.Username)" />
+        </div>
+
+        <div class="form-row" style="position:relative">
+            <input class="input" placeholder="Contraseña" type="@(showPassword ? "text" : "password")" @bind="model.Password" />
+            <button type="button" class="btn-ghost" style="position:absolute; right:8px; top:8px;" @onclick="TogglePassword">@((showPassword) ? "🙈" : "👁")</button>
+            <ValidationMessage For="@(() => model.Password)" />
+        </div>
+
+        <div class="top-row">
+            <button class="btn" type="submit" disabled="@(isLoading)">@(isLoading ? "Cargando..." : "Ingresar")</button>
+            <button class="btn-ghost" type="button" @onclick=@(() => Nav.NavigateTo("/", true))>Cancelar</button>
+        </div>
+
+        @if (!string.IsNullOrEmpty(error))
+        {
+            <div class="alert alert-danger mt-2">@error</div>
+        }
     </div>
-
-    <div class="mb-3">
-        <label>Contraseña</label>
-        <input type="password" @bind="Password" class="form-control" />
-    </div>
-
-    <button class="btn btn-primary w-100" @onclick="LoginAsync" disabled="@IsLoading">
-        @(IsLoading ? "Cargando..." : "Ingresar")
-    </button>
-
-    @if (Error != null)
-    {
-        <div class="alert alert-danger mt-2">@Error</div>
-    }
-</div>
+</EditForm>
 
 @code {
-    private string Username = "";
-    private string Password = "";
-    private string? Error;
-    private bool IsLoading;
+    private LoginModel model = new();
+    private bool showPassword;
+    private bool isLoading;
+    private string? error;
 
-    private async Task LoginAsync()
+    protected override async Task OnInitializedAsync()
     {
-        Error = null;
-        IsLoading = true;
+        if (await AuthService.IsAuthenticatedAsync())
+        {
+            var user = await AuthService.GetCurrentUserAsync();
+            if (user != null && user.TypeUser == UserType.Admin)
+                Nav.NavigateTo("/admin/users");
+            else
+                Nav.NavigateTo("/dashboard");
+        }
+    }
 
+    private void TogglePassword() => showPassword = !showPassword;
+
+    private async Task OnSubmit()
+    {
+        error = null;
+        isLoading = true;
         try
         {
-            var success = await AuthService.LoginAsync(Username, Password);
-            if (success)
-                Nav.NavigateTo("/dashboard");
+            var success = await AuthService.LoginAsync(model.Username, model.Password);
+            if (!success)
+            {
+                error = "Usuario o contraseña incorrectos.";
+                return;
+            }
+
+            var user = await AuthService.GetCurrentUserAsync();
+            if (user != null && user.TypeUser == UserType.Admin)
+                Nav.NavigateTo("/admin/users");
             else
-                Error = "Usuario o contraseña incorrectos.";
+                Nav.NavigateTo("/login");
         }
         catch (Exception ex)
         {
-            Error = "Ocurrió un error inesperado: " + ex.Message;
+            error = "Ocurrió un error: " + ex.Message;
         }
         finally
         {
-            IsLoading = false;
+            isLoading = false;
         }
+    }
 
+    public class LoginModel
+    {
+        [Required(ErrorMessage = "El usuario es requerido")]
+        public string Username { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "La contraseña es requerida")]
+        public string Password { get; set; } = string.Empty;
     }
 }

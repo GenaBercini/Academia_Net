@@ -1,0 +1,77 @@
+﻿@page "/admin/users"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+
+<h3 class="card">Usuarios</h3>
+
+<div class="card">
+    <div class="top-row">
+        <div>
+            <button class="btn" @onclick="Create">Nuevo usuario</button>
+        </div>
+        <div>
+            <input placeholder="Buscar por usuario o email" @bind="filter" class="input" />
+        </div>
+    </div>
+
+    @if (users == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Tipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var u in Filtered)
+                {
+                    <tr>
+                        <td>@u.UserName</td>
+                        <td>@($"{u.Name} {u.LastName}")</td>
+                        <td>@u.Email</td>
+                        <td>@u.TypeUser</td>
+                        <td class="actions">
+                            <button @onclick="() => Edit(u.Id)">Editar</button>
+                            <button @onclick="() => Delete(u.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<UserDTO>? users;
+    private string filter = string.Empty;
+
+    private IEnumerable<UserDTO> Filtered => string.IsNullOrWhiteSpace(filter) ? users ?? Enumerable.Empty<UserDTO>() :
+        (users ?? Enumerable.Empty<UserDTO>()).Where(u => (u.UserName?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false) || (u.Email?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = (await API.Clients.UsersApiClient.GetAllAsync())?.ToList();
+    }
+
+    void Create() => Nav.NavigateTo("/admin/users/create");
+    void Edit(int id) => Nav.NavigateTo($"/admin/users/{id}");
+    async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar usuario #{id}?");
+        if (!ok) return;
+        await API.Clients.UsersApiClient.DeleteAsync(id);
+        users = (await API.Clients.UsersApiClient.GetAllAsync())?.ToList();
+        StateHasChanged();
+    }
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+}

@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+@using Shared.Types
+@using DTOs
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div class="brand">Administración</div>
+
+        <nav class="nav">
+            <a class="nav-link" href="/admin/users">Usuarios</a>
+            <a class="nav-link" href="/admin/subjects">Materias</a>
+            <a class="nav-link" href="/admin/plans">Planes</a>
+            <a class="nav-link" href="/admin/specialties">Especialidades</a>
+            <a class="nav-link" href="/admin/courses">Cursos</a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <button class="btn-ghost" @onclick="Logout">Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        @Body
+    </main>
+</div>
+
+@code {
+    [Inject] public API.Clients.AuthApiClient? AuthApiClient { get; set; }
+    [Inject] public IAuthService AuthService { get; set; } = default!;
+    [Inject] public NavigationManager Nav { get; set; } = default!;
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Nav.NavigateTo("/", true);
+    }
+}
