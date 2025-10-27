@@ -55,7 +55,7 @@ namespace Application.Services
         }
   
 
-        public async Task<SpecialtyDTO> GetAsync(int id)
+        public async Task<SpecialtyDTO?> GetAsync(int id)
         {
             //var specialtyRepository = new SpecialtyRepository();
             Specialty? specialty = await _specialtyRepository.GetAsync(id);

@@ -1,4 +1,5 @@
-﻿using Domain.Model;
+﻿using Data;
+using Domain.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,64 +16,75 @@ namespace Data
             _context = context;
         }
 
+        public async Task<UserCourseSubject?> GetAsync(int userId, int courseId, int subjectId)
+        {
+            return await _context.UsersCoursesSubjects
+                .Include(e => e.User)
+                .Include(e => e.Course)
+                .Include(e => e.Subject)
+                .FirstOrDefaultAsync(e =>
+                    e.UserId == userId &&
+                    e.CourseId == courseId &&
+                    e.SubjectId == subjectId);
+        }
+
+        public async Task<IEnumerable<UserCourseSubject>> GetByUserAsync(int userId)
+        {
+            return await _context.UsersCoursesSubjects
+                .Where(e => e.UserId == userId)
+                .Include(e => e.Course)
+                .Include(e => e.Subject)
+                .ToListAsync();
+        }
+
+        public async Task AddAsync(UserCourseSubject entity)
+        {
+            _context.UsersCoursesSubjects.Add(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> UpdateAsync(UserCourseSubject entity)
+        {
+            var existing = await GetAsync(entity.UserId, entity.CourseId, entity.SubjectId);
+            if (existing == null) return false;
+
+            existing.NotaFinal = entity.NotaFinal;
+            existing.FechaInscripcion = entity.FechaInscripcion;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public void Delete(UserCourseSubject entity)
+        {
+            _context.UsersCoursesSubjects.Remove(entity);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task<Course?> GetCourseAsync(int courseId)
+        {
+            return await _context.Courses.FirstOrDefaultAsync(c => c.Id == courseId);
+        }
+
+        public async Task<Subject?> GetSubjectAsync(int subjectId)
+        {
+            return await _context.Subjects.FirstOrDefaultAsync(s => s.Id == subjectId);
+        }
+
         public async Task<bool> CourseSubjectExistsAsync(int courseId, int subjectId)
         {
             return await _context.CoursesSubjects
                 .AnyAsync(cs => cs.CourseId == courseId && cs.SubjectId == subjectId);
         }
 
-        public async Task<UserCourseSubject?> GetAsync(int userId, int courseId, int subjectId)
+        public async Task AddCourseSubjectAsync(CourseSubject entity)
         {
-            return await _context.UsersCoursesSubjects
-                .FirstOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId && e.SubjectId == subjectId);
-        }
-
-        public async Task<UserCourseSubject> AddAsync(UserCourseSubject enrollment)
-        {
-            var exists = await _context.UsersCoursesSubjects
-                .AnyAsync(e => e.UserId == enrollment.UserId &&
-                               e.CourseId == enrollment.CourseId &&
-                               e.SubjectId == enrollment.SubjectId);
-            if (exists)
-                return enrollment;
-
-            _context.UsersCoursesSubjects.Add(enrollment);
-            try
-            {
-                await _context.SaveChangesAsync();
-                return enrollment;
-            }
-            catch (DbUpdateException dbEx)
-            {
-                var inner = dbEx.InnerException?.Message ?? dbEx.Message;
-                throw new InvalidOperationException($"Error al guardar la inscripción en la BD: {inner}", dbEx);
-            }
-        }
-
-        public async Task<List<UserCourseSubject>> GetByUserAsync(int userId)
-        {
-            return await _context.UsersCoursesSubjects
-                .Include(e => e.Course)
-                .Include(e => e.Subject)
-                .Include(e => e.User)
-                .Where(e => e.UserId == userId)
-                .ToListAsync();
-        }
-
-        public async Task<List<UserCourseSubject>> GetByUserAndCourseAsync(int userId, int courseId)
-        {
-            return await _context.UsersCoursesSubjects
-                .Where(u => u.UserId == userId && u.CourseId == courseId)
-                .ToListAsync();
-        }
-
-        public void Delete(UserCourseSubject enrollment)
-        {
-            _context.UsersCoursesSubjects.Remove(enrollment);
-        }
-
-        public async Task SaveChangesAsync()
-        {
+            _context.CoursesSubjects.Add(entity);
             await _context.SaveChangesAsync();
         }
     }

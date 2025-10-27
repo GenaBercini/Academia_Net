@@ -22,13 +22,19 @@ namespace Application.Services
             _userRepository = userRepository;
             _enrollmentRepository = enrollmentRepository;
         }
+        public async Task<UserCourseSubjectDTO?> GetEnrollmentAsync(int userId, int courseId, int subjectId)
+        {
+            var entity = await _enrollmentRepository.GetAsync(userId, courseId, subjectId);
+            return entity == null ? null : MapToDto(entity);
+        }
+
         public async Task<IEnumerable<UserCourseSubjectDTO>> GetEnrollmentsByUserAndCourseAsync(int userId, int courseId)
         {
             var enrollments = await _enrollmentRepository.GetByUserAsync(userId);
             var filtered = enrollments.Where(e => e.CourseId == courseId);
-
             return filtered.Select(MapToDto).ToList();
         }
+
         public async Task<bool> EnrollUserInCourseSubjectAsync(int userId, int courseId, int subjectId)
         {
             var user = await _userRepository.GetAsync(userId);
@@ -53,6 +59,7 @@ namespace Application.Services
             await _enrollmentRepository.AddAsync(enrollment);
             return true;
         }
+
         public async Task AddEnrollmentAsync(UserCourseSubjectDTO dto)
         {
             if (dto == null)
@@ -61,13 +68,38 @@ namespace Application.Services
             var user = await _userRepository.GetAsync(dto.UserId);
             if (user == null)
                 throw new ArgumentException($"Usuario con id {dto.UserId} no existe.");
-
             if (user.Status != UserStatus.Active)
                 throw new ArgumentException($"Usuario con id {dto.UserId} no está activo.");
 
-            var courseSubjectExists = await _enrollmentRepository.CourseSubjectExistsAsync(dto.CourseId, dto.SubjectId);
-            if (!courseSubjectExists)
-                throw new ArgumentException($"La materia (SubjectId={dto.SubjectId}) no está asociada al curso (CourseId={dto.CourseId}).");
+            var course = await _enrollmentRepository.GetCourseAsync(dto.CourseId);
+            var subject = await _enrollmentRepository.GetSubjectAsync(dto.SubjectId);
+
+            if (course == null)
+                throw new ArgumentException($"Curso con id {dto.CourseId} no existe.");
+            if (subject == null)
+                throw new ArgumentException($"Materia con id {dto.SubjectId} no existe.");
+
+            int añoCurso = 0;
+            if (!string.IsNullOrEmpty(course.Comision) && char.IsDigit(course.Comision[0]))
+                añoCurso = int.Parse(course.Comision[0].ToString());
+
+            bool courseSubjectExists = await _enrollmentRepository.CourseSubjectExistsAsync(dto.CourseId, dto.SubjectId);
+
+            if (!courseSubjectExists && subject.Año == añoCurso)
+            {
+                var newCourseSubject = new CourseSubject
+                {
+                    CourseId = dto.CourseId,
+                    SubjectId = dto.SubjectId,
+                    DiaHoraDictado = "A confirmar"
+                };
+
+                await _enrollmentRepository.AddCourseSubjectAsync(newCourseSubject);
+            }
+            else if (!courseSubjectExists)
+            {
+                throw new ArgumentException($"La materia (SubjectId={dto.SubjectId}) no corresponde al año del curso (CourseId={dto.CourseId}).");
+            }
 
             var existing = await _enrollmentRepository.GetAsync(dto.UserId, dto.CourseId, dto.SubjectId);
             if (existing != null) return;
@@ -83,6 +115,18 @@ namespace Application.Services
             await _enrollmentRepository.AddAsync(entity);
         }
 
+        public async Task<bool> UpdateAsync(UserCourseSubjectDTO dto)
+        {
+            var entity = new UserCourseSubject
+            {
+                UserId = dto.UserId,
+                CourseId = dto.CourseId,
+                SubjectId = dto.SubjectId,
+                NotaFinal = dto.NotaFinal,
+                FechaInscripcion = dto.FechaInscripcion
+            };
+            return await _enrollmentRepository.UpdateAsync(entity);
+        }
 
         public async Task DeleteEnrollmentAsync(int userId, int courseId, int subjectId)
         {
@@ -93,6 +137,7 @@ namespace Application.Services
             _enrollmentRepository.Delete(existing);
             await _enrollmentRepository.SaveChangesAsync();
         }
+
         private UserCourseSubjectDTO MapToDto(UserCourseSubject e)
         {
             return new UserCourseSubjectDTO

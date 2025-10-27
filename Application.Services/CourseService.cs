@@ -153,6 +153,7 @@ namespace Application.Services
                     Desc = cs.Subject.Desc,
                     HsSemanales = cs.Subject.HsSemanales,
                     Obligatoria = cs.Subject.Obligatoria,
+                    Año= cs.Subject.Año,
                 }
             }).ToList();
         }
@@ -172,6 +173,7 @@ namespace Application.Services
                     Desc = cs.Subject.Desc,
                     HsSemanales = cs.Subject.HsSemanales,
                     Obligatoria = cs.Subject.Obligatoria,
+                    Año = cs.Subject.Año,
                 }
             };
         }

@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            dataGridView1 = new DataGridView();
+            studentDataGridView = new DataGridView();
             subjectDataGridView = new DataGridView();
             button1 = new Button();
             label3 = new Label();
-            comboBox2 = new ComboBox();
+            notasComboBox = new ComboBox();
             comboBox1 = new ComboBox();
             label1 = new Label();
             cargarNotas = new Button();
@@ -45,7 +45,7 @@
             panel5 = new Panel();
             estudianteLabel = new Label();
             panel3 = new Panel();
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)studentDataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)subjectDataGridView).BeginInit();
             panel2.SuspendLayout();
             panel1.SuspendLayout();
@@ -56,14 +56,14 @@
             panel3.SuspendLayout();
             SuspendLayout();
             // 
-            // dataGridView1
+            // studentDataGridView
             // 
-            dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView1.Location = new Point(403, 3);
-            dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(394, 271);
-            dataGridView1.TabIndex = 0;
+            studentDataGridView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            studentDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            studentDataGridView.Location = new Point(403, 3);
+            studentDataGridView.Name = "studentDataGridView";
+            studentDataGridView.Size = new Size(394, 271);
+            studentDataGridView.TabIndex = 0;
             // 
             // subjectDataGridView
             // 
@@ -83,6 +83,7 @@
             button1.TabIndex = 4;
             button1.Text = "Cargar Notas";
             button1.UseVisualStyleBackColor = true;
+            button1.Click += cargarNotaButton_Click;
             // 
             // label3
             // 
@@ -93,14 +94,14 @@
             label3.TabIndex = 2;
             label3.Text = "Nota :";
             // 
-            // comboBox2
+            // notasComboBox
             // 
-            comboBox2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(193, 17);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(504, 23);
-            comboBox2.TabIndex = 3;
+            notasComboBox.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            notasComboBox.FormattingEnabled = true;
+            notasComboBox.Location = new Point(193, 17);
+            notasComboBox.Name = "notasComboBox";
+            notasComboBox.Size = new Size(504, 23);
+            notasComboBox.TabIndex = 3;
             // 
             // comboBox1
             // 
@@ -132,7 +133,7 @@
             // 
             panel2.Controls.Add(button1);
             panel2.Controls.Add(label3);
-            panel2.Controls.Add(comboBox2);
+            panel2.Controls.Add(notasComboBox);
             panel2.Dock = DockStyle.Bottom;
             panel2.Location = new Point(0, 0);
             panel2.Name = "panel2";
@@ -157,7 +158,7 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.Controls.Add(subjectDataGridView, 0, 0);
-            tableLayoutPanel1.Controls.Add(dataGridView1, 1, 0);
+            tableLayoutPanel1.Controls.Add(studentDataGridView, 1, 0);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 73);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -236,7 +237,8 @@
             Controls.Add(panel1);
             Name = "NotasList";
             Text = "Form1";
-            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            Load += NotasList_Load;
+            ((System.ComponentModel.ISupportInitialize)studentDataGridView).EndInit();
             ((System.ComponentModel.ISupportInitialize)subjectDataGridView).EndInit();
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
@@ -254,11 +256,11 @@
 
         #endregion
 
-        private DataGridView dataGridView1;
+        private DataGridView studentDataGridView;
         private DataGridView subjectDataGridView;
         private Button button1;
         private Label label3;
-        private ComboBox comboBox2;
+        private ComboBox notasComboBox;
         private ComboBox comboBox1;
         private Label label1;
         private Button cargarNotas;

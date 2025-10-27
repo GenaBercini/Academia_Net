@@ -89,6 +89,7 @@ namespace Application.Services
                 Desc = subject.Desc,
                 HsSemanales = subject.HsSemanales,
                 Obligatoria = subject.Obligatoria,
+                Año = subject.Año,
                 PlanId = subject.PlanId
             };
         }

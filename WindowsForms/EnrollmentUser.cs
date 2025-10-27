@@ -170,6 +170,7 @@ namespace WindowsForms
                     int subjectId = (int)row.Cells["Id"].Value;
 
                     if (_enrollments.Any(e => e.SubjectId == subjectId))
+
                         continue;
 
                     nuevasInscripciones.Add(new UserCourseSubjectDTO

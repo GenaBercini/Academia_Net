@@ -18,7 +18,6 @@ namespace Data
         {
             _context = context;
         }
-
         public UserCourseSubject? EnrollUserInCourseSubject(int userId, int courseId, int subjectId)
         {
             //using var context = CreateContext();
@@ -86,7 +85,6 @@ namespace Data
                           .Where(e => e.UserId == userId)
                           .ToList();
         }
-
         public async Task AddAsync(User user)
         {
             //using var context = CreateContext();
