@@ -8,6 +8,7 @@ using SkiaSharp;
 using System.Diagnostics;
 using System.Globalization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Shared.Types;
 
 namespace Application.Services
 {

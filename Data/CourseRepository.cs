@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Numerics;
+using Shared.Types;
 
 
 namespace Data

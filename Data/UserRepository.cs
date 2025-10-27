@@ -1,6 +1,7 @@
 ﻿using Domain.Model;
 using DTOs;
 using Microsoft.EntityFrameworkCore;
+using Shared.Types;
 
 namespace Data
 {
@@ -22,7 +23,7 @@ namespace Data
         {
             //using var context = CreateContext();
 
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId && u.Status == Domain.Model.UserStatus.Active);
+            var user = _context.Users.FirstOrDefault(u => u.Id == userId && u.Status == UserStatus.Active);
             if (user == null) throw new InvalidOperationException("Usuario no encontrado o inactivo.");
 
             var course = _context.Courses.Include(c => c.CoursesSubjects)

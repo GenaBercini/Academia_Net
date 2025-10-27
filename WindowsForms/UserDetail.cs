@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using API.Clients;
 using Domain.Model;
 using DTOs;
+using Shared.Types;
 
 namespace WindowsForms
 {

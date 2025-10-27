@@ -1,0 +1,87 @@
+﻿@* @page "/login"
+@using BlazorApp.Services
+@using DTOs
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<h3>Iniciar Sesión</h3>
+
+<div class="login-container">
+    <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label>Usuario</label>
+            <InputText @bind-Value="loginModel.Username" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
+        </div>
+        <button class="btn btn-primary" type="submit">Ingresar</button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <p class="text-danger">@errorMessage</p>
+    }
+</div>
+
+@code {
+    private LoginRequest loginModel = new();
+    private string? errorMessage;
+
+    private async Task HandleLogin()
+    {
+        var result = await AuthService.LoginAsync(loginModel);
+        if (result != null)
+        {
+            Nav.NavigateTo("/dashboard");
+        }
+        else
+        {
+            errorMessage = "Usuario o contraseña incorrectos";
+        }
+    }
+}
+ *@
+
+@page "/login"
+@using DTOs
+@using BlazorApp.Services
+@inject AuthService AuthService
+@inject NavigationManager Nav
+
+<div class="card">
+    <h2>Iniciar sesión</h2>
+    <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
+        <InputText @bind-Value="loginModel.Username" placeholder="Usuario" class="input" />
+        <br />
+        <InputText @bind-Value="loginModel.Password" type="password" placeholder="Contraseña" class="input" />
+        <br />
+        <button type="submit">Ingresar</button>
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <p style="color:red;">@message</p>
+    }
+</div>
+
+@code {
+    private LoginRequest loginModel = new();
+    private string message = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        var res = await AuthService.LoginAsync(loginModel);
+        if (res != null)
+        {
+            Nav.NavigateTo("/dashboard", true);
+        }
+        else
+        {
+            message = "Usuario o contraseña incorrectos.";
+        }
+    }
+}
