@@ -29,6 +29,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpLogging(o => { });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazorWasm",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost:7154")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // Add JWT Authentication
 //var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 //var secretKey = jwtSettings["SecretKey"];
@@ -88,6 +99,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowBlazorWasm");
 
 // Use CORS
 //app.UseCors("AllowBlazorWasm");

@@ -1,8 +1,48 @@
 ﻿@page "/dashboard"
+@using API.Clients
+@inject IAuthService AuthService
+@inject NavigationManager Nav
 
-<h3>Panel de Control</h3>
+@if (IsLoading)
+{
+    <p>Cargando...</p>
+}
+else if (Username != null)
+{
+    <h3>Bienvenido @Username</h3>
+    <button class="btn btn-secondary" @onclick="Logout">Cerrar sesión</button>
+}
 
-<div class="card">
-    <p>Bienvenido al sistema administrativo.</p>
-    <p>Usá el menú lateral para navegar.</p>
-</div>
+
+@code {
+    private string? Username;
+    private bool IsLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsLoading = true;
+
+        if (!await AuthService.IsAuthenticatedAsync())
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        Username = await AuthService.GetUsernameAsync();
+
+        if (string.IsNullOrEmpty(Username))
+        {
+            await AuthService.LogoutAsync();
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        IsLoading = false;
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Nav.NavigateTo("/login", true);
+    }
+}
