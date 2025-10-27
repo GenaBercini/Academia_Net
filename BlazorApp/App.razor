@@ -1,0 +1,42 @@
+﻿@using BlazorApp.Layout
+@using API.Clients
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p class="text-center mt-5 text-danger">Página no encontrada.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] IAuthService AuthService { get; set; } = default!;
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var currentUri = NavigationManager.Uri.ToLower();
+
+            if (currentUri.EndsWith("/login") || currentUri.Contains("/home-publico"))
+                return;
+
+            var isAuthenticated = await AuthService.IsAuthenticatedAsync();
+
+            if (!isAuthenticated)
+            {
+                NavigationManager.NavigateTo("/login", true);
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/dashboard", true);
+            }
+        }
+    }
+}
+
+

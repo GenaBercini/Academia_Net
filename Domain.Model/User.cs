@@ -2,28 +2,10 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
+using Shared.Types;
 
 namespace Domain.Model
 {
-    public enum UserType
-    {
-        Admin = 1,
-        Student = 2,
-        Teacher = 3
-    }
-
-    public enum JobPositionType
-    {
-        Practice = 1,
-        Theory = 2,
-    }
-
-    public enum UserStatus
-    {
-        Active = 1,
-        Inactive = 2,
-        Deleted = 3
-    }
 
     public class User
     {

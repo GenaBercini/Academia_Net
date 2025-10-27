@@ -1,0 +1,58 @@
+﻿@page "/login"
+@using API.Clients
+@inject NavigationManager Nav
+@inject IAuthService AuthService
+
+<h3>Login</h3>
+
+<div class="card p-4" style="max-width: 400px;">
+    <div class="mb-3">
+        <label>Usuario</label>
+        <input @bind="Username" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Contraseña</label>
+        <input type="password" @bind="Password" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary w-100" @onclick="LoginAsync" disabled="@IsLoading">
+        @(IsLoading ? "Cargando..." : "Ingresar")
+    </button>
+
+    @if (Error != null)
+    {
+        <div class="alert alert-danger mt-2">@Error</div>
+    }
+</div>
+
+@code {
+    private string Username = "";
+    private string Password = "";
+    private string? Error;
+    private bool IsLoading;
+
+    private async Task LoginAsync()
+    {
+        Error = null;
+        IsLoading = true;
+
+        try
+        {
+            var success = await AuthService.LoginAsync(Username, Password);
+            if (success)
+                Nav.NavigateTo("/dashboard");
+            else
+                Error = "Usuario o contraseña incorrectos.";
+        }
+        catch (Exception ex)
+        {
+            Error = "Ocurrió un error inesperado: " + ex.Message;
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
+    }
+}
