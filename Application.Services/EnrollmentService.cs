@@ -4,6 +4,7 @@ using DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Shared.Types;
 
 
 namespace Application.Services

@@ -1,0 +1,29 @@
+﻿@using BlazorApp.Layout
+
+<Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p class="text-center mt-5 text-danger">Página no encontrada.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    [Inject] NavigationManager NavigationManager { get; set; }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var uri = NavigationManager.Uri.ToLower();
+            if (uri.EndsWith("/") || uri.EndsWith("/index.html"))
+            {
+                NavigationManager.NavigateTo("/home-publico", forceLoad: true);
+            }
+        }
+    }
+}
+

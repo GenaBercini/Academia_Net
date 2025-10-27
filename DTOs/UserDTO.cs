@@ -1,5 +1,4 @@
-﻿using Domain.Model;
-
+﻿using Shared.Types;
 namespace DTOs
 {
     public class UserDTO
