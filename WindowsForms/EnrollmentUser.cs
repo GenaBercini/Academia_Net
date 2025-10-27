@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using API.Clients;
+using Domain.Model;
 using DTOs;
 
 namespace WindowsForms
@@ -26,13 +28,19 @@ namespace WindowsForms
             await CargarMateriasAsync();
         }
 
+        private bool _isLoadingUsers = false;
+
         private async Task CargarUsuariosAsync()
         {
             try
             {
+                _isLoadingUsers = true;
                 var usuarios = await UsersApiClient.GetAllAsync();
+                var usuariosNoAdmin = usuarios
+                    .Where(u => u.TypeUser != Domain.Model.UserType.Admin)
+                    .ToList();
 
-                usuarioComboBox.DataSource = usuarios.ToList();
+                usuarioComboBox.DataSource = usuariosNoAdmin;
                 usuarioComboBox.DisplayMember = "UserName";
                 usuarioComboBox.ValueMember = "Id";
             }
@@ -40,6 +48,29 @@ namespace WindowsForms
             {
                 MessageBox.Show($"Error al cargar usuarios: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            finally
+            {
+                _isLoadingUsers = false;
+            }
+        }
+
+        private async void usuarioComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (_isLoadingUsers || usuarioComboBox.SelectedValue == null || usuarioComboBox.SelectedIndex < 0)
+                return;
+
+            await CargarMateriasAsync();
+        }
+        private int ObtenerAñoDesdeComision(string comision)
+        {
+            if (string.IsNullOrWhiteSpace(comision))
+                throw new Exception("La comisión no puede estar vacía.");
+
+            var match = Regex.Match(comision, @"^(\d)");
+            if (!match.Success)
+                throw new Exception($"Formato de comisión inválido: {comision}");
+
+            return int.Parse(match.Groups[1].Value);
         }
 
         private async Task CargarMateriasAsync()
@@ -51,19 +82,41 @@ namespace WindowsForms
             {
                 int userId = (int)usuarioComboBox.SelectedValue;
 
-                _subjects = (await SubjectsApiClient.GetByCourseIdAsync(_courseId)).ToList();
-                _enrollments = (await UserCourseSubjectsApiClient.GetByUserAndCourseAsync(userId, _courseId)).ToList();
+                var curso = await CoursesApiClient.GetAsync(_courseId);
+                if (curso == null)
+                    throw new Exception("No se encontró el curso seleccionado.");
+
+                int añoCurso = ObtenerAñoDesdeComision(curso.Comision);
+
+                var todasMaterias = await SubjectsApiClient.GetAllAsync();
+                _subjects = todasMaterias.Where(s => s.Año == añoCurso).ToList();
+
+                try
+                {
+                    var inscripciones = await UserCourseSubjectsApiClient.GetByUserAndCourseAsync(userId, _courseId);
+                    _enrollments = inscripciones?.ToList() ?? new List<UserCourseSubjectDTO>();
+                }
+                catch (Exception ex)
+                {
+                
+                    if (ex.Message.Contains("no se encontraron inscripciones", StringComparison.OrdinalIgnoreCase))
+                    {
+                        _enrollments = new List<UserCourseSubjectDTO>();
+                    }
+                    else
+                    {
+                        throw; 
+                    }
+                }
 
                 var enrolledIds = _enrollments.Select(e => e.SubjectId).ToList();
                 var availableSubjects = _subjects.Where(s => !enrolledIds.Contains(s.Id)).ToList();
 
-                // 🔹 Limpiar y actualizar DataGridView de materias disponibles
                 subjectDataGridView.DataSource = null;
                 subjectDataGridView.DataSource = availableSubjects
                     .Select(s => new { s.Id, s.Desc, s.Año, s.HsSemanales })
                     .ToList();
 
-                // 🔹 Limpiar y actualizar DataGridView de materias inscriptas
                 inscripcionDataGridView.DataSource = null;
                 inscripcionDataGridView.DataSource = _enrollments
                     .Select(e => new
@@ -73,24 +126,23 @@ namespace WindowsForms
                     })
                     .ToList();
 
-                // 🔹 Actualizar botones según disponibilidad
+                subjectDataGridView.MultiSelect = true;
+                subjectDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+
                 inscribirButton.Enabled = availableSubjects.Any();
                 eliminarButton.Enabled = _enrollments.Any();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar materias: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(
+                    $"Error al cargar materias: {ex.Message}\n\nDetalle: {ex.InnerException?.Message ?? "Sin detalle."}",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 
-        private async void usuarioComboBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Evita ejecutar si todavía no hay datos cargados
-            if (usuarioComboBox.SelectedValue == null || usuarioComboBox.SelectedIndex < 0)
-                return;
 
-            await CargarMateriasAsync();
-        }
 
         private async void inscribirButton_Click(object sender, EventArgs e)
         {
@@ -102,28 +154,41 @@ namespace WindowsForms
 
             if (subjectDataGridView.SelectedRows.Count == 0)
             {
-                MessageBox.Show("Debe seleccionar una materia.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Debe seleccionar al menos una materia.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var enrollment = new UserCourseSubjectDTO
-            {
-                UserId = (int)usuarioComboBox.SelectedValue,
-                CourseId = _courseId,
-                SubjectId = (int)subjectDataGridView.SelectedRows[0].Cells["Id"].Value,
-                FechaInscripcion = DateTime.Now
-            };
-
-            // 🔹 Validación extra por si el usuario ya está inscripto
-            if (_enrollments.Any(e => e.SubjectId == enrollment.SubjectId))
-            {
-                MessageBox.Show("El usuario ya está inscripto en esta materia.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            int userId = (int)usuarioComboBox.SelectedValue;
 
             try
             {
-                await UserCourseSubjectsApiClient.AddAsync(enrollment);
+                var nuevasInscripciones = new List<UserCourseSubjectDTO>();
+
+                foreach (DataGridViewRow row in subjectDataGridView.SelectedRows)
+                {
+                    int subjectId = (int)row.Cells["Id"].Value;
+
+                    if (_enrollments.Any(e => e.SubjectId == subjectId))
+                        continue;
+
+                    nuevasInscripciones.Add(new UserCourseSubjectDTO
+                    {
+                        UserId = userId,
+                        CourseId = _courseId,
+                        SubjectId = subjectId,
+                        FechaInscripcion = DateTime.Now
+                    });
+                }
+
+                if (!nuevasInscripciones.Any())
+                {
+                    MessageBox.Show("El usuario ya estaba inscripto en las materias seleccionadas.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                foreach (var ins in nuevasInscripciones)
+                    await UserCourseSubjectsApiClient.AddAsync(ins);
+
                 MessageBox.Show("Inscripción realizada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await CargarMateriasAsync();
             }
@@ -132,6 +197,7 @@ namespace WindowsForms
                 MessageBox.Show($"Error al inscribir: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private async void eliminarButton_Click(object sender, EventArgs e)
         {
@@ -148,11 +214,15 @@ namespace WindowsForms
             }
 
             int userId = (int)usuarioComboBox.SelectedValue;
-            int subjectId = (int)inscripcionDataGridView.SelectedRows[0].Cells["SubjectId"].Value;
 
             try
             {
-                await UserCourseSubjectsApiClient.DeleteAsync(userId, _courseId, subjectId);
+                foreach (DataGridViewRow row in inscripcionDataGridView.SelectedRows)
+                {
+                    int subjectId = (int)row.Cells["SubjectId"].Value;
+                    await UserCourseSubjectsApiClient.DeleteAsync(userId, _courseId, subjectId);
+                }
+
                 MessageBox.Show("Inscripción eliminada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 await CargarMateriasAsync();
             }

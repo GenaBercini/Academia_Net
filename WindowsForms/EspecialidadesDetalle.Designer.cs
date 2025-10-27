@@ -31,12 +31,12 @@
             components = new System.ComponentModel.Container();
             aceptarButton = new Button();
             cancelarButton = new Button();
-            duracionTextBox = new TextBox();
             descripcionTextBox = new TextBox();
             nombreLabel = new Label();
             label1 = new Label();
             label2 = new Label();
             errorProvider1 = new ErrorProvider(components);
+            duracionComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
@@ -61,15 +61,6 @@
             cancelarButton.Text = "Cancelar";
             cancelarButton.UseVisualStyleBackColor = true;
             cancelarButton.Click += cancelarButton_Click;
-            // 
-            // duracionTextBox
-            // 
-            duracionTextBox.Location = new Point(235, 186);
-            duracionTextBox.Margin = new Padding(2, 1, 2, 1);
-            duracionTextBox.Name = "duracionTextBox";
-            duracionTextBox.Size = new Size(221, 23);
-            duracionTextBox.TabIndex = 5;
-            duracionTextBox.KeyPress += duracionTextBox_KeyPress;
             // 
             // descripcionTextBox
             // 
@@ -112,20 +103,29 @@
             // 
             errorProvider1.ContainerControl = this;
             // 
+            // duracionComboBox
+            // 
+            duracionComboBox.FormattingEnabled = true;
+            duracionComboBox.Location = new Point(235, 190);
+            duracionComboBox.Name = "duracionComboBox";
+            duracionComboBox.Size = new Size(221, 23);
+            duracionComboBox.TabIndex = 16;
+            // 
             // EspecialidadesDetalle
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
+            Controls.Add(duracionComboBox);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(nombreLabel);
             Controls.Add(descripcionTextBox);
-            Controls.Add(duracionTextBox);
             Controls.Add(cancelarButton);
             Controls.Add(aceptarButton);
             Name = "EspecialidadesDetalle";
             Text = "Especialidades";
+            Load += FormEspecialidad_Load;
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -135,11 +135,11 @@
 
         private Button aceptarButton;
         private Button cancelarButton;
-        private TextBox duracionTextBox;
         private TextBox descripcionTextBox;
         private Label nombreLabel;
         private Label label1;
         private Label label2;
         private ErrorProvider errorProvider1;
+        private ComboBox duracionComboBox;
     }
 }

@@ -90,6 +90,9 @@ namespace WindowsForms
 
             añoCursoComboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
             indiceCursoComboBox.SelectedIndexChanged += ComboBox_SelectedIndexChanged;
+
+            turnoComboBox.Items.AddRange(new object[] { "Mañana", "Tarde", "Noche" });
+            turnoComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         }
 
         private void ComboBox_SelectedIndexChanged(object? sender, EventArgs e)
@@ -106,7 +109,7 @@ namespace WindowsForms
         {
             cupoCursoTextBox.Text = course.Cupo.ToString();
             año_calendarioCursoTextBox.Text = course.Año_calendario.ToString();
-            turnoCursoTextBox.Text = course.Turno;
+            turnoComboBox.SelectedItem = course.Turno;
 
             if (!string.IsNullOrEmpty(course.Comision) && course.Comision.Length >= 2)
             {
@@ -125,7 +128,7 @@ namespace WindowsForms
                 course.SpecialtyId = (int)specialtyComboBox.SelectedValue;
                 course.Cupo = int.Parse(cupoCursoTextBox.Text.Trim());
                 course.Año_calendario = int.Parse(año_calendarioCursoTextBox.Text.Trim());
-                course.Turno = turnoCursoTextBox.Text.Trim();
+                course.Turno = turnoComboBox.SelectedItem?.ToString();
 
                 if (!string.IsNullOrWhiteSpace(añoCursoComboBox.Text) &&
                     !string.IsNullOrWhiteSpace(indiceCursoComboBox.Text))
@@ -172,20 +175,9 @@ namespace WindowsForms
                 isValid = false;
             }
 
-            if (Regex.IsMatch(turnoCursoTextBox.Text.Trim(), @"\d"))
+            if (turnoComboBox.SelectedItem == null)
             {
-                errorProvider1.SetError(turnoCursoTextBox, "El turno no puede contener números.");
-                isValid = false;
-            }
-
-            if (string.IsNullOrWhiteSpace(turnoCursoTextBox.Text.Trim()))
-            {
-                errorProvider1.SetError(turnoCursoTextBox, "El turno es obligatorio.");
-                isValid = false;
-            }
-            else if (turnoCursoTextBox.Text.Trim().Length > 50)
-            {
-                errorProvider1.SetError(turnoCursoTextBox, "El turno no puede superar los 50 caracteres.");
+                errorProvider1.SetError(turnoComboBox, "Debe seleccionar un turno (Mañana, Tarde o Noche).");
                 isValid = false;
             }
 

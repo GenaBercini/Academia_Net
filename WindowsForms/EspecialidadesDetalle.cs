@@ -57,13 +57,18 @@ namespace WindowsForms
                 this.Text = "Editar Especialidad";
             }
         }
-
+        private void FormEspecialidad_Load(object sender, EventArgs e)
+        {
+            duracionComboBox.Items.AddRange(new object[] { "1", "2", "3", "4", "5" });
+            duracionComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        }
         private void SetSpecialty()
         {
+
             if (Specialty != null)
             {
                 descripcionTextBox.Text = Specialty.DescEspecialidad;
-                duracionTextBox.Text = Specialty.DuracionAnios.ToString();
+                duracionComboBox.SelectedItem = Specialty.DuracionAnios.ToString();
             }
         }
 
@@ -73,7 +78,7 @@ namespace WindowsForms
             errorProvider1.Clear();
 
             var descripcion = descripcionTextBox.Text.Trim();
-            var duracionTexto = duracionTextBox.Text.Trim();
+            var duracionTexto = duracionComboBox.Text.Trim();
 
             if (string.IsNullOrWhiteSpace(descripcion))
             {
@@ -93,12 +98,12 @@ namespace WindowsForms
 
             if (!int.TryParse(duracionTexto, out int duracion) || duracion <= 0)
             {
-                errorProvider1.SetError(duracionTextBox, "Ingrese una duración válida en años.");
+                errorProvider1.SetError(duracionComboBox, "Ingrese una duración válida en años.");
                 isValid = false;
             }
             else if (duracion > 100)
             {
-                errorProvider1.SetError(duracionTextBox, "La duración no puede ser mayor a 100 años.");
+                errorProvider1.SetError(duracionComboBox, "La duración no puede ser mayor a 100 años.");
                 isValid = false;
             }
 
@@ -111,7 +116,7 @@ namespace WindowsForms
                 return;
 
             Specialty.DescEspecialidad = descripcionTextBox.Text.Trim();
-            Specialty.DuracionAnios = int.Parse(duracionTextBox.Text.Trim());
+            Specialty.DuracionAnios = int.Parse(duracionComboBox.SelectedItem.ToString());
 
             try
             {

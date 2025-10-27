@@ -13,7 +13,7 @@ namespace DTOs
         public int CourseId { get; set; }
         public int SubjectId { get; set; }
         public decimal? NotaFinal { get; set; }
-        public DateTime FechaInscripcion { get; set; }
+        public DateTime? FechaInscripcion { get; set; }
     }
 }
 

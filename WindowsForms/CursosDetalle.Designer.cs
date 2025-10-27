@@ -35,7 +35,6 @@
             label3 = new Label();
             label4 = new Label();
             label5 = new Label();
-            turnoCursoTextBox = new TextBox();
             año_calendarioCursoTextBox = new TextBox();
             errorProvider1 = new ErrorProvider(components);
             cupoCursoTextBox = new TextBox();
@@ -45,6 +44,7 @@
             label7 = new Label();
             specialtyComboBox = new ComboBox();
             label1 = new Label();
+            turnoComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
@@ -105,14 +105,6 @@
             label5.Size = new Size(89, 15);
             label5.TabIndex = 24;
             label5.Text = "Año Calendario";
-            // 
-            // turnoCursoTextBox
-            // 
-            turnoCursoTextBox.Location = new Point(218, 228);
-            turnoCursoTextBox.Name = "turnoCursoTextBox";
-            turnoCursoTextBox.Size = new Size(266, 23);
-            turnoCursoTextBox.TabIndex = 29;
-            turnoCursoTextBox.KeyPress += TurnoCursoTextBox_KeyPress;
             // 
             // año_calendarioCursoTextBox
             // 
@@ -185,11 +177,20 @@
             label1.TabIndex = 36;
             label1.Text = "Especialidad";
             // 
+            // turnoComboBox
+            // 
+            turnoComboBox.FormattingEnabled = true;
+            turnoComboBox.Location = new Point(218, 228);
+            turnoComboBox.Name = "turnoComboBox";
+            turnoComboBox.Size = new Size(266, 23);
+            turnoComboBox.TabIndex = 37;
+            // 
             // CursosDetalle
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
+            Controls.Add(turnoComboBox);
             Controls.Add(label1);
             Controls.Add(specialtyComboBox);
             Controls.Add(label7);
@@ -197,7 +198,6 @@
             Controls.Add(indiceCursoComboBox);
             Controls.Add(añoCursoComboBox);
             Controls.Add(año_calendarioCursoTextBox);
-            Controls.Add(turnoCursoTextBox);
             Controls.Add(cupoCursoTextBox);
             Controls.Add(label5);
             Controls.Add(label4);
@@ -220,7 +220,6 @@
         private Label label3;
         private Label label4;
         private Label label5;
-        private TextBox turnoCursoTextBox;
         private TextBox año_calendarioCursoTextBox;
         private ErrorProvider errorProvider1;
         private Label label7;
@@ -230,5 +229,6 @@
         private TextBox cupoCursoTextBox;
         private Label label1;
         private ComboBox specialtyComboBox;
+        private ComboBox turnoComboBox;
     }
 }

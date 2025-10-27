@@ -71,7 +71,7 @@ namespace Data
             var subject = await _context.Subjects.FindAsync(id);
             if (subject != null && !subject.IsDeleted)
             {
-                subject.IsDeleted = false;
+                subject.IsDeleted = true;
                 _context.Subjects.Update(subject); 
                 await _context.SaveChangesAsync();
                 return true;

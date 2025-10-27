@@ -263,6 +263,9 @@ namespace Data.Migrations
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("FechaInscripcion")
                         .HasColumnType("datetime2");
 
@@ -270,6 +273,8 @@ namespace Data.Migrations
                         .HasColumnType("decimal(5,2)");
 
                     b.HasKey("UserId", "CourseId", "SubjectId");
+
+                    b.HasIndex("SubjectId");
 
                     b.HasIndex("CourseId", "SubjectId");
 
@@ -281,13 +286,13 @@ namespace Data.Migrations
                     b.HasOne("Domain.Model.Course", null)
                         .WithMany()
                         .HasForeignKey("CoursesId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Model.Subject", null)
                         .WithMany()
                         .HasForeignKey("SubjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -307,13 +312,13 @@ namespace Data.Migrations
                     b.HasOne("Domain.Model.Course", "Course")
                         .WithMany("CoursesSubjects")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Model.Subject", "Subject")
                         .WithMany("CoursesSubjects")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -337,7 +342,7 @@ namespace Data.Migrations
                     b.HasOne("Domain.Model.Plan", "Plan")
                         .WithMany("Subjects")
                         .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Plan");
@@ -345,19 +350,35 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Domain.Model.UserCourseSubject", b =>
                 {
+                    b.HasOne("Domain.Model.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Model.Subject", "Subject")
+                        .WithMany()
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Domain.Model.User", "User")
                         .WithMany("CoursesSubjects")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Model.CourseSubject", "CourseSubject")
                         .WithMany("Users")
                         .HasForeignKey("CourseId", "SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Course");
+
                     b.Navigation("CourseSubject");
+
+                    b.Navigation("Subject");
 
                     b.Navigation("User");
                 });

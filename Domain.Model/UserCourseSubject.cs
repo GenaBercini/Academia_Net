@@ -12,13 +12,16 @@ namespace Domain.Model
         public User User { get; set; } = default!;
 
         public int CourseId { get; set; }
-        public int SubjectId { get; set; }
+        public Course Course { get; set; }
 
-        // Relación con el par Curso-Materia
+        public int SubjectId { get; set; }
+        public Subject Subject { get; set; }
+
         public CourseSubject CourseSubject { get; set; }
 
-        // Atributos que existen solo si el usuario es estudiante
         public decimal? NotaFinal { get; set; }
         public DateTime? FechaInscripcion { get; set; }
+    
+        public DateTime EnrollmentDate { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using API.Clients;
+using Domain.Model;
 using DTOs;
 using static WindowsForms.CursosDetalle;
 
@@ -19,7 +20,9 @@ namespace WindowsForms
 
         private void ConfigurarColumnas()
         {
-            this.specialtiesDataGridView.AutoGenerateColumns = false;
+            specialtiesDataGridView.AutoGenerateColumns = false;
+            specialtiesDataGridView.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            specialtiesDataGridView.MultiSelect = false;
 
             this.specialtiesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
             {
@@ -50,23 +53,24 @@ namespace WindowsForms
         {
             try
             {
-                eliminarButton.Enabled = false;
-                modificarButton.Enabled = false;
-                this.specialtiesDataGridView.DataSource = null;
-
-                this.specialtiesDataGridView.DataSource = await SpecialtiesApiClient.GetAllAsync();
-
-
-                if (specialtiesDataGridView.Rows.Count > 0)
+                specialtiesDataGridView.DataSource = null;
+                var specialties = await SpecialtiesApiClient.GetAllAsync();
+                if (specialties == null || !specialties.Any())
                 {
-                    specialtiesDataGridView.Rows[0].Selected = true;
-                    eliminarButton.Enabled = true;
-                    modificarButton.Enabled = true;
+                    eliminarButton.Enabled = false;
+                    modificarButton.Enabled = false;
+                    return;
                 }
+                specialtiesDataGridView.DataSource = specialties;
+                specialtiesDataGridView.Rows[0].Selected = true;
+                eliminarButton.Enabled = true;
+                modificarButton.Enabled = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al cargar especialidades: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al cargar la lista de cursos: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                eliminarButton.Enabled = false;
+                modificarButton.Enabled = false;
             }
         }
 
@@ -103,16 +107,20 @@ namespace WindowsForms
                 MessageBox.Show($"Error al cargar especialidad para modificar: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
+        
         private async void eliminarButton_Click(object sender, EventArgs e)
         {
+            if (specialtiesDataGridView.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Debe seleccionar una especialidad para eliminar.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             try
             {
-                var specialty = this.SelectedSpecialty();
-                if (specialty == null) return;
+                var specialty = SelectedSpecialty();
 
                 var result = MessageBox.Show(
-                    $"¿Está seguro que desea eliminar la especialidad {specialty.DescEspecialidad}?",
+                    $"¿Está seguro que desea eliminar la especialidad {specialty.Id}?",
                     "Confirmar eliminación",
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
@@ -121,7 +129,7 @@ namespace WindowsForms
                 if (result == DialogResult.Yes)
                 {
                     await SpecialtiesApiClient.DeleteAsync(specialty.Id);
-                    this.GetAllSpecialties();
+                    GetAllSpecialties();
                 }
             }
             catch (Exception ex)
@@ -130,15 +138,9 @@ namespace WindowsForms
             }
         }
 
-        private SpecialtyDTO? SelectedSpecialty()
+        private SpecialtyDTO SelectedSpecialty()
         {
-            if (specialtiesDataGridView.SelectedRows.Count == 0)
-            {
-                MessageBox.Show("Debe seleccionar una especialidad.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return null;
-            }
-
-            return specialtiesDataGridView.SelectedRows[0].DataBoundItem as SpecialtyDTO;
+            return (SpecialtyDTO)specialtiesDataGridView.SelectedRows[0].DataBoundItem;
         }
     }
 }

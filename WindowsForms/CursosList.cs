@@ -177,7 +177,7 @@ namespace WindowsForms
 
         private void inscribirButton_Click(object sender, EventArgs e)
         {
-            if (coursesDataGridView.SelectedRows.Count == 0)
+            if (this.coursesDataGridView.CurrentRow == null)
             {
                 MessageBox.Show("Seleccione un curso primero.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;

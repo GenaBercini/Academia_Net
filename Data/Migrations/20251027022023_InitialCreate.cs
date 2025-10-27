@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Data.Migrations
 {
     /// <inheritdoc />
-    public partial class SyncModel : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -119,7 +119,7 @@ namespace Data.Migrations
                         column: x => x.PlanId,
                         principalTable: "Plans",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -138,13 +138,13 @@ namespace Data.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_CoursesSubjects_Subjects_SubjectId",
                         column: x => x.SubjectId,
                         principalTable: "Subjects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -162,13 +162,13 @@ namespace Data.Migrations
                         column: x => x.CoursesId,
                         principalTable: "Courses",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_CourseSubject_Subjects_SubjectsId",
                         column: x => x.SubjectsId,
                         principalTable: "Subjects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,7 +179,8 @@ namespace Data.Migrations
                     CourseId = table.Column<int>(type: "int", nullable: false),
                     SubjectId = table.Column<int>(type: "int", nullable: false),
                     NotaFinal = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    FechaInscripcion = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    FechaInscripcion = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EnrollmentDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -189,13 +190,25 @@ namespace Data.Migrations
                         columns: x => new { x.CourseId, x.SubjectId },
                         principalTable: "CoursesSubjects",
                         principalColumns: new[] { "CourseId", "SubjectId" },
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UsersCoursesSubjects_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UsersCoursesSubjects_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UsersCoursesSubjects_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -233,6 +246,11 @@ namespace Data.Migrations
                 name: "IX_UsersCoursesSubjects_CourseId_SubjectId",
                 table: "UsersCoursesSubjects",
                 columns: new[] { "CourseId", "SubjectId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UsersCoursesSubjects_SubjectId",
+                table: "UsersCoursesSubjects",
+                column: "SubjectId");
         }
 
         /// <inheritdoc />
