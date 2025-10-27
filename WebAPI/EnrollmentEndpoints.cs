@@ -1,6 +1,5 @@
 ﻿using Application.Services;
 using DTOs;
-using Microsoft.AspNetCore.Mvc; 
 
 namespace WebAPI
 {
@@ -8,71 +7,96 @@ namespace WebAPI
     {
         public static void MapEnrollmentEndpoints(this WebApplication app)
         {
-            app.MapGet("/userCourseSubjects", async (int userId, int courseId, [FromServices] EnrollmentService service) =>
+            app.MapGet("/userCourseSubjects/{userId:int}/{courseId:int}/{subjectId:int}", async (
+                int userId,
+                int courseId,
+                int subjectId,
+                EnrollmentService service) =>
             {
-                try
-                {
-                    var dtos = await service.GetEnrollmentsByUserAndCourseAsync(userId, courseId);
-
-                    if (dtos == null || !dtos.Any())
-                        return Results.NotFound(new { mensaje = $"No se encontraron inscripciones para el usuario {userId} en el curso {courseId}." });
-
-                    return Results.Ok(dtos);
-                }
-                catch (Exception ex)
-                {
-                    return Results.Problem($"Error al obtener inscripciones del usuario {userId} en curso {courseId}. Detalle: {ex.Message}");
-                }
+                var enrollment = await service.GetEnrollmentAsync(userId, courseId, subjectId);
+                if (enrollment == null)
+                    return Results.NotFound();
+                return Results.Ok(enrollment);
             })
-            .WithName("GetUserCourseSubjects")
-            .Produces<IEnumerable<UserCourseSubjectDTO>>(StatusCodes.Status200OK)
+            .WithName("GetUserCourseSubject")
+            .Produces<UserCourseSubjectDTO>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status500InternalServerError)
             .WithOpenApi();
 
-            app.MapPost("/userCourseSubjects", async (UserCourseSubjectDTO dto, [FromServices] EnrollmentService service) =>
+            app.MapGet("/userCourseSubjects", async (
+                int? userId,
+                int? courseId,
+                EnrollmentService service) =>
+            {
+                if (userId.HasValue && courseId.HasValue)
+                {
+                    var dtos = await service.GetEnrollmentsByUserAndCourseAsync(userId.Value, courseId.Value);
+                    return Results.Ok(dtos);
+                }
+                return Results.BadRequest(new { error = "Debe especificar userId y courseId para filtrar inscripciones." });
+            })
+            .WithName("GetUserCourseSubjects")
+            .Produces<List<UserCourseSubjectDTO>>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
+
+            app.MapPost("/userCourseSubjects", async (UserCourseSubjectDTO dto, EnrollmentService service) =>
             {
                 try
                 {
                     await service.AddEnrollmentAsync(dto);
-                    return Results.Created($"/userCourseSubjects?userId={dto.UserId}&courseId={dto.CourseId}", dto);
+                    return Results.Created($"/userCourseSubjects/{dto.UserId}/{dto.CourseId}/{dto.SubjectId}", dto);
                 }
                 catch (ArgumentException ex)
                 {
                     return Results.BadRequest(new { error = ex.Message });
                 }
-                catch (Exception ex)
-                {
-                    return Results.Problem($"Error al crear la inscripción: {ex.Message}");
-                }
             })
             .WithName("AddUserCourseSubject")
             .Produces<UserCourseSubjectDTO>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status500InternalServerError)
             .WithOpenApi();
 
-            app.MapDelete("/userCourseSubjects", async (int userId, int courseId, int subjectId, [FromServices] EnrollmentService service) =>
+            app.MapPut("/userCourseSubjects", async (UserCourseSubjectDTO dto, EnrollmentService service) =>
+            {
+                try
+                {
+                    var updated = await service.UpdateAsync(dto);
+                    if (!updated)
+                        return Results.NotFound();
+                    return Results.NoContent();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            })
+            .WithName("UpdateUserCourseSubject")
+            .Produces(StatusCodes.Status404NotFound)
+            .Produces(StatusCodes.Status400BadRequest)
+            .WithOpenApi();
+
+            app.MapDelete("/userCourseSubjects/{userId:int}/{courseId:int}/{subjectId:int}", async (
+                        int userId,
+                        int courseId,
+                        int subjectId,
+            EnrollmentService service) =>
             {
                 try
                 {
                     await service.DeleteEnrollmentAsync(userId, courseId, subjectId);
                     return Results.NoContent();
                 }
-                catch (KeyNotFoundException)
+                catch (InvalidOperationException ex)
                 {
-                    return Results.NotFound(new { mensaje = "La inscripción especificada no existe." });
+                    return Results.NotFound(new { error = ex.Message });
                 }
                 catch (Exception ex)
                 {
-                    return Results.Problem($"Error al eliminar la inscripción: {ex.Message}");
+                    return Results.BadRequest(new { error = ex.Message });
                 }
-            })
-            .WithName("DeleteUserCourseSubject")
-            .Produces(StatusCodes.Status204NoContent)
-            .Produces(StatusCodes.Status404NotFound)
-            .Produces(StatusCodes.Status500InternalServerError)
-            .WithOpenApi();
+            });
+
         }
     }
 }

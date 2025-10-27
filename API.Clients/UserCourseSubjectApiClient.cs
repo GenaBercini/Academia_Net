@@ -18,6 +18,17 @@ namespace API.Clients
             string error = await response.Content.ReadAsStringAsync();
             throw new Exception($"Error al obtener inscripciones. Detalle: {error}");
         }
+        public static async Task UpdateNotaAsync(UserCourseSubjectDTO inscripcion)
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.PutAsJsonAsync("userCourseSubjects", inscripcion);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                string error = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Error al actualizar la nota. Detalle: {error}");
+            }
+        }
 
         public static async Task<IEnumerable<UserCourseSubjectDTO>> GetByUserAndCourseAsync(int userId, int courseId)
         {
@@ -46,7 +57,7 @@ namespace API.Clients
         public static async Task DeleteAsync(int userId, int courseId, int subjectId)
         {
             using var client = await CreateHttpClientAsync();
-            var response = await client.DeleteAsync($"{Endpoint}?userId={userId}&courseId={courseId}&subjectId={subjectId}");
+            var response = await client.DeleteAsync($"{Endpoint}/{userId}/{courseId}/{subjectId}");
 
             if (!response.IsSuccessStatusCode)
             {

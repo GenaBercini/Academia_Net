@@ -16,10 +16,13 @@ namespace API.Clients
 
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadAsAsync<SubjectDTO>();
-
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                return null;
             string error = await response.Content.ReadAsStringAsync();
             throw new Exception($"Error al obtener materia con Id {id}. Detalle: {error}");
         }
+    
+
 
         public static async Task<IEnumerable<SubjectDTO>> GetAllAsync()
         {
