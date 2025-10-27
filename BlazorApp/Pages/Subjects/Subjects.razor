@@ -1,0 +1,62 @@
+﻿@page "/admin/subjects"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+
+<h3 class="card">Materias</h3>
+
+<div class="card">
+    <div class="top-row">
+        <div>
+            <button class="btn" @onclick="Create">Nueva materia</button>
+        </div>
+    </div>
+
+    @if (subjects == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Id</th><th>Descripción</th><th>Año</th><th>Hs/Sem</th><th>Plan</th><th>Acciones</th></tr></thead>
+            <tbody>
+                @foreach (var s in subjects)
+                {
+                    <tr>
+                        <td>@s.Id</td>
+                        <td>@s.Desc</td>
+                        <td>@s.Año</td>
+                        <td>@s.HsSemanales</td>
+                        <td>@s.PlanId</td>
+                        <td class="actions">
+                            <button @onclick="() => Edit(s.Id)">Editar</button>
+                            <button @onclick="() => Delete(s.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<SubjectDTO>? subjects;
+
+    protected override async Task OnInitializedAsync()
+    {
+        subjects = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToList();
+    }
+
+    void Create() => Nav.NavigateTo("/admin/subjects/create");
+    void Edit(int id) => Nav.NavigateTo($"/admin/subjects/{id}");
+    async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar materia #{id}?");
+        if (!ok) return;
+        await API.Clients.SubjectsApiClient.DeleteAsync(id);
+        subjects = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToList();
+    }
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+}

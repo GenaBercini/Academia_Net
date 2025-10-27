@@ -1,0 +1,60 @@
+﻿@page "/admin/subjects/{Id:int?}"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+
+<h3 class="card">@Title</h3>
+
+<div class="card">
+    @if (subject == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <EditForm Model="subject" OnValidSubmit="Save">
+            <div class="form-row">
+                <input class="input" @bind="subject.Desc" placeholder="Descripción" />
+                <input class="input" type="number" @bind="subject.Año" placeholder="Año" />
+            </div>
+
+            <div class="form-row">
+                <input class="input" type="number" @bind="subject.HsSemanales" placeholder="Horas semanales" />
+                <input class="input" type="number" @bind="subject.PlanId" placeholder="Id Plan" />
+            </div>
+
+            <div class="top-row">
+                <div>
+                    <button class="btn" type="submit">Guardar</button>
+                    <button class="btn-ghost" type="button" @onclick="Cancel">Cancelar</button>
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private SubjectDTO? subject;
+    private string Title => Id.HasValue ? "Editar materia" : "Nueva materia";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+            subject = await API.Clients.SubjectsApiClient.GetAsync(Id.Value);
+        else
+            subject = new SubjectDTO();
+    }
+
+    async Task Save()
+    {
+        if (Id.HasValue)
+            await API.Clients.SubjectsApiClient.UpdateAsync(subject!);
+        else
+            await API.Clients.SubjectsApiClient.AddAsync(subject!);
+
+        Nav.NavigateTo("/admin/subjects");
+    }
+
+    void Cancel() => Nav.NavigateTo("/admin/subjects");
+}

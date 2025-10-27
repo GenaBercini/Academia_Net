@@ -1,21 +1,31 @@
-﻿using DTOs;
+﻿
+using API.Clients;
+using DTOs;
+using Microsoft.JSInterop;
+using System.Text.Json;
+using DTOs;
 using Microsoft.JSInterop;
 using API.Clients;
+using System.Text.Json;
+using System.Linq;
 
 namespace BlazorApp.Services
 {
     public class BlazorAuthService : IAuthService
     {
         private readonly IJSRuntime _js;
+        private readonly AuthApiClient _authClient;
         private const string TOKEN_KEY = "auth_token";
         private const string USERNAME_KEY = "auth_username";
         private const string EXPIRATION_KEY = "auth_expiration";
+        private const string USER_KEY = "auth_user";
 
         public event Action<bool>? AuthenticationStateChanged;
 
-        public BlazorAuthService(IJSRuntime js)
+        public BlazorAuthService(IJSRuntime js, AuthApiClient authClient)
         {
             _js = js;
+            _authClient = authClient;
         }
 
         public async Task<bool> IsAuthenticatedAsync()
@@ -54,9 +64,7 @@ namespace BlazorApp.Services
             {
                 throw new Exception($"Error leyendo el token de usuario: {jsEx.Message}");
             }
-
         }
-            
 
         public async Task<string?> GetUsernameAsync()
         {
@@ -70,58 +78,60 @@ namespace BlazorApp.Services
             }
         }
 
-
         public async Task<UserDTO?> GetCurrentUserAsync()
         {
             try
             {
+                var userJson = await _js.InvokeAsync<string>("localStorage.getItem", USER_KEY);
+                if (!string.IsNullOrEmpty(userJson))
+                {
+                    var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    var user = JsonSerializer.Deserialize<UserDTO>(userJson, opts);
+                    if (user != null) return user;
+                }
+
+                // Fallback: si no hay user JSON, intentar obtener por username (si existe)
                 var username = await GetUsernameAsync();
-                return string.IsNullOrEmpty(username)
-                    ? null
-                    : new UserDTO { UserName = username };
+                if (string.IsNullOrEmpty(username)) return null;
+
+                try
+                {
+                    var todos = (await UsersApiClient.GetAllAsync()).ToList();
+                    var found = todos.FirstOrDefault(u => u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
+                    if (found != null) return found;
+                }
+                catch
+                {
+                    // ignorar fallo en fallback
+                }
+
+                return new UserDTO { UserName = username };
             }
             catch (JSException jsEx)
             {
                 throw new Exception($"Error obteniendo el usuario: {jsEx.Message}");
             }
-
         }
 
-        //public async Task<bool> LoginAsync(string username, string password)
-        //{
-        //    var client = new AuthApiClient();
-        //    var result = await client.LoginAsync(new LoginRequest
-        //    {
-        //        Username = username,
-        //        Password = password
-        //    });
-
-        //    if (result == null) return false;
-
-        //    await _js.InvokeVoidAsync("localStorage.setItem", TOKEN_KEY, result.Token);
-        //    await _js.InvokeVoidAsync("localStorage.setItem", USERNAME_KEY, result.User.UserName);
-        //    await _js.InvokeVoidAsync("localStorage.setItem", EXPIRATION_KEY, result.ExpiresAt.ToString("O"));
-
-        //    AuthenticationStateChanged?.Invoke(true);
-        //    return true;
-        //}
         public async Task<bool> LoginAsync(string username, string password)
         {
             try
             {
-                var client = new AuthApiClient();
-                var result = await client.LoginAsync(new LoginRequest
+                var result = await _authClient.LoginAsync(new LoginRequest
                 {
                     Username = username,
                     Password = password
                 });
 
-                if (result == null)
-                    return false;
+                if (result == null) return false;
 
                 await _js.InvokeVoidAsync("localStorage.setItem", TOKEN_KEY, result.Token);
                 await _js.InvokeVoidAsync("localStorage.setItem", USERNAME_KEY, result.User.UserName);
                 await _js.InvokeVoidAsync("localStorage.setItem", EXPIRATION_KEY, result.ExpiresAt.ToString("O"));
+
+                var opts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var userJson = JsonSerializer.Serialize(result.User, opts);
+                await _js.InvokeVoidAsync("localStorage.setItem", USER_KEY, userJson);
 
                 AuthenticationStateChanged?.Invoke(true);
                 return true;
@@ -140,16 +150,15 @@ namespace BlazorApp.Services
             }
         }
 
-
         public async Task LogoutAsync()
         {
             try
             {
-
-            await _js.InvokeVoidAsync("localStorage.removeItem", TOKEN_KEY);
-            await _js.InvokeVoidAsync("localStorage.removeItem", USERNAME_KEY);
-            await _js.InvokeVoidAsync("localStorage.removeItem", EXPIRATION_KEY);
-            AuthenticationStateChanged?.Invoke(false);
+                await _js.InvokeVoidAsync("localStorage.removeItem", TOKEN_KEY);
+                await _js.InvokeVoidAsync("localStorage.removeItem", USERNAME_KEY);
+                await _js.InvokeVoidAsync("localStorage.removeItem", EXPIRATION_KEY);
+                await _js.InvokeVoidAsync("localStorage.removeItem", USER_KEY);
+                AuthenticationStateChanged?.Invoke(false);
             }
             catch (JSException jsEx)
             {
@@ -161,9 +170,8 @@ namespace BlazorApp.Services
         {
             try
             {
-
-            if (!await IsAuthenticatedAsync())
-                await LogoutAsync();
+                if (!await IsAuthenticatedAsync())
+                    await LogoutAsync();
             }
             catch (JSException jsEx)
             {
