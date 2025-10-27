@@ -1,87 +1,58 @@
-﻿@* @page "/login"
-@using BlazorApp.Services
-@using DTOs
-@inject AuthService AuthService
+﻿@page "/login"
+@using API.Clients
 @inject NavigationManager Nav
+@inject IAuthService AuthService
 
-<h3>Iniciar Sesión</h3>
+<h3>Login</h3>
 
-<div class="login-container">
-    <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-        <div class="form-group">
-            <label>Usuario</label>
-            <InputText @bind-Value="loginModel.Username" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Contraseña</label>
-            <InputText @bind-Value="loginModel.Password" type="password" class="form-control" />
-        </div>
-        <button class="btn btn-primary" type="submit">Ingresar</button>
-    </EditForm>
+<div class="card p-4" style="max-width: 400px;">
+    <div class="mb-3">
+        <label>Usuario</label>
+        <input @bind="Username" class="form-control" />
+    </div>
 
-    @if (!string.IsNullOrEmpty(errorMessage))
+    <div class="mb-3">
+        <label>Contraseña</label>
+        <input type="password" @bind="Password" class="form-control" />
+    </div>
+
+    <button class="btn btn-primary w-100" @onclick="LoginAsync" disabled="@IsLoading">
+        @(IsLoading ? "Cargando..." : "Ingresar")
+    </button>
+
+    @if (Error != null)
     {
-        <p class="text-danger">@errorMessage</p>
+        <div class="alert alert-danger mt-2">@Error</div>
     }
 </div>
 
 @code {
-    private LoginRequest loginModel = new();
-    private string? errorMessage;
+    private string Username = "";
+    private string Password = "";
+    private string? Error;
+    private bool IsLoading;
 
-    private async Task HandleLogin()
+    private async Task LoginAsync()
     {
-        var result = await AuthService.LoginAsync(loginModel);
-        if (result != null)
+        Error = null;
+        IsLoading = true;
+
+        try
         {
-            Nav.NavigateTo("/dashboard");
+            var success = await AuthService.LoginAsync(Username, Password);
+            if (success)
+                Nav.NavigateTo("/dashboard");
+            else
+                Error = "Usuario o contraseña incorrectos.";
         }
-        else
+        catch (Exception ex)
         {
-            errorMessage = "Usuario o contraseña incorrectos";
+            Error = "Ocurrió un error inesperado: " + ex.Message;
         }
-    }
-}
- *@
-
-@page "/login"
-@using DTOs
-@using BlazorApp.Services
-@inject AuthService AuthService
-@inject NavigationManager Nav
-
-<div class="card">
-    <h2>Iniciar sesión</h2>
-    <EditForm Model="@loginModel" OnValidSubmit="@HandleLogin">
-        <InputText @bind-Value="loginModel.Username" placeholder="Usuario" class="input" />
-        <br />
-        <InputText @bind-Value="loginModel.Password" type="password" placeholder="Contraseña" class="input" />
-        <br />
-        <button type="submit">Ingresar</button>
-    </EditForm>
-
-    @if (!string.IsNullOrEmpty(message))
-    {
-        <p style="color:red;">@message</p>
-    }
-</div>
-
-@code {
-    private LoginRequest loginModel = new();
-    private string message = string.Empty;
-
-    private async Task HandleLogin()
-    {
-        var res = await AuthService.LoginAsync(loginModel);
-        if (res != null)
+        finally
         {
-            Nav.NavigateTo("/dashboard", true);
+            IsLoading = false;
         }
-        else
-        {
-            message = "Usuario o contraseña incorrectos.";
-        }
+
     }
 }
