@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using API.Clients;
 using Domain.Model;
 using DTOs;
+using Shared.Types;
 
 namespace WindowsForms
 {
@@ -37,7 +38,7 @@ namespace WindowsForms
                 _isLoadingUsers = true;
                 var usuarios = await UsersApiClient.GetAllAsync();
                 var usuariosNoAdmin = usuarios
-                    .Where(u => u.TypeUser != Domain.Model.UserType.Admin)
+                    .Where(u => u.TypeUser != UserType.Admin)
                     .ToList();
 
                 usuarioComboBox.DataSource = usuariosNoAdmin;

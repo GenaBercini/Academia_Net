@@ -1,5 +1,6 @@
 using API.Clients;
 using Domain.Model;
+using Shared.Types;
 
 namespace WindowsForms
 {

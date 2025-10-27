@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsForms", "WindowsForm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API.Clients", "API.Clients\API.Clients.csproj", "{99176DD8-76DD-406F-B261-E5F1A5E1F228}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shared.Types", "Shared.Types\Shared.Types.csproj", "{B68AE164-9DDE-49FA-B2B5-26CB1D3AF2AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{9F2254D7-3123-4508-8642-B268490C8AB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +55,14 @@ Global
 		{99176DD8-76DD-406F-B261-E5F1A5E1F228}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99176DD8-76DD-406F-B261-E5F1A5E1F228}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99176DD8-76DD-406F-B261-E5F1A5E1F228}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B68AE164-9DDE-49FA-B2B5-26CB1D3AF2AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B68AE164-9DDE-49FA-B2B5-26CB1D3AF2AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B68AE164-9DDE-49FA-B2B5-26CB1D3AF2AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B68AE164-9DDE-49FA-B2B5-26CB1D3AF2AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F2254D7-3123-4508-8642-B268490C8AB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F2254D7-3123-4508-8642-B268490C8AB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F2254D7-3123-4508-8642-B268490C8AB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F2254D7-3123-4508-8642-B268490C8AB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

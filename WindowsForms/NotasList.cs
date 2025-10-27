@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using API.Clients;
 using DTOs;
+using Shared.Types;
 
 namespace WindowsForms
 {
@@ -39,7 +40,7 @@ namespace WindowsForms
             var profesores = await UsersApiClient.GetAllAsync();
             var cursos = await CoursesApiClient.GetAllAsync();
 
-            _profesorId = profesores.FirstOrDefault(u => u.TypeUser == Domain.Model.UserType.Teacher)?.Id ?? 0;
+            _profesorId = profesores.FirstOrDefault(u => u.TypeUser == UserType.Teacher)?.Id ?? 0;
             _courseId = cursos.FirstOrDefault()?.Id ?? 0;
 
             if (_profesorId > 0 && _courseId > 0)
