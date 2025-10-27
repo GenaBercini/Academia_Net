@@ -85,7 +85,7 @@ namespace WindowsForms
         {
             if (Subject != null && Mode == FormMode.Update)
             {
-                añoSubjectTextBox.Text = Subject.Año.ToString();
+                añoComboBox.SelectedItem = Subject.Año.ToString();
                 descripcionSubjectTextBox.Text = Subject.Desc;
                 horasSemanalesTextBox.Text = Subject.HsSemanales.ToString();
                 checkBoxObligatoriaSi.Checked = Subject.Obligatoria;
@@ -157,9 +157,9 @@ namespace WindowsForms
                 isValid = false;
             }
 
-            if (!int.TryParse(añoSubjectTextBox.Text, out int año) || año <= 0 && año>5)
+            if (añoComboBox.SelectedItem == null)
             {
-                errorProvider1.SetError(horasSemanalesTextBox, "Ingrese un número válido de año.");
+                errorProvider1.SetError(añoComboBox, "Seleccione un año válido.");
                 isValid = false;
             }
 
@@ -190,7 +190,7 @@ namespace WindowsForms
                 return;
             try
             {
-                subject.Año = int.Parse(añoSubjectTextBox.Text);
+                subject.Año = int.Parse(añoComboBox.SelectedItem.ToString());
                 subject.PlanId = (int)planComboBox.SelectedValue;
                 subject.Desc= descripcionSubjectTextBox.Text.Trim();
                 subject.HsSemanales= int.Parse(horasSemanalesTextBox.Text);
@@ -230,6 +230,11 @@ namespace WindowsForms
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+        private void SubjectDetail_Load(object sender, EventArgs e)
+        {
+            añoComboBox.Items.AddRange(new object[] { "1", "2", "3", "4", "5" });
+            añoComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         }
     }
 }

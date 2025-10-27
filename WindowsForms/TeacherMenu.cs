@@ -13,6 +13,9 @@ namespace WindowsForms
 {
     public partial class TeacherMenu : Form
     {
+        private Button botonActivo;
+        private Color colorBase = Color.FromArgb(240, 240, 240);
+        private Color colorActivo = Color.SteelBlue;
         public TeacherMenu()
         {
             InitializeComponent();
@@ -26,7 +29,29 @@ namespace WindowsForms
         //    primaryPanel.Controls.Add(secondaryForm);
         //    secondaryForm.Show();
         //}
+        private void OpenOtherForm(Form secondaryForm)
+        {
+            primaryPanel.Controls.Clear();
+            secondaryForm.TopLevel = false;
+            secondaryForm.FormBorderStyle = FormBorderStyle.None;
+            secondaryForm.Dock = DockStyle.Fill;
+            primaryPanel.Controls.Add(secondaryForm);
+            secondaryForm.Show();
+        }
+        private void ActivarBoton(Button boton, string titulo)
+        {
+            if (botonActivo != null)
+            {
+                botonActivo.BackColor = colorBase;
+                botonActivo.ForeColor = Color.Black;
+            }
 
+            boton.BackColor = colorActivo;
+            boton.ForeColor = Color.White;
+            botonActivo = boton;
+
+            this.Text = titulo;
+        }
         private async void Logout(object sender, EventArgs e)
         {
             var authService = AuthServiceProvider.Instance;
@@ -34,5 +59,16 @@ namespace WindowsForms
 
             Application.Restart();
         }
+        private void notasButton_Click(object sender, EventArgs e)
+        {
+            ActivarBoton((Button)sender, "Notas de Usuarios");
+            OpenOtherForm(new NotasList());
+        }
+        private void profileButton_Click(object sender, EventArgs e)
+        {
+            ActivarBoton((Button)sender, "Perfil del Profesor");
+            OpenOtherForm(new ProfileTeacher());
+        }
+
     }
 }

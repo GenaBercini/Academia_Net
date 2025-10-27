@@ -98,28 +98,28 @@ namespace Data
                     // La propiedad SpecialtyId se establece directamente después de la creación
 
                     // Cursos para Informática
-                    var c1 = new Course(0, 30, DateTime.Now.Year, "Tarde", "A", specInf.Id);
-                    var c2 = new Course(0, 25, DateTime.Now.Year, "Mañana", "B", specInf.Id);
-                    var c3 = new Course(0, 28, DateTime.Now.Year, "Noche", "C", specInf.Id);
-                    var c4 = new Course (0, 20, DateTime.Now.Year, "Tarde", "D", specInf.Id);
+                    var c1 = new Course(0, 30, DateTime.Now.Year, "Tarde", "101", specInf.Id);
+                    var c2 = new Course(0, 25, DateTime.Now.Year, "Mañana", "201", specInf.Id);
+                    var c3 = new Course(0, 28, DateTime.Now.Year, "Noche", "303", specInf.Id);
+                    var c4 = new Course (0, 20, DateTime.Now.Year, "Tarde", "404", specInf.Id);
 
                     // Cursos para Administración
-                    var c5 = new Course(0, 35, DateTime.Now.Year, "Mañana", "E",specAdm.Id);
+                    var c5 = new Course(0, 35, DateTime.Now.Year, "Mañana", "505",specAdm.Id);
 
                     // Curso de Contabilidad (año anterior)
-                    var c6 = new Course(0, 22, DateTime.Now.Year - 1, "Tarde", "F", specCont.Id);
+                    var c6 = new Course(0, 22, DateTime.Now.Year - 1, "Tarde", "504", specCont.Id);
 
                     context.Courses.AddRange(c1, c2, c3, c4, c5, c6);
                     context.SaveChanges();
                 }
 
                 // Obtener cursos para usar en otros seeds
-                var courseProgATarde = context.Courses.First(c => c.Comision == "A" && c.Turno == "Tarde");
-                var courseProgBMñana = context.Courses.First(c => c.Comision == "B" && c.Turno == "Mañana");
-                var courseProgCNoche = context.Courses.First(c => c.Comision == "C" && c.Turno == "Noche");
-                var courseBDDTarde = context.Courses.First(c => c.Comision == "D" && c.Turno == "Tarde");
-                var courseEcoEMana = context.Courses.First(c => c.Comision == "E" && c.Turno == "Mañana");
-                var courseContFTarde = context.Courses.First(c => c.Comision == "F" && c.Turno == "Tarde");
+                var courseProgATarde = context.Courses.First(c => c.Comision == "101" && c.Turno == "Tarde");
+                var courseProgBMñana = context.Courses.First(c => c.Comision == "201" && c.Turno == "Mañana");
+                var courseProgCNoche = context.Courses.First(c => c.Comision == "303" && c.Turno == "Noche");
+                var courseBDDTarde = context.Courses.First(c => c.Comision == "404" && c.Turno == "Tarde");
+                var courseEcoEMana = context.Courses.First(c => c.Comision == "505" && c.Turno == "Mañana");
+                var courseContFTarde = context.Courses.First(c => c.Comision == "504" && c.Turno == "Tarde");
 
 
                 // 5) CourseSubjects (relación Curso-Materia)

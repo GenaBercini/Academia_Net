@@ -107,7 +107,7 @@ namespace WebAPI
                 //EnrollmentService enrollmentService = new EnrollmentService();
                 try
                 {
-                    bool created = await enrollmentService.EnrollUserInCourseSubject(userId, dto.CourseId, dto.SubjectId);
+                    bool created = await enrollmentService.EnrollUserInCourseSubjectAsync(userId, dto.CourseId, dto.SubjectId);
                     if (!created)
                         return Results.Conflict(new { Message = "El usuario ya está inscripto en esa materia." });
 
@@ -127,12 +127,12 @@ namespace WebAPI
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status409Conflict);
 
-            app.MapGet("/users/{userId:int}/enrollments", async (int userId, EnrollmentService enrollmentService) =>
+            app.MapGet("/users/{userId:int}/enrollments", async (int userId, int courseId, EnrollmentService enrollmentService) =>
             {
                 //EnrollmentService enrollmentService = new EnrollmentService();
                 try
                 {
-                    var enrollments = enrollmentService.GetEnrollmentsByUser(userId);
+                    var enrollments = await enrollmentService.GetEnrollmentsByUserAndCourseAsync(userId, courseId);
                     return Results.Ok(enrollments);
                 }
                 catch (Exception ex)

@@ -12,8 +12,7 @@ builder.Services.AddScoped<SubjectRepository>();
 builder.Services.AddScoped<PlanRepository>();
 builder.Services.AddScoped<CourseRepository>();
 builder.Services.AddScoped<SpecialtyRepository>();
-//builder.Services.AddScoped<CourseSubjectRepository>();
-builder.Services.AddScoped<UserCourseSubjectRepository>();
+builder.Services.AddScoped<EnrollmentRepository>();
 
 builder.Services.AddScoped<UserService>(); 
 builder.Services.AddScoped<SubjectService>();
@@ -23,7 +22,6 @@ builder.Services.AddScoped<SpecialtyService>();
 builder.Services.AddScoped<EnrollmentService>();
 builder.Services.AddScoped<AuthService>();
 //builder.Services.AddScoped<CourseSubjectService>();
-//builder.Services.AddScoped<UserCourseSubjectService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -115,6 +113,6 @@ app.MapSubjectEndpoints();
 app.MapPlanEndpoints();
 app.MapCourseEndpoints();
 app.MapSpecialtyEndpoints();
-
+app.MapEnrollmentEndpoints();
 
 app.Run();

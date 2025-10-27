@@ -42,7 +42,7 @@
             label4 = new Label();
             planComboBox = new ComboBox();
             label5 = new Label();
-            añoSubjectTextBox = new TextBox();
+            añoComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
             SuspendLayout();
             // 
@@ -165,20 +165,20 @@
             label5.TabIndex = 23;
             label5.Text = "Año";
             // 
-            // añoSubjectTextBox
+            // añoComboBox
             // 
-            añoSubjectTextBox.Location = new Point(214, 109);
-            añoSubjectTextBox.Name = "añoSubjectTextBox";
-            añoSubjectTextBox.Size = new Size(274, 23);
-            añoSubjectTextBox.TabIndex = 24;
-            añoSubjectTextBox.KeyPress += HorasSemanalesTextBox_KeyPress;
+            añoComboBox.FormattingEnabled = true;
+            añoComboBox.Location = new Point(214, 106);
+            añoComboBox.Name = "añoComboBox";
+            añoComboBox.Size = new Size(274, 23);
+            añoComboBox.TabIndex = 24;
             // 
             // SubjectDetail
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(684, 411);
-            Controls.Add(añoSubjectTextBox);
+            Controls.Add(añoComboBox);
             Controls.Add(label5);
             Controls.Add(planComboBox);
             Controls.Add(label4);
@@ -193,6 +193,7 @@
             Controls.Add(label1);
             Name = "SubjectDetail";
             Text = "Materias";
+            Load += SubjectDetail_Load;
             ((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -212,7 +213,7 @@
         private ErrorProvider errorProvider1;
         private ComboBox planComboBox;
         private Label label4;
-        private TextBox añoSubjectTextBox;
         private Label label5;
+        private ComboBox añoComboBox;
     }
 }

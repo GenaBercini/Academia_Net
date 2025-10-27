@@ -155,11 +155,13 @@ namespace Data
 
                 entity.HasOne(cs => cs.Course)
                       .WithMany(c => c.CoursesSubjects)
-                      .HasForeignKey(cs => cs.CourseId);
+                      .HasForeignKey(cs => cs.CourseId)
+                                               .OnDelete(DeleteBehavior.Restrict);
 
                 entity.HasOne(cs => cs.Subject)
                       .WithMany(s => s.CoursesSubjects)
-                      .HasForeignKey(cs => cs.SubjectId);
+                      .HasForeignKey(cs => cs.SubjectId)
+                                             .OnDelete(DeleteBehavior.Restrict);
 
                 entity.Property(e => e.DiaHoraDictado).HasMaxLength(200);
             });
@@ -170,15 +172,22 @@ namespace Data
 
                  entity.HasOne(e => e.User)
                        .WithMany(u => u.CoursesSubjects)
-                       .HasForeignKey(e => e.UserId);
+                       .HasForeignKey(e => e.UserId)
+                       .OnDelete(DeleteBehavior.Restrict); 
 
                  entity.HasOne(e => e.CourseSubject)
                        .WithMany(cs => cs.Users)
-                       .HasForeignKey(e => new { e.CourseId, e.SubjectId });
+                       .HasForeignKey(e => new { e.CourseId, e.SubjectId })
+                       .OnDelete(DeleteBehavior.Restrict); 
 
                  entity.Property(e => e.FechaInscripcion).IsRequired(false);
                  entity.Property(e => e.NotaFinal).HasColumnType("decimal(5,2)").IsRequired(false);
              });
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
         }
+
     }
 }

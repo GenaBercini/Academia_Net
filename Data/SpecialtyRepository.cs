@@ -61,7 +61,7 @@ namespace Data
             var specialty = await _context.Specialties.FindAsync(id);
             if (specialty != null && !specialty.IsDeleted)
             {
-                specialty.IsDeleted = false;
+                specialty.IsDeleted = true;
                 _context.Specialties.Update(specialty);
                 await _context.SaveChangesAsync();
                 return true;
