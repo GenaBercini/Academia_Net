@@ -213,14 +213,5 @@ namespace WindowsForms
             if (char.IsDigit(e.KeyChar))
                 e.Handled = true;
         }
-
-        // (Opcional) Método preparado para más adelante
-        private async Task RefreshSubjectsByYear(int year)
-        {
-            // Acá podrías traer las materias del año seleccionado
-            var subjects = await SubjectsApiClient.GetAllAsync();
-            var filtered = subjects.Where(s => s.Año == year).ToList();
-            // Ejemplo: podrías usarlas después si el curso necesita mostrarlas
-        }
     }
 }

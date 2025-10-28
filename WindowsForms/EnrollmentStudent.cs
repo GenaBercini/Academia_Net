@@ -22,12 +22,10 @@ namespace WindowsForms
         {
             InitializeComponent();
 
-            // Eventos
             this.Load += EnrollmentStudent_Load;
             courseComboBox.SelectedIndexChanged += courseComboBox_SelectedIndexChanged;
             enrollmentButton.Click += enrollmentButton_Click;
 
-            // DataGridView configuración por defecto
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
             dataGridView1.ReadOnly = true;
@@ -37,13 +35,11 @@ namespace WindowsForms
         {
             try
             {
-                // Cargar cursos en el combo
                 var cursos = (await CoursesApiClient.GetAllAsync())?.ToList() ?? new List<CourseDTO>();
                 courseComboBox.DataSource = cursos;
                 courseComboBox.DisplayMember = "Comision";
                 courseComboBox.ValueMember = "Id";
 
-                // Si hay cursos, seleccionar el primero para mostrar materias inmediatamente
                 if (courseComboBox.Items.Count > 0)
                     courseComboBox.SelectedIndex = 0;
             }
@@ -78,16 +74,13 @@ namespace WindowsForms
                 var course = (CourseDTO)courseComboBox.SelectedItem;
                 int courseId = course.Id;
 
-                // Obtener año a partir de la comisión
                 int añoCurso = 0;
                 try { añoCurso = ObtenerAñoDesdeComision(course.Comision); }
                 catch { añoCurso = 0; }
 
-                // Traer todas las materias y filtrar por año
                 var todasMaterias = (await SubjectsApiClient.GetAllAsync())?.ToList() ?? new List<SubjectDTO>();
                 _subjects = añoCurso > 0 ? todasMaterias.Where(s => s.Año == añoCurso).ToList() : todasMaterias;
 
-                // Obtener usuario actual (estudiante)
                 var auth = AuthServiceProvider.Instance;
                 var current = await auth.GetCurrentUserAsync();
                 if (current == null)
@@ -96,7 +89,6 @@ namespace WindowsForms
                     return;
                 }
 
-                // Inscripciones actuales del usuario en el curso seleccionado
                 IEnumerable<UserCourseSubjectDTO> inscripciones;
                 try
                 {
@@ -104,7 +96,6 @@ namespace WindowsForms
                 }
                 catch
                 {
-                    // Si el endpoint falla, asumir sin inscripciones
                     inscripciones = new List<UserCourseSubjectDTO>();
                 }
 
@@ -172,7 +163,6 @@ namespace WindowsForms
 
                 MessageBox.Show("Inscripción realizada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Refrescar listado de materias disponibles
                 courseComboBox_SelectedIndexChanged(null, EventArgs.Empty);
             }
             catch (Exception ex)

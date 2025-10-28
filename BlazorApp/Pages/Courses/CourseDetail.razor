@@ -119,7 +119,6 @@
             if (Id.HasValue)
             {
                 course = (await API.Clients.CoursesApiClient.GetAsync(Id.Value)) ?? new CourseDTO();
-                // parsear comisión en varios formatos (ej: "101" o "1-01")
                 ParseComision(course.Comision);
             }
             else
@@ -153,7 +152,6 @@
         selectedIndex = 0;
         if (string.IsNullOrWhiteSpace(comision)) return;
 
-        // extraer solo dígitos (soporta "101", "1-01", "1-1", etc.)
         var digits = new string(comision.Where(char.IsDigit).ToArray());
         if (digits.Length >= 2)
         {
@@ -165,7 +163,6 @@
             }
         }
 
-        // fallback por si viene con guion "1-01"
         var parts = comision.Split('-', StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length >= 2 && int.TryParse(parts[0], out var py) && int.TryParse(parts[1], out var pidx))
         {
@@ -223,8 +220,6 @@
     private async Task HandleSubmit(EditContext ctx)
     {
         errors.Clear();
-
-        // construir comisión antes de validar/guardar
         if (selectedYear > 0 && selectedIndex > 0)
             course.Comision = $"{selectedYear}{selectedIndex:D2}";
         else

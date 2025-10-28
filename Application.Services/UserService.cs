@@ -219,11 +219,9 @@ namespace Application.Services
 
             return pdfBytes;
         }
-        // (añade este método público en la clase UserService)
 
         public async Task<byte[]> GenerateGradesPieChartAsync()
         {
-            // Buckets: ajustar según la agrupación que quieras
             var buckets = new Dictionary<string, int>
     {
         { "0-3", 0 },
@@ -232,7 +230,6 @@ namespace Application.Services
         { "9-10", 0 }
     };
 
-            // Obtener todos los usuarios y sus inscripciones
             var users = await _userRepository.GetAllAsync();
 
             foreach (var u in users)
@@ -242,7 +239,6 @@ namespace Application.Services
                 {
                     if (e.NotaFinal.HasValue)
                     {
-                        // redondear o truncar según prefieras
                         var nota = (int)Math.Round(e.NotaFinal.Value);
                         if (nota <= 3) buckets["0-3"]++;
                         else if (nota <= 6) buckets["4-6"]++;
@@ -252,7 +248,6 @@ namespace Application.Services
                 }
             }
 
-            // Reusar el generador gráfico existente (método privado GenerateGradesPieChart)
             return GenerateGradesPieChart(buckets);
         }
 
