@@ -145,7 +145,6 @@
 
             if (user.TypeUser != UserType.Teacher)
             {
-                // Redirigir si el rol no corresponde
                 Nav.NavigateTo("/");
                 return;
             }
@@ -169,11 +168,9 @@
                 }
                 catch
                 {
-                    // ignorar fallo en curso individual y continuar
                 }
             }
 
-            // seleccionar la primera materia si existe
             if (teacherSubjects.Any())
             {
                 await SelectSubject(teacherSubjects[0].CourseId, teacherSubjects[0].SubjectId);
@@ -230,7 +227,6 @@
                 }
                 catch
                 {
-                    // ignorar fallo por usuario
                 }
             }
         }
@@ -274,8 +270,6 @@
         {
             selectedEnrollment.NotaFinal = selectedNota;
             await API.Clients.UserCourseSubjectsApiClient.UpdateNotaAsync(selectedEnrollment);
-
-            // recargar alumnos para reflejar la nota actualizada
             await LoadStudentsForSubject(selectedCourseId, selectedSubjectId);
             ClearSelection();
             await JS.InvokeVoidAsync("alert", "Nota cargada correctamente.");

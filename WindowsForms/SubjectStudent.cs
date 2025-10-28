@@ -19,7 +19,6 @@ namespace WindowsForms
             InitializeComponent();
             this.Load += SubjectStudent_Load;
 
-            // DataGridView configuración mínima
             dataGridView1.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dataGridView1.MultiSelect = false;
             dataGridView1.ReadOnly = true;
@@ -63,7 +62,7 @@ namespace WindowsForms
                     }
                     catch
                     {
-                        // ignorar fallo en un curso y continuar
+                       
                     }
                 }
 

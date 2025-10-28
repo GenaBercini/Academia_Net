@@ -75,7 +75,6 @@ namespace Data
             return false;
         }
 
-        //Cada curso va a tener que buscar sus estudiantes y profesores asociados
         public async Task<IEnumerable<User>> GetStudents(int courseId)
         {
             //using var ctx = CreateContext();

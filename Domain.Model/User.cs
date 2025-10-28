@@ -25,7 +25,6 @@ namespace Domain.Model
         public DateTime? DateOfHire { get; private set; }           
         public UserStatus Status { get; private set; }
 
-        //Relacion con tabla intermedia CoursoMaterias
         public ICollection<UserCourseSubject> CoursesSubjects { get; set; } = new List<UserCourseSubject>();
 
         public User(

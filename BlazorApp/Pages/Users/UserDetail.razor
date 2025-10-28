@@ -151,7 +151,6 @@
             messageStore = new ValidationMessageStore(editContext);
             editContext.OnFieldChanged += (_, field) =>
             {
-                // limpiar mensajes del campo cuando el usuario lo modifica
                 messageStore?.Clear(field.FieldIdentifier);
                 StateHasChanged();
             };
@@ -159,7 +158,6 @@
         catch (Exception ex)
         {
             errors.Add($"Error cargando datos: {ex.Message}");
-            // asegurar editContext para no romper el form
             user = new UserDTO { TypeUser = UserType.Student, Adress = string.Empty };
             editContext = new EditContext(user);
             messageStore = new ValidationMessageStore(editContext);
@@ -174,7 +172,6 @@
     {
         if (user.TypeUser != UserType.Student) user.StudentNumber = null;
         if (user.TypeUser != UserType.Teacher) user.JobPosition = null;
-        // limpiar mensajes que pudieran haberse añadido
         messageStore?.Clear();
         editContext?.NotifyValidationStateChanged();
     }

@@ -20,16 +20,6 @@ namespace WindowsForms
         {
             InitializeComponent();
         }
-        //private void OpenOtherForm(Form secondaryForm)
-        //{
-        //    primaryPanel.Controls.Clear();
-        //    secondaryForm.TopLevel = false;
-        //    secondaryForm.FormBorderStyle = FormBorderStyle.None;
-        //    secondaryForm.Dock = DockStyle.Fill;
-        //    primaryPanel.Controls.Add(secondaryForm);
-        //    secondaryForm.Show();
-        //}
-
         private async void Logout(object sender, EventArgs e)
         {
             var authService = AuthServiceProvider.Instance;

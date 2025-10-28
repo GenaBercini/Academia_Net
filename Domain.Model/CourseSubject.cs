@@ -14,10 +14,8 @@ namespace Domain.Model
         public int SubjectId { get; set; }
         public Subject Subject { get; set; } = default!;
 
-        //Atributos de la relacion
         public string DiaHoraDictado { get; set; }
 
-        // Relación con usuarios (docentes y estudiantes)
         public ICollection<UserCourseSubject> Users { get; set; } = new List<UserCourseSubject>();
 
     }

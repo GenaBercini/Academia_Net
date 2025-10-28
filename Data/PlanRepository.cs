@@ -7,10 +7,6 @@ namespace Data
 {
     public class PlanRepository
     {
-        //private TPIContext CreateContext()
-        //{
-        //    return new TPIContext();
-        //}
 
         private readonly TPIContext _context;
 

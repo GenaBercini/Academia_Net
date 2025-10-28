@@ -48,7 +48,6 @@ namespace Application.Services
         public async Task<CourseDTO> AddAsync(CourseDTO dto)
         {
             ValidarCourseDTO(dto);
-            //var courseRepository = new CourseRepository();
             Course course = new Course(
                 0,
                 dto.Cupo,
@@ -64,7 +63,6 @@ namespace Application.Services
 
         public async Task<bool> DeleteAsync(int id)
         {
-            //var courseRepository = new CourseRepository();
             var course = await _courseRepository.GetAsync(id);
             if (course == null)
                 return false;
@@ -74,7 +72,6 @@ namespace Application.Services
         public async Task<CourseDTO?> GetAsync(int id)
         {
        
-            /*var courseRepository = new CourseRepository()*/;
             Course? course = await _courseRepository.GetAsync(id);
 
             if (course == null)
@@ -111,7 +108,6 @@ namespace Application.Services
       
         public async Task<bool> UpdateAsync(CourseDTO dto)
         {
-            //var courseRepository = new CourseRepository();
             var existing = await _courseRepository.GetAsync(dto.Id);
             if (existing == null || existing.IsDeleted)
                 throw new ArgumentException("El curso no existe o está deshabilitado.");
@@ -140,7 +136,6 @@ namespace Application.Services
 
         public async Task<IEnumerable<CourseSubjectDTO>> GetSubjectsByCourse(int courseId)
         {
-            //var repo = new CourseRepository();
             var items = await _courseRepository.GetCourseSubjects(courseId);
             return items.Select(cs => new CourseSubjectDTO
             {
@@ -160,7 +155,6 @@ namespace Application.Services
 
         public async Task<CourseSubjectDTO> AddSubjectToCourse(int courseId, int subjectId, string? diaHora)
         {
-            //var repo = new CourseRepository();
             var cs = await _courseRepository.AddCourseSubject(courseId, subjectId, diaHora);
             return new CourseSubjectDTO
             {

@@ -90,7 +90,6 @@ namespace BlazorApp.Services
                     if (user != null) return user;
                 }
 
-                // Fallback: si no hay user JSON, intentar obtener por username (si existe)
                 var username = await GetUsernameAsync();
                 if (string.IsNullOrEmpty(username)) return null;
 
@@ -102,7 +101,6 @@ namespace BlazorApp.Services
                 }
                 catch
                 {
-                    // ignorar fallo en fallback
                 }
 
                 return new UserDTO { UserName = username };
