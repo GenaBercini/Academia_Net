@@ -1,8 +1,63 @@
 ﻿@page "/admin/courses"
 @layout AdminLayout
 @using DTOs
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <h3 class="card">Cursos</h3>
+
 <div class="card">
-    <p>Listado de cursos — implementar CRUD y flujo de inscripciones (Enrollment) exactamente como en WinForms.</p>
+    <div class="top-row">
+        <div><button class="btn" @onclick="Create">Nuevo curso</button></div>
+        <div><input placeholder="Buscar" @bind="filter" class="input" /></div>
+    </div>
+
+    @if (items == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Comisión</th><th>Turno</th><th>Año</th><th>Cupo</th><th>Especialidad</th><th>Acciones</th></tr></thead>
+            <tbody>
+                @foreach (var c in Filtered)
+                {
+                    <tr>
+                        <td>@c.Comision</td>
+                        <td>@c.Turno</td>
+                        <td>@c.Año_calendario</td>
+                        <td>@c.Cupo</td>
+                        <td>@c.SpecialtyDescripcion</td>
+                        <td class="actions">
+                            <button @onclick="() => Edit(c.Id)">Editar</button>
+                            <button @onclick="() => Delete(c.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
+
+@code {
+    private List<CourseDTO>? items;
+    private string filter = string.Empty;
+    private IEnumerable<CourseDTO> Filtered => string.IsNullOrWhiteSpace(filter) ? items ?? Enumerable.Empty<CourseDTO>() :
+        (items ?? Enumerable.Empty<CourseDTO>()).Where(c => (c.Comision?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = (await API.Clients.CoursesApiClient.GetAllAsync())?.ToList();
+    }
+
+    void Create() => Nav.NavigateTo("/admin/courses/create");
+    void Edit(int id) => Nav.NavigateTo($"/admin/courses/{id}");
+    async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar curso #{id}?");
+        if (!ok) return;
+        await API.Clients.CoursesApiClient.DeleteAsync(id);
+        items = (await API.Clients.CoursesApiClient.GetAllAsync())?.ToList();
+    }
+}

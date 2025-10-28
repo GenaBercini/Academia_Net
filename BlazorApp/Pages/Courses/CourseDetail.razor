@@ -1,0 +1,256 @@
+﻿
+@page "/admin/courses/create"
+@page "/admin/courses/{Id:int?}"
+@layout AdminLayout
+@using DTOs
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Linq
+@inject NavigationManager Nav
+
+<h3 class="card">@Title</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <EditForm EditContext="@editContext" OnSubmit="HandleSubmit">
+            <ValidationSummary />
+
+            <div class="form-row">
+                <label>Cupo:</label>
+                <InputNumber class="input" @bind-Value="course.Cupo" />
+                <ValidationMessage For="@(() => course.Cupo)" />
+
+                <label>Año calendario:</label>
+                <InputNumber class="input" @bind-Value="course.Año_calendario" />
+                <ValidationMessage For="@(() => course.Año_calendario)" />
+            </div>
+
+            <div class="form-row">
+                <select class="input" @bind="selectedYear">
+                    <option value="0">-- Año (1 al 5) --</option>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <option value="@i">@i</option>
+                        ;
+                    }
+                </select>
+                <ValidationMessage For="@(() => selectedYear)" />
+
+                <select class="input" @bind="selectedIndex">
+                    <option value="0">-- Índice (01-10) --</option>
+                    @for (int i = 1; i <= 10; i++)
+                    {
+                        <option value="@i">@i.ToString("D2")</option>
+                        ;
+                    }
+                </select>
+                <ValidationMessage For="@(() => selectedIndex)" />
+            </div>
+
+            <div class="form-row">
+                <select class="input" @bind="course.Turno">
+                    <option value="">-- Seleccione turno --</option>
+                    <option value="Mañana">Mañana</option>
+                    <option value="Tarde">Tarde</option>
+                    <option value="Noche">Noche</option>
+                </select>
+                <ValidationMessage For="@(() => course.Turno)" />
+
+                <select class="input" @bind="course.SpecialtyId">
+                    <option value="0">-- Seleccione especialidad --</option>
+                    @foreach (var s in specialties)
+                    {
+                        <option value="@s.Id">@s.DescEspecialidad</option>
+                    }
+                </select>
+                <ValidationMessage For="@(() => course.SpecialtyId)" />
+            </div>
+
+            <div class="top-row mt-3">
+                <button class="btn" type="submit" disabled="@isSaving">
+                    @(isSaving ? "Guardando..." : "Guardar")
+                </button>
+                <button class="btn-ghost" type="button" @onclick="Cancel" disabled="@isSaving">Cancelar</button>
+            </div>
+        </EditForm>
+
+        @if (errors.Any())
+        {
+            <div class="alert alert-danger mt-2">
+                <ul>
+                    @foreach (var err in errors)
+                    {
+                        <li>@(err)</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private CourseDTO course = new();
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
+    private List<SpecialtyDTO> specialties = new();
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private List<string> errors = new();
+    private string Title => Id.HasValue ? "Editar Curso" : "Nuevo Curso";
+
+    private int selectedYear;
+    private int selectedIndex;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        errors.Clear();
+
+        try
+        {
+            specialties = (await API.Clients.SpecialtiesApiClient.GetAllAsync())?.ToList() ?? new();
+
+            if (Id.HasValue)
+            {
+                course = (await API.Clients.CoursesApiClient.GetAsync(Id.Value)) ?? new CourseDTO();
+                // parsear comisión en varios formatos (ej: "101" o "1-01")
+                ParseComision(course.Comision);
+            }
+            else
+            {
+                course = new CourseDTO { SpecialtyId = 0, Cupo = 0, Año_calendario = DateTime.Now.Year, Turno = string.Empty, Comision = string.Empty };
+                selectedYear = 0;
+                selectedIndex = 0;
+            }
+
+            editContext = new EditContext(course);
+            messageStore = new ValidationMessageStore(editContext);
+            editContext.OnFieldChanged += (_, f) =>
+            {
+                messageStore?.Clear(f.FieldIdentifier);
+                StateHasChanged();
+            };
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error cargando datos: {ex.Message}");
+            course = new CourseDTO { SpecialtyId = 0, Cupo = 0, Año_calendario = DateTime.Now.Year, Turno = string.Empty };
+            editContext = new EditContext(course);
+            messageStore = new ValidationMessageStore(editContext);
+        }
+        finally { isLoading = false; }
+    }
+
+    private void ParseComision(string comision)
+    {
+        selectedYear = 0;
+        selectedIndex = 0;
+        if (string.IsNullOrWhiteSpace(comision)) return;
+
+        // extraer solo dígitos (soporta "101", "1-01", "1-1", etc.)
+        var digits = new string(comision.Where(char.IsDigit).ToArray());
+        if (digits.Length >= 2)
+        {
+            if (int.TryParse(digits.Substring(0, 1), out var y) && int.TryParse(digits.Substring(1), out var idx))
+            {
+                selectedYear = y;
+                selectedIndex = idx;
+                return;
+            }
+        }
+
+        // fallback por si viene con guion "1-01"
+        var parts = comision.Split('-', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2 && int.TryParse(parts[0], out var py) && int.TryParse(parts[1], out var pidx))
+        {
+            selectedYear = py;
+            selectedIndex = pidx;
+            return;
+        }
+    }
+
+    private bool Validate()
+    {
+        messageStore?.Clear();
+        bool valido = true;
+
+        if (course.Cupo <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(course, nameof(course.Cupo)), "El cupo debe ser un número mayor a cero.");
+            valido = false;
+        }
+
+        if (course.Año_calendario <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(course, nameof(course.Año_calendario)), "Ingrese un año calendario válido.");
+            valido = false;
+        }
+
+        if (selectedYear <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(this, nameof(selectedYear)), "Seleccione año de comisión.");
+            valido = false;
+        }
+
+        if (selectedIndex <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(this, nameof(selectedIndex)), "Seleccione índice de comisión.");
+            valido = false;
+        }
+
+        if (course.SpecialtyId <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(course, nameof(course.SpecialtyId)), "Seleccione una especialidad.");
+            valido = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(course.Turno))
+        {
+            messageStore?.Add(new FieldIdentifier(course, nameof(course.Turno)), "Seleccione un turno.");
+            valido = false;
+        }
+
+        editContext?.NotifyValidationStateChanged();
+        return valido;
+    }
+
+    private async Task HandleSubmit(EditContext ctx)
+    {
+        errors.Clear();
+
+        // construir comisión antes de validar/guardar
+        if (selectedYear > 0 && selectedIndex > 0)
+            course.Comision = $"{selectedYear}{selectedIndex:D2}";
+        else
+            course.Comision = string.Empty;
+
+        if (!Validate()) return;
+
+        isSaving = true;
+        try
+        {
+            if (Id.HasValue)
+                await API.Clients.CoursesApiClient.UpdateAsync(course);
+            else
+                await API.Clients.CoursesApiClient.AddAsync(course);
+
+            Nav.NavigateTo("/admin/courses");
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error al guardar curso: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    void Cancel() => Nav.NavigateTo("/admin/courses");
+}

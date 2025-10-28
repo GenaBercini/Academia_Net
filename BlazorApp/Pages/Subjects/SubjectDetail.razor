@@ -1,59 +1,172 @@
-﻿@page "/admin/subjects/{Id:int?}"
+﻿@page "/admin/subjects/create"
+@page "/admin/subjects/{Id:int?}"
 @layout AdminLayout
 @using DTOs
+@using Microsoft.AspNetCore.Components.Forms
 @inject NavigationManager Nav
 
 <h3 class="card">@Title</h3>
 
 <div class="card">
-    @if (subject == null)
+    @if (isLoading)
     {
         <p>Cargando...</p>
     }
     else
     {
-        <EditForm Model="subject" OnValidSubmit="Save">
+        <EditForm EditContext="@editContext" OnSubmit="HandleSubmit">
+            <ValidationSummary />
+
             <div class="form-row">
-                <input class="input" @bind="subject.Desc" placeholder="Descripción" />
-                <input class="input" type="number" @bind="subject.Año" placeholder="Año" />
+                <InputText class="input" @bind-Value="subject.Desc" placeholder="Descripción" />
+                <ValidationMessage For="@(() => subject.Desc)" />
+                <InputNumber class="input" @bind-Value="subject.HsSemanales" placeholder="Hs semanales" />
+                <ValidationMessage For="@(() => subject.HsSemanales)" />
             </div>
 
             <div class="form-row">
-                <input class="input" type="number" @bind="subject.HsSemanales" placeholder="Horas semanales" />
-                <input class="input" type="number" @bind="subject.PlanId" placeholder="Id Plan" />
+                <select class="input" @bind="subject.Año">
+                    <option value="0">-- Año --</option>
+                    @for (int i = 1; i <= 6; i++) { <option value="@i">@i</option>; }
+                </select>
+                <ValidationMessage For="@(() => subject.Año)" />
+
+                <select class="input" @bind="subject.PlanId">
+                    <option value="0">-- Seleccione plan --</option>
+                    @foreach (var p in plans)
+                    {
+                        <option value="@p.Id">@p.Descripcion (@p.Año_calendario)</option>
+                    }
+                </select>
+                <ValidationMessage For="@(() => subject.PlanId)" />
             </div>
 
-            <div class="top-row">
-                <div>
-                    <button class="btn" type="submit">Guardar</button>
-                    <button class="btn-ghost" type="button" @onclick="Cancel">Cancelar</button>
-                </div>
+            <div class="form-row mt-2">
+                <label><input type="checkbox" @bind="subject.Obligatoria" /> Obligatoria</label>
+            </div>
+
+            <div class="top-row mt-3">
+                <button class="btn" type="submit" disabled="@isSaving">
+                    @(isSaving ? "Guardando..." : "Guardar")
+                </button>
+                <button class="btn-ghost" type="button" @onclick="Cancel" disabled="@isSaving">Cancelar</button>
             </div>
         </EditForm>
+
+        @if (errors.Any())
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var err in errors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
     }
 </div>
 
 @code {
     [Parameter] public int? Id { get; set; }
-    private SubjectDTO? subject;
-    private string Title => Id.HasValue ? "Editar materia" : "Nueva materia";
+    private SubjectDTO subject = new();
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
+    private List<PlanDTO> plans = new();
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private List<string> errors = new();
+    private string Title => Id.HasValue ? "Editar Materia" : "Nueva Materia";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        if (Id.HasValue)
-            subject = await API.Clients.SubjectsApiClient.GetAsync(Id.Value);
-        else
-            subject = new SubjectDTO();
+        isLoading = true;
+        errors.Clear();
+
+        try
+        {
+            plans = (await API.Clients.PlansApiClient.GetAllAsync())?.ToList() ?? new();
+
+            if (Id.HasValue)
+            {
+                subject = (await API.Clients.SubjectsApiClient.GetAsync(Id.Value)) ?? new SubjectDTO();
+            }
+            else
+            {
+                subject = new SubjectDTO { Año = 0, PlanId = 0, HsSemanales = 0, Desc = string.Empty };
+            }
+
+            editContext = new EditContext(subject);
+            messageStore = new ValidationMessageStore(editContext);
+            editContext.OnFieldChanged += (_, f) =>
+            {
+                messageStore?.Clear(f.FieldIdentifier);
+                StateHasChanged();
+            };
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error cargando datos: {ex.Message}");
+            subject = new SubjectDTO { Año = 0, PlanId = 0, HsSemanales = 0, Desc = string.Empty };
+            editContext = new EditContext(subject);
+            messageStore = new ValidationMessageStore(editContext);
+        }
+        finally { isLoading = false; }
     }
 
-    async Task Save()
+    private bool Validate()
     {
-        if (Id.HasValue)
-            await API.Clients.SubjectsApiClient.UpdateAsync(subject!);
-        else
-            await API.Clients.SubjectsApiClient.AddAsync(subject!);
+        messageStore?.Clear();
+        bool valido = true;
 
-        Nav.NavigateTo("/admin/subjects");
+        if (string.IsNullOrWhiteSpace(subject.Desc))
+        {
+            messageStore?.Add(new FieldIdentifier(subject, nameof(subject.Desc)), "La descripción es requerida.");
+            valido = false;
+        }
+
+        if (subject.HsSemanales <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(subject, nameof(subject.HsSemanales)), "Horas semanales debe ser mayor a 0.");
+            valido = false;
+        }
+
+        if (subject.Año < 1 || subject.Año > 6)
+        {
+            messageStore?.Add(new FieldIdentifier(subject, nameof(subject.Año)), "Seleccione un año válido.");
+            valido = false;
+        }
+
+        if (subject.PlanId <= 0)
+        {
+            messageStore?.Add(new FieldIdentifier(subject, nameof(subject.PlanId)), "Seleccione un plan.");
+            valido = false;
+        }
+
+        editContext?.NotifyValidationStateChanged();
+        return valido;
+    }
+
+    private async Task HandleSubmit(EditContext ctx)
+    {
+        errors.Clear();
+        if (!Validate()) return;
+
+        isSaving = true;
+        try
+        {
+            if (Id.HasValue)
+                await API.Clients.SubjectsApiClient.UpdateAsync(subject);
+            else
+                await API.Clients.SubjectsApiClient.AddAsync(subject);
+
+            Nav.NavigateTo("/admin/subjects");
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error al guardar materia: {ex.Message}");
+        }
+        finally { isSaving = false; }
     }
 
     void Cancel() => Nav.NavigateTo("/admin/subjects");

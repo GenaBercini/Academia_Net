@@ -1,0 +1,116 @@
+﻿@page "/admin/specialties/create"
+@page "/admin/specialties/{Id:int?}"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+
+<h3 class="card">@Title</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        @if (errors.Any())
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var err in errors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <EditForm Model="@specialty" OnValidSubmit="Save">
+            <div class="form-row">
+                <InputText class="input" @bind-Value="specialty.DescEspecialidad" placeholder="Descripción" />
+                <select class="input" @bind="specialty.DuracionAnios">
+                    <option value="0">-- Duración (años) --</option>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </select>
+            </div>
+
+            <div class="top-row mt-3">
+                <button class="btn" type="submit" disabled="@isSaving">
+                    @(isSaving ? "Guardando..." : "Guardar")
+                </button>
+                <button class="btn-ghost" type="button" @onclick="Cancel" disabled="@isSaving">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+    private SpecialtyDTO specialty = new SpecialtyDTO();
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private List<string> errors = new();
+    private string Title => Id.HasValue ? "Editar Especialidad" : "Nueva Especialidad";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        errors.Clear();
+
+        try
+        {
+            if (Id.HasValue)
+                specialty = (await API.Clients.SpecialtiesApiClient.GetAsync(Id.Value)) ?? new SpecialtyDTO();
+            else
+                specialty = new SpecialtyDTO { DuracionAnios = 1 };
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error cargando datos: {ex.Message}");
+            specialty = new SpecialtyDTO { DuracionAnios = 1 };
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private bool Validate()
+    {
+        errors.Clear();
+        var desc = specialty.DescEspecialidad?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(desc)) errors.Add("La descripción es requerida.");
+        else if (desc.Length < 3) errors.Add("La descripción debe tener al menos 3 caracteres.");
+        if (specialty.DuracionAnios <= 0) errors.Add("Seleccione la duración en años.");
+        return errors.Count == 0;
+    }
+
+    private async Task Save()
+    {
+        if (!Validate()) return;
+
+        isSaving = true;
+        try
+        {
+            if (Id.HasValue)
+                await API.Clients.SpecialtiesApiClient.UpdateAsync(specialty);
+            else
+                await API.Clients.SpecialtiesApiClient.AddAsync(specialty);
+
+            Nav.NavigateTo("/admin/specialties");
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error al guardar especialidad: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    void Cancel() => Nav.NavigateTo("/admin/specialties");
+}
