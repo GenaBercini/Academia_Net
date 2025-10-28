@@ -1,4 +1,4 @@
-﻿@page "/admin/specialties"
+﻿@* @page "/admin/specialties"
 @layout AdminLayout
 @using DTOs
 @inject NavigationManager Nav
@@ -55,4 +55,67 @@
     }
 
     [Inject] IJSRuntime JS { get; set; } = default!;
+}
+ *@
+
+@page "/admin/specialties"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="card">Especialidades</h3>
+
+<div class="card">
+    <div class="top-row">
+        <div><button class="btn" @onclick="Create">Nueva especialidad</button></div>
+        <div><input placeholder="Buscar" @bind="filter" class="input" /></div>
+    </div>
+
+    @if (items == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Descripción</th><th>Horas</th><th>Acciones</th></tr></thead>
+            <tbody>
+                @foreach (var s in Filtered)
+                {
+                    <tr>
+                        <td>@s.DescEspecialidad</td>
+                        <td>@s.DuracionAnios</td>
+                        <td>@s.PlanId</td>
+                        <td class="actions">
+                            <button @onclick="() => Edit(s.Id)">Editar</button>
+                            <button @onclick="() => Delete(s.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<SpecialtyDTO>? items;
+    private string filter = string.Empty;
+    private IEnumerable<SpecialtyDTO> Filtered => string.IsNullOrWhiteSpace(filter) ? items ?? Enumerable.Empty<SpecialtyDTO>() :
+        (items ?? Enumerable.Empty<SpecialtyDTO>()).Where(s => (s.DescEspecialidad?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = (await API.Clients.SpecialtiesApiClient.GetAllAsync())?.ToList();
+    }
+
+    void Create() => Nav.NavigateTo("/admin/specialties/create");
+    void Edit(int id) => Nav.NavigateTo($"/admin/specialties/{id}");
+    async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar especialidad #{id}?");
+        if (!ok) return;
+        await API.Clients.SpecialtiesApiClient.DeleteAsync(id);
+        items = (await API.Clients.SpecialtiesApiClient.GetAllAsync())?.ToList();
+    }
 }

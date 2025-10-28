@@ -1,8 +1,65 @@
 ﻿@page "/admin/plans"
 @layout AdminLayout
 @using DTOs
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
 <h3 class="card">Planes</h3>
+
 <div class="card">
-    <p>Listado básico de planes — implementa CRUD siguiendo el patrón de Usuarios/Materias.</p>
+    <div class="top-row">
+        <div><button class="btn" @onclick="Create">Nuevo plan</button></div>
+        <div><input placeholder="Buscar" @bind="filter" class="input" /></div>
+    </div>
+
+    @if (plans == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr><th>Descripción</th><th>Año</th><th>Especialidad</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Filtered)
+                {
+                    <tr>
+                        <td>@p.Descripcion</td>
+                        <td>@p.Año_calendario</td>
+                        <td>@p.SpecialtyDescripcion</td>
+                        <td class="actions">
+                            <button @onclick="() => Edit(p.Id)">Editar</button>
+                            <button @onclick="() => Delete(p.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
+
+@code {
+    private List<PlanDTO>? plans;
+    private string filter = string.Empty;
+
+    private IEnumerable<PlanDTO> Filtered => string.IsNullOrWhiteSpace(filter) ? plans ?? Enumerable.Empty<PlanDTO>() :
+        (plans ?? Enumerable.Empty<PlanDTO>()).Where(p => (p.Descripcion?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnInitializedAsync()
+    {
+        plans = (await API.Clients.PlansApiClient.GetAllAsync())?.ToList();
+    }
+
+    void Create() => Nav.NavigateTo("/admin/plans/create");
+    void Edit(int id) => Nav.NavigateTo($"/admin/plans/{id}");
+    async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar plan #{id}?");
+        if (!ok) return;
+        await API.Clients.PlansApiClient.DeleteAsync(id);
+        plans = (await API.Clients.PlansApiClient.GetAllAsync())?.ToList();
+        StateHasChanged();
+    }
+}

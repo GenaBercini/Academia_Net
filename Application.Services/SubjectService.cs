@@ -80,7 +80,7 @@ namespace Application.Services
             //var subjectRepository = new SubjectRepository();
             Subject? subject = await _subjectRepository.GetAsync(id);
 
-            if (subject == null || !subject.IsDeleted)
+            if (subject == null || subject.IsDeleted)
                 return null;
             
             return new SubjectDTO

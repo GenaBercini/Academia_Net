@@ -1,4 +1,4 @@
-﻿@page "/admin/subjects"
+﻿@* @page "/admin/subjects"
 @layout AdminLayout
 @using DTOs
 @inject NavigationManager Nav
@@ -59,4 +59,69 @@
     }
 
     [Inject] IJSRuntime JS { get; set; } = default!;
+}
+ *@
+
+
+@page "/admin/subjects"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="card">Materias</h3>
+
+<div class="card">
+    <div class="top-row">
+        <div><button class="btn" @onclick="Create">Nueva materia</button></div>
+        <div><input placeholder="Buscar" @bind="filter" class="input" /></div>
+    </div>
+
+    @if (items == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Descripción</th><th>Hs</th><th>Año</th><th>Plan</th><th>Acciones</th></tr></thead>
+            <tbody>
+                @foreach (var s in Filtered)
+                {
+                    <tr>
+                        <td>@s.Desc</td>
+                        <td>@s.HsSemanales</td>
+                        <td>@s.Año</td>
+                        <td>@s.PlanDescripcion</td>
+                        <td class="actions">
+                            <button @onclick="() => Edit(s.Id)">Editar</button>
+                            <button @onclick="() => Delete(s.Id)">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+    private List<SubjectDTO>? items;
+    private string filter = string.Empty;
+    private IEnumerable<SubjectDTO> Filtered => string.IsNullOrWhiteSpace(filter) ? items ?? Enumerable.Empty<SubjectDTO>() :
+        (items ?? Enumerable.Empty<SubjectDTO>()).Where(s => (s.Desc?.Contains(filter, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnInitializedAsync()
+    {
+        items = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToList();
+    }
+
+    void Create() => Nav.NavigateTo("/admin/subjects/create");
+    void Edit(int id) => Nav.NavigateTo($"/admin/subjects/{id}");
+    async Task Delete(int id)
+    {
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar materia #{id}?");
+        if (!ok) return;
+        await API.Clients.SubjectsApiClient.DeleteAsync(id);
+        items = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToList();
+    }
 }

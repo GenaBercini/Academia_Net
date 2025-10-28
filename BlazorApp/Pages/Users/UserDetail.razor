@@ -1,125 +1,300 @@
-﻿@page "/admin/users/{Id:int?}"
+﻿
+
+@page "/admin/users/create"
+@page "/admin/users/{Id:int?}"
 @layout AdminLayout
 @using DTOs
+@using Shared.Types
+@using System.Text.RegularExpressions
+@using Microsoft.AspNetCore.Components.Forms
 @inject NavigationManager Nav
 
 <h3 class="card">@Title</h3>
 
 <div class="card">
-    @if (user == null)
+    @if (isLoading)
     {
         <p>Cargando...</p>
     }
     else
     {
-        <EditForm Model="user" OnValidSubmit="Save">
+        <EditForm EditContext="@editContext" OnSubmit="HandleSubmit">
+            <ValidationSummary />
+
             <div class="form-row">
-                <input class="input" @bind="user.UserName" placeholder="Usuario" />
-                <input class="input" @bind="user.Email" placeholder="Email" />
+                <InputText class="input" @bind-Value="user.UserName" placeholder="Usuario" />
+                <ValidationMessage For="@(() => user.UserName)" />
+
+                <InputText class="input" @bind-Value="user.Email" placeholder="Email" />
+                <ValidationMessage For="@(() => user.Email)" />
             </div>
 
             <div class="form-row">
-                <input class="input" @bind="user.Name" placeholder="Nombre" />
-                <input class="input" @bind="user.LastName" placeholder="Apellido" />
+                <InputText class="input" @bind-Value="user.Name" placeholder="Nombre" />
+                <ValidationMessage For="@(() => user.Name)" />
+
+                <InputText class="input" @bind-Value="user.LastName" placeholder="Apellido" />
+                <ValidationMessage For="@(() => user.LastName)" />
             </div>
 
             <div class="form-row">
-                <input class="input" @bind="user.Dni" placeholder="DNI" />
-                <input class="input" @bind="user.StudentNumber" placeholder="Legajo (si aplica)" />
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Contraseña</label>
-                <input class="form-control" type="password" @bind="Contrasena" />
+                <InputText class="input" @bind-Value="user.Dni" placeholder="DNI" />
+                <ValidationMessage For="@(() => user.Dni)" />
+
+                @if (user.TypeUser == UserType.Student)
+                {
+                    <InputText class="input" @bind-Value="user.StudentNumber" placeholder="Legajo (si aplica)" />
+                    <ValidationMessage For="@(() => user.StudentNumber)" />
+                }
+                else
+                {
+                    <div class="input" style="visibility:hidden"></div>
+                }
             </div>
 
             <div class="form-row">
-                <select class="input" @bind="user.TypeUser">
-                    @foreach (var t in Enum.GetValues(typeof(Shared.Types.UserType)))
+                <InputText class="input" @bind-Value="user.Adress" placeholder="Dirección" />
+                <ValidationMessage For="@(() => user.Adress)" />
+            </div>
+
+            @if (!Id.HasValue)
+            {
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Contraseña</label>
+                    <InputText class="form-control" type="password" @bind-Value="Contrasena" />
+                    <ValidationMessage For="@(() => Contrasena)" />
+                </div>
+            }
+
+            <div class="form-row mt-2">
+                <select class="input" value="@user.TypeUser" @onchange="OnTypeUserChanged">
+                    @foreach (var t in Enum.GetValues(typeof(UserType)).Cast<UserType>())
                     {
                         <option value="@t">@t</option>
                     }
                 </select>
 
-                <select class="input" @bind="user.JobPosition">
-                    @foreach (var j in Enum.GetValues(typeof(Shared.Types.JobPositionType)))
-                    {
-                        <option value="@j">@j</option>
-                    }
-                </select>
+                @if (user.TypeUser == UserType.Teacher)
+                {
+                    <select class="input" @bind="user.JobPosition">
+                        <option value="">-- Seleccione cargo --</option>
+                        @foreach (var j in Enum.GetValues(typeof(JobPositionType)).Cast<JobPositionType>())
+                        {
+                            <option value="@j">@j</option>
+                        }
+                    </select>
+                    <ValidationMessage For="@(() => user.JobPosition)" />
+                }
+                else
+                {
+                    <div class="input" style="visibility:hidden"></div>
+                }
             </div>
 
-            <div class="top-row">
+            <div class="top-row mt-3">
                 <div>
-                    <button class="btn" type="submit">Guardar</button>
-                    <button class="btn-ghost" type="button" @onclick="Cancel">Cancelar</button>
+                    <button class="btn" type="submit" disabled="@isSaving">
+                        @(isSaving ? "Guardando..." : "Guardar")
+                    </button>
+                    <button class="btn-ghost" type="button" @onclick="Cancel" disabled="@isSaving">Cancelar</button>
                 </div>
             </div>
         </EditForm>
+
+        @if (errors.Any())
+        {
+            <div class="alert alert-danger mt-2">
+                <ul>
+                    @foreach (var err in errors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
     }
 </div>
 
 @code {
-
     [Parameter] public int? Id { get; set; }
-    private UserDTO? user;
+
+    private UserDTO user = new();
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
     private string Contrasena { get; set; } = string.Empty;
+
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private List<string> errors = new();
+
     private string Title => Id.HasValue ? "Editar usuario" : "Nuevo usuario";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        if (Id.HasValue)
+        isLoading = true;
+        errors.Clear();
+
+        try
         {
-            user = await API.Clients.UsersApiClient.GetAsync(Id.Value);
+            if (Id.HasValue)
+            {
+                user = (await API.Clients.UsersApiClient.GetAsync(Id.Value)) ?? new UserDTO();
+                Contrasena = string.Empty;
+            }
+            else
+            {
+                user = new UserDTO { TypeUser = UserType.Student, Adress = string.Empty };
+                Contrasena = string.Empty;
+            }
+
+            editContext = new EditContext(user);
+            messageStore = new ValidationMessageStore(editContext);
+            editContext.OnFieldChanged += (_, field) =>
+            {
+                // limpiar mensajes del campo cuando el usuario lo modifica
+                messageStore?.Clear(field.FieldIdentifier);
+                StateHasChanged();
+            };
         }
-        else
+        catch (Exception ex)
         {
-            user = new UserDTO();
+            errors.Add($"Error cargando datos: {ex.Message}");
+            // asegurar editContext para no romper el form
+            user = new UserDTO { TypeUser = UserType.Student, Adress = string.Empty };
+            editContext = new EditContext(user);
+            messageStore = new ValidationMessageStore(editContext);
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
-    async Task Save()
+    private void OnTypeUserChanged(ChangeEventArgs _)
     {
-        if(Id.HasValue)
-        {
-             var updateUser = new UserUpdateDTO
-            {
-                Id = user.Id,
-                UserName = user.UserName,
-                Name = user.Name,
-                LastName = user.LastName,
-                Email = user.Email,
-                Dni = user.Dni,
-                Adress = user.Adress,
-                TypeUser = user.TypeUser,
-                JobPosition = user.JobPosition,
-                StudentNumber = user.StudentNumber,
-                DateOfAdmission = user.DateOfAdmission,
-                DateOfHire = user.DateOfHire,
-                Status = user.Status,
-                Password = string.IsNullOrWhiteSpace(Contrasena) ? null : Contrasena
-            };
-            await API.Clients.UsersApiClient.UpdateAsync(updateUser);
-        }
-        else
-        {
-            var createUser = new UserCreateDTO
+        if (user.TypeUser != UserType.Student) user.StudentNumber = null;
+        if (user.TypeUser != UserType.Teacher) user.JobPosition = null;
+        // limpiar mensajes que pudieran haberse añadido
+        messageStore?.Clear();
+        editContext?.NotifyValidationStateChanged();
+    }
 
-            {
-                UserName = user.UserName,
-                Name = user.Name,
-                LastName = user.LastName,
-                Email = user.Email,
-                Dni = user.Dni,
-                Adress = user.Adress,
-                TypeUser = user.TypeUser,
-                StudentNumber = user.StudentNumber,
-                JobPosition = user.JobPosition,
-                Password = Contrasena
-            };
-            await API.Clients.UsersApiClient.AddAsync(createUser);
+    private bool Validate()
+    {
+        messageStore?.Clear();
+        bool valido = true;
+
+        if (string.IsNullOrWhiteSpace(user.UserName))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.UserName)), "El nombre de usuario es requerido.");
+            valido = false;
         }
 
-        Nav.NavigateTo("/admin/users");
+        if (string.IsNullOrWhiteSpace(user.Name))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.Name)), "El nombre es requerido.");
+            valido = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.LastName))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.LastName)), "El apellido es requerido.");
+            valido = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Email))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.Email)), "El email es requerido.");
+            valido = false;
+        }
+        else if (!Regex.IsMatch(user.Email ?? string.Empty, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.Email)), "Formato de email no válido.");
+            valido = false;
+        }
+
+        if (user.TypeUser == UserType.Student && string.IsNullOrWhiteSpace(user.StudentNumber))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.StudentNumber)), "El legajo es requerido para alumnos.");
+            valido = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(user.Adress))
+        {
+            messageStore?.Add(new FieldIdentifier(user, nameof(user.Adress)), "La dirección es requerida.");
+            valido = false;
+        }
+
+        if (!Id.HasValue && string.IsNullOrWhiteSpace(Contrasena))
+        {
+            messageStore?.Add(new FieldIdentifier(this, nameof(Contrasena)), "La contraseña es requerida.");
+            valido = false;
+        }
+
+        editContext?.NotifyValidationStateChanged();
+        return valido;
+    }
+
+    private async Task HandleSubmit(EditContext ctx)
+    {
+        errors.Clear();
+
+        if (!Validate()) return;
+
+        isSaving = true;
+        try
+        {
+            if (Id.HasValue)
+            {
+                var updateUser = new UserUpdateDTO
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Name = user.Name,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Dni = user.Dni,
+                    Adress = user.Adress,
+                    TypeUser = user.TypeUser,
+                    JobPosition = user.TypeUser == UserType.Teacher ? user.JobPosition : null,
+                    StudentNumber = user.TypeUser == UserType.Student ? user.StudentNumber : null,
+                    DateOfAdmission = user.DateOfAdmission,
+                    DateOfHire = user.DateOfHire,
+                    Status = user.Status,
+                    Password = null
+                };
+
+                await API.Clients.UsersApiClient.UpdateAsync(updateUser);
+            }
+            else
+            {
+                var createUser = new UserCreateDTO
+                {
+                    UserName = user.UserName,
+                    Name = user.Name,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                    Dni = user.Dni,
+                    Adress = user.Adress,
+                    TypeUser = user.TypeUser,
+                    StudentNumber = user.TypeUser == UserType.Student ? user.StudentNumber : null,
+                    JobPosition = user.TypeUser == UserType.Teacher ? user.JobPosition : null,
+                    Password = Contrasena
+                };
+
+                await API.Clients.UsersApiClient.AddAsync(createUser);
+            }
+
+            Nav.NavigateTo("/admin/users");
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error al guardar usuario: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
     }
 
     void Cancel() => Nav.NavigateTo("/admin/users");

@@ -60,7 +60,7 @@ namespace Application.Services
             //var specialtyRepository = new SpecialtyRepository();
             Specialty? specialty = await _specialtyRepository.GetAsync(id);
 
-            if (specialty == null || !specialty.IsDeleted)
+            if (specialty == null || specialty.IsDeleted)
                 return null;
 
             return new SpecialtyDTO

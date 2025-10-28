@@ -14,16 +14,16 @@ namespace API.Clients
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await httpClient.PostAsync("/auth/login", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
 
             if (response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<LoginResponse>(responseContent, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
             }
-            return null;
+            throw new Exception($"Login failed ({(int)response.StatusCode} {response.ReasonPhrase}): {responseContent}");
         }
     }
 }

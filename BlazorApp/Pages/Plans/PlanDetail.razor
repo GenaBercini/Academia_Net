@@ -1,0 +1,123 @@
+﻿@page "/admin/plans/create"
+@page "/admin/plans/{Id:int?}"
+@layout AdminLayout
+@using DTOs
+@inject NavigationManager Nav
+
+<h3 class="card">@Title</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        @if (errors.Any())
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var err in errors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <EditForm Model="@plan" OnValidSubmit="Save">
+            <div class="form-row">
+                <InputText class="input" @bind-Value="plan.Descripcion" placeholder="Descripción" />
+                <InputNumber class="input" @bind-Value="plan.Año_calendario" placeholder="Año" />
+            </div>
+
+            <div class="form-row">
+                <select class="input" @bind="plan.SpecialtyId">
+                    <option value="0">-- Seleccione especialidad --</option>
+                    @foreach (var s in specialties)
+                    {
+                        <option value="@s.Id">@s.DescEspecialidad</option>
+                    }
+                </select>
+            </div>
+
+            <div class="top-row mt-3">
+                <button class="btn" type="submit" disabled="@isSaving">
+                    @(isSaving ? "Guardando..." : "Guardar")
+                </button>
+                <button class="btn-ghost" type="button" @onclick="Cancel" disabled="@isSaving">Cancelar</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private PlanDTO plan = new PlanDTO();
+    private List<SpecialtyDTO> specialties = new();
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private List<string> errors = new();
+    private string Title => Id.HasValue ? "Editar Plan" : "Nuevo Plan";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        errors.Clear();
+
+        try
+        {
+            specialties = (await API.Clients.SpecialtiesApiClient.GetAllAsync())?.ToList() ?? new();
+
+            if (Id.HasValue)
+                plan = (await API.Clients.PlansApiClient.GetAsync(Id.Value)) ?? new PlanDTO();
+            else
+                plan = new PlanDTO { SpecialtyId = 0, Año_calendario = DateTime.Now.Year };
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error cargando datos: {ex.Message}");
+            plan = new PlanDTO { SpecialtyId = 0, Año_calendario = DateTime.Now.Year };
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private bool Validate()
+    {
+        errors.Clear();
+        if (string.IsNullOrWhiteSpace(plan.Descripcion)) errors.Add("La descripción es requerida.");
+        if (plan.Año_calendario <= 0) errors.Add("El año debe ser un número válido.");
+        if (plan.SpecialtyId <= 0) errors.Add("Seleccione una especialidad.");
+        return errors.Count == 0;
+    }
+
+    private async Task Save()
+    {
+        if (!Validate()) return;
+
+        isSaving = true;
+        try
+        {
+            if (Id.HasValue)
+                await API.Clients.PlansApiClient.UpdateAsync(plan);
+            else
+                await API.Clients.PlansApiClient.AddAsync(plan);
+
+            Nav.NavigateTo("/admin/plans");
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error al guardar plan: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    void Cancel() => Nav.NavigateTo("/admin/plans");
+}
