@@ -175,7 +175,6 @@ namespace API.Clients
                     return await response.Content.ReadAsByteArrayAsync();
                 }
 
-                // Manejar 401 (limpia sesión si corresponde)
                 await HandleUnauthorizedResponseAsync(response);
 
                 var errorContent = await response.Content.ReadAsStringAsync();
@@ -189,6 +188,17 @@ namespace API.Clients
             {
                 throw new Exception($"Timeout al obtener reporte de usuarios: {ex.Message}", ex);
             }
+        }
+
+        public static async Task<byte[]> GetGradesPieChartAsync()
+        {
+            using var client = await CreateHttpClientAsync();
+            var response = await client.GetAsync("users/report/grades/pie");
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadAsByteArrayAsync();
+            await HandleUnauthorizedResponseAsync(response);
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error al obtener gráfico de notas. Status: {response.StatusCode}, Detalle: {errorContent}");
         }
     }
 }

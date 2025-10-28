@@ -266,5 +266,54 @@ namespace WindowsForms
             }
         }
 
+        private async void PieChartButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                pieChartButton.Enabled = false;
+                Cursor.Current = Cursors.WaitCursor;
+
+                var bytes = await UsersApiClient.GetGradesPieChartAsync();
+                if (bytes == null || bytes.Length == 0)
+                    throw new Exception("El servidor devolvió un gráfico vacío.");
+
+                string selectedPath = null;
+                this.Invoke(() =>
+                {
+                    using var sfd = new SaveFileDialog
+                    {
+                        Filter = "PNG (*.png)|*.png",
+                        FileName = $"GraficoNotas_{DateTime.Now:yyyyMMdd_HHmmss}.png",
+                        Title = "Guardar gráfico de notas como",
+                        OverwritePrompt = true,
+                        RestoreDirectory = true,
+                        InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
+                    };
+
+                    if (sfd.ShowDialog(this) == DialogResult.OK)
+                        selectedPath = sfd.FileName;
+                });
+
+                if (string.IsNullOrEmpty(selectedPath))
+                    return;
+
+                await Task.Run(() => File.WriteAllBytes(selectedPath, bytes));
+
+                MessageBox.Show($"Gráfico guardado en:\n{selectedPath}", "Gráfico generado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                try { Process.Start(new ProcessStartInfo { FileName = selectedPath, UseShellExecute = true }); }
+                catch { }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al descargar el gráfico:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                pieChartButton.Enabled = true;
+                Cursor.Current = Cursors.Default;
+            }
+        }
+
     }
 }

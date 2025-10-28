@@ -30,6 +30,7 @@
                         <td>@c.Cupo</td>
                         <td>@c.SpecialtyDescripcion</td>
                         <td class="actions">
+                            <button @onclick="() => Enroll(c.Id)">Inscribir</button>
                             <button @onclick="() => Edit(c.Id)">Editar</button>
                             <button @onclick="() => Delete(c.Id)">Eliminar</button>
                         </td>
@@ -59,5 +60,9 @@
         if (!ok) return;
         await API.Clients.CoursesApiClient.DeleteAsync(id);
         items = (await API.Clients.CoursesApiClient.GetAllAsync())?.ToList();
+    }
+    void Enroll(int courseId)
+    {
+        Nav.NavigateTo($"/admin/courses/{courseId}/enrollments");
     }
 }

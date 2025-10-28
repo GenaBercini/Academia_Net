@@ -1,0 +1,118 @@
+﻿@page "/student/subjects"
+@layout StudentLayout
+@using DTOs
+@using Shared.Types
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+
+<h3 class="card">Mis Materias</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        @if (pageErrors.Any())
+        {
+            <div class="alert alert-danger">
+                <ul>@foreach (var err in pageErrors) {
+                <li>@err</li>
+            }
+    </ul>
+        </div>
+    }
+
+    @if (!enrolledList.Any())
+    {
+        <div class="text-muted">No estás inscripto en ninguna materia.</div>
+    }
+    else
+    {
+        <table class="table">
+            <thead><tr><th>Curso</th><th>Materia</th><th>Nota</th><th>Inscripción</th></tr></thead>
+            <tbody>
+                @foreach (var e in enrolledList)
+                {
+                    <tr>
+                        <td>@e.Curso</td>
+                        <td>@e.Materia</td>
+                        <td>@(e.Nota.HasValue? e.Nota.Value.ToString("0.##") : "-")</td>
+                        <td>@(e.FechaInscripcion?.ToString("g") ?? "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+        }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private List<string> pageErrors = new();
+    private List<EnrolledView> enrolledList = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        pageErrors.Clear();
+
+        if (!await AuthService.IsAuthenticatedAsync())
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        var user = await AuthService.GetCurrentUserAsync();
+        if (user == null || user.TypeUser != UserType.Student)
+        {
+            Nav.NavigateTo("/");
+            return;
+        }
+
+        try
+        {
+            var courses = (await API.Clients.CoursesApiClient.GetAllAsync())?.ToList() ?? new List<CourseDTO>();
+            var subjectsCache = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToDictionary(s => s.Id) ?? new Dictionary<int, SubjectDTO>();
+
+            foreach (var c in courses)
+            {
+                try
+                {
+                    var insc = (await API.Clients.UserCourseSubjectsApiClient.GetByUserAndCourseAsync(user.Id, c.Id))?.ToList() ?? new List<UserCourseSubjectDTO>();
+                    foreach (var i in insc)
+                    {
+                        enrolledList.Add(new EnrolledView
+                        {
+                            Curso = c.Comision,
+                            Materia = subjectsCache.TryGetValue(i.SubjectId, out var s) ? s.Desc : $"Id {i.SubjectId}",
+                            Nota = i.NotaFinal,
+                            FechaInscripcion = i.FechaInscripcion
+                        });
+                    }
+                }
+                catch
+                {
+                    // ignorar fallo por curso
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error cargando materias inscriptas: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private class EnrolledView
+    {
+        public string Curso { get; set; } = string.Empty;
+        public string Materia { get; set; } = string.Empty;
+        public decimal? Nota { get; set; }
+        public DateTime? FechaInscripcion { get; set; }
+    }
+}
