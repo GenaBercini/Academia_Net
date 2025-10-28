@@ -119,6 +119,23 @@ namespace WebAPI
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status500InternalServerError)
             .WithOpenApi();
+
+            app.MapGet("/users/report/grades/pie", async (UserService userService) =>
+            {
+                try
+                {
+                    var pngBytes = await userService.GenerateGradesPieChartAsync();
+                    return Results.File(pngBytes, "image/png", "GraficoNotas.png");
+                }
+                catch (Exception ex)
+                {
+                    return Results.Problem(ex.Message);
+                }
+            })
+            .WithName("GetUsersGradesPieChart")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .WithOpenApi();
         }
     }
 }

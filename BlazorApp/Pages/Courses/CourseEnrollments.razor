@@ -1,0 +1,305 @@
+﻿@page "/admin/courses/{Id:int}/enrollments"
+@layout AdminLayout
+@using DTOs
+@using System.Linq
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="card">Inscripciones - @course?.SpecialtyDescripcion ?? "Curso"</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else if (course == null)
+    {
+        <div class="alert alert-warning">Curso no encontrado.</div>
+    }
+    else
+    {
+        <div class="mb-2">
+            <strong>Curso:</strong> @course.Comision - @course.Turno - Año @course.Año_calendario - Cupo: @course.Cupo
+        </div>
+
+        <div class="d-flex gap-3" style="align-items:flex-start;">
+            <!-- Usuarios -->
+            <div style="width:30%;">
+                <h5>Usuarios</h5>
+                <input placeholder="Filtrar usuario" class="input mb-2" @bind="userFilter" @oninput="OnUserFilterChanged" />
+                <div style="max-height:420px; overflow:auto; border:1px solid #ddd; padding:8px;">
+                    @if (!users.Any())
+                    {
+                        <div>No hay usuarios.</div>
+                    }
+                    else
+                    {
+                        @foreach (var u in FilteredUsers)
+                        {
+                            <div class="user-row p-1" style="cursor:pointer;@(selectedUser?.Id == u.Id ? "background:#eef;" : "")"
+                                 @onclick="() => SelectUser(u)">
+                                <div><strong>@u.UserName</strong> (@u.TypeUser)</div>
+                                <div class="small text-muted">@u.Name @u.LastName - @u.Email</div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <!-- Materias disponibles -->
+            <div style="width:40%;">
+                <h5>Materias disponibles (@availableSubjects.Count)</h5>
+                <div style="max-height:420px; overflow:auto; border:1px solid #ddd; padding:8px;">
+                    @if (selectedUser == null)
+                    {
+                        <div class="text-muted">Seleccione un usuario para ver las materias disponibles.</div>
+                    }
+                    else if (!availableSubjects.Any())
+                    {
+                        <div>No hay materias disponibles para inscribir.</div>
+                    }
+                    else
+                    {
+                        @foreach (var s in availableSubjects)
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="sub-@s.Id"
+                                       @onchange="(e) => ToggleAvailable(s.Id, (bool?)e.Value == true)" checked="@selectedAvailableIds.Contains(s.Id)" />
+                                <label class="form-check-label" for="sub-@s.Id">@s.Desc (@s.PlanDescripcion) - Año @s.Año</label>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="mt-2">
+                    <button class="btn" @onclick="EnrollSelected" disabled="@(!selectedAvailableIds.Any() || selectedUser == null)">Inscribir seleccionadas</button>
+                </div>
+            </div>
+
+            <!-- Materias inscriptas -->
+            <div style="width:30%;">
+                <h5>Materias inscriptas (@enrollments.Count)</h5>
+                <div style="max-height:420px; overflow:auto; border:1px solid #ddd; padding:8px;">
+                    @if (selectedUser == null)
+                    {
+                        <div class="text-muted">Seleccione un usuario.</div>
+                    }
+                    else if (!enrollments.Any())
+                    {
+                        <div>El usuario no está inscripto en este curso.</div>
+                    }
+                    else
+                    {
+                        @foreach (var e in enrollments)
+                        {
+                            var subj = subjects.FirstOrDefault(s => s.Id == e.SubjectId);
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="enr-@e.SubjectId"
+                                       @onchange="(ev) => ToggleEnrolled(e.SubjectId, (bool?)ev.Value == true)" checked="@selectedEnrolledIds.Contains(e.SubjectId)" />
+                                <label class="form-check-label" for="enr-@e.SubjectId">@subj?.Desc ?? ("Id " + e.SubjectId)</label>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <div class="mt-2">
+                    <button class="btn btn-danger" @onclick="RemoveSelected" disabled="@(!selectedEnrolledIds.Any() || selectedUser == null)">Eliminar inscripción(es)</button>
+                </div>
+            </div>
+        </div>
+
+        @if (pageErrors.Any())
+        {
+            <div class="alert alert-danger mt-3">
+                <ul>
+                    @foreach (var err in pageErrors)
+                    {
+                        <li>@err</li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int Id { get; set; } // course id
+
+    private CourseDTO? course;
+    private List<UserDTO> users = new();
+    private List<SubjectDTO> subjects = new(); // todas las materias del sistema
+    private List<SubjectDTO> availableSubjects = new();
+    private List<UserCourseSubjectDTO> enrollments = new();
+    private UserDTO? selectedUser;
+    private HashSet<int> selectedAvailableIds = new();
+    private HashSet<int> selectedEnrolledIds = new();
+    private List<string> pageErrors = new();
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private string userFilter = string.Empty;
+
+    private IEnumerable<UserDTO> FilteredUsers => string.IsNullOrWhiteSpace(userFilter) ? users : users.Where(u => (u.UserName?.Contains(userFilter, StringComparison.OrdinalIgnoreCase) ?? false) || (u.Email?.Contains(userFilter, StringComparison.OrdinalIgnoreCase) ?? false));
+
+    protected override async Task OnParametersSetAsync()
+    {
+        isLoading = true;
+        pageErrors.Clear();
+        selectedUser = null;
+        selectedAvailableIds.Clear();
+        selectedEnrolledIds.Clear();
+        enrollments.Clear();
+        availableSubjects.Clear();
+        subjects.Clear();
+
+        try
+        {
+            course = await API.Clients.CoursesApiClient.GetAsync(Id);
+            if (course == null)
+            {
+                pageErrors.Add("Curso no encontrado.");
+                return;
+            }
+
+            // cargar usuarios (excluir admins)
+            users = (await API.Clients.UsersApiClient.GetAllAsync())?.Where(u => u.TypeUser != Shared.Types.UserType.Admin).ToList() ?? new();
+
+            // cargar todas las materias y luego filtraremos por año de curso
+            subjects = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToList() ?? new();
+
+            // si quieres, podrías precargar enrollments, pero los cargamos al seleccionar usuario
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error cargando datos: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void OnUserFilterChanged(ChangeEventArgs _) => StateHasChanged();
+
+    private async Task SelectUser(UserDTO u)
+    {
+        selectedUser = u;
+        selectedAvailableIds.Clear();
+        selectedEnrolledIds.Clear();
+        pageErrors.Clear();
+
+        await LoadUserEnrollments();
+    }
+
+    private async Task LoadUserEnrollments()
+    {
+        if (selectedUser == null || course == null) return;
+
+        try
+        {
+            enrollments = (await API.Clients.UserCourseSubjectsApiClient.GetByUserAndCourseAsync(selectedUser.Id, course.Id))?.ToList() ?? new();
+
+            // Obtener año del curso a partir de la comision (primer dígito)
+            int añoCurso = 0;
+            if (!string.IsNullOrWhiteSpace(course.Comision))
+            {
+                var digits = new string(course.Comision.Where(char.IsDigit).ToArray());
+                if (digits.Length >= 1 && int.TryParse(digits.Substring(0, 1), out var y))
+                    añoCurso = y;
+            }
+
+            // materias del mismo año
+            var materiasDelAño = subjects.Where(s => s.Año == añoCurso).ToList();
+
+            var enrolledIds = enrollments.Select(e => e.SubjectId).ToHashSet();
+            availableSubjects = materiasDelAño.Where(s => !enrolledIds.Contains(s.Id)).ToList();
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error cargando inscripciones: {ex.Message}");
+            enrollments = new List<UserCourseSubjectDTO>();
+            availableSubjects = new List<SubjectDTO>();
+        }
+    }
+
+    private void ToggleAvailable(int subjectId, bool checkedState)
+    {
+        if (checkedState) selectedAvailableIds.Add(subjectId);
+        else selectedAvailableIds.Remove(subjectId);
+    }
+
+    private void ToggleEnrolled(int subjectId, bool checkedState)
+    {
+        if (checkedState) selectedEnrolledIds.Add(subjectId);
+        else selectedEnrolledIds.Remove(subjectId);
+    }
+
+    private async Task EnrollSelected()
+    {
+        pageErrors.Clear();
+        if (selectedUser == null || course == null) return;
+        if (!selectedAvailableIds.Any()) return;
+
+        isSaving = true;
+        try
+        {
+            var toAdd = selectedAvailableIds.ToList();
+            foreach (var subjId in toAdd)
+            {
+                var dto = new UserCourseSubjectDTO
+                {
+                    UserId = selectedUser.Id,
+                    CourseId = course.Id,
+                    SubjectId = subjId,
+                    FechaInscripcion = DateTime.UtcNow
+                };
+
+                await API.Clients.UserCourseSubjectsApiClient.AddAsync(dto);
+            }
+
+            // recargar
+            await LoadUserEnrollments();
+            selectedAvailableIds.Clear();
+            await JS.InvokeVoidAsync("alert", "Inscripción/s realizada/s correctamente.");
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error al inscribir: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private async Task RemoveSelected()
+    {
+        pageErrors.Clear();
+        if (selectedUser == null || course == null) return;
+        if (!selectedEnrolledIds.Any()) return;
+
+        var ok = await JS.InvokeAsync<bool>("confirm", $"Eliminar {selectedEnrolledIds.Count} inscripción/es?");
+        if (!ok) return;
+
+        isSaving = true;
+        try
+        {
+            var toRemove = selectedEnrolledIds.ToList();
+            foreach (var subjId in toRemove)
+            {
+                await API.Clients.UserCourseSubjectsApiClient.DeleteAsync(selectedUser.Id, course.Id, subjId);
+            }
+
+            await LoadUserEnrollments();
+            selectedEnrolledIds.Clear();
+            await JS.InvokeVoidAsync("alert", "Inscripciones eliminadas correctamente.");
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error al eliminar inscripción: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+}

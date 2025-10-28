@@ -1,4 +1,5 @@
-﻿@page "/login"
+﻿
+@page "/login"
 @layout AuthLayout
 @using System.ComponentModel.DataAnnotations
 @using Shared.Types
@@ -51,6 +52,10 @@
             var user = await AuthService.GetCurrentUserAsync();
             if (user != null && user.TypeUser == UserType.Admin)
                 Nav.NavigateTo("/admin/users");
+            else if (user != null && user.TypeUser == UserType.Teacher)
+                Nav.NavigateTo("/teacher/grades");
+            else if (user != null && user.TypeUser == UserType.Student)
+                Nav.NavigateTo("/student/enroll");
             else
                 Nav.NavigateTo("/dashboard");
         }
@@ -74,8 +79,12 @@
             var user = await AuthService.GetCurrentUserAsync();
             if (user != null && user.TypeUser == UserType.Admin)
                 Nav.NavigateTo("/admin/users");
+            else if (user != null && user.TypeUser == UserType.Teacher)
+                Nav.NavigateTo("/teacher/grades");
+            else if (user != null && user.TypeUser == UserType.Student)
+                Nav.NavigateTo("/student/enroll");
             else
-                Nav.NavigateTo("/login");
+                Nav.NavigateTo("/dashboard");
         }
         catch (Exception ex)
         {

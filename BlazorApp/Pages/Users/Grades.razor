@@ -1,0 +1,309 @@
+﻿@page "/teacher"
+@page "/teacher/grades"
+@layout TeacherLayout
+@using DTOs
+@using Shared.Types
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="card">Notas</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        @if (pageErrors.Any())
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var err in pageErrors) { <li>@err</li> }
+                </ul>
+            </div>
+        }
+
+        <div class="d-flex gap-3" style="align-items:flex-start;">
+            <div style="width:40%;">
+                <h5>Materias</h5>
+
+                @if (!teacherSubjects.Any())
+                {
+                    <div class="text-muted">No hay materias asignadas.</div>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead><tr><th>Curso</th><th>Materia</th></tr></thead>
+                        <tbody>
+                            @foreach (var s in teacherSubjects)
+                            {
+                                var isSelected = s.CourseId == selectedCourseId && s.SubjectId == selectedSubjectId;
+                                <tr style="cursor:pointer;@(isSelected ? "background:#eef;" : "")" @onclick="() => SelectSubject(s.CourseId, s.SubjectId)">
+                                    <td>@s.CourseComision</td>
+                                    <td>@s.SubjectDesc</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+
+            <div style="width:60%;">
+                <h5>Estudiantes (@students.Count)</h5>
+
+                @if (selectedSubjectId == 0)
+                {
+                    <div class="text-muted">Seleccione una materia para ver los estudiantes.</div>
+                }
+                else if (!students.Any())
+                {
+                    <div>No hay estudiantes inscriptos en esta materia.</div>
+                }
+                else
+                {
+                    <table class="table">
+                        <thead><tr><th>Usuario</th><th>Nombre</th><th>Nota</th><th>Acciones</th></tr></thead>
+                        <tbody>
+                            @foreach (var st in students)
+                            {
+                                <tr class="@(selectedStudentId == st.UserId ? "selected-row" : "")">
+                                    <td>@st.UserName</td>
+                                    <td>@st.Name</td>
+                                    <td>@(st.Nota.HasValue ? st.Nota.Value.ToString("0.##") : "-")</td>
+                                    <td>
+                                        <button class="btn" @onclick="() => SelectStudent(st.UserId)">Editar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+
+                @if (selectedEnrollment != null)
+                {
+                    <div class="card mt-2 p-2">
+                        <div><strong>Alumno:</strong> @selectedStudentName</div>
+                        <div class="form-row mt-2">
+                            <label style="width:80px">Nota:</label>
+                            <select class="input" @bind="selectedNota">
+                                @for (int i = 1; i <= 10; i++)
+                                {
+                                    <option value="@((decimal)i)">@i</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="top-row mt-2">
+                            <button class="btn" @onclick="SaveNota" disabled="@isSaving">@(isSaving ? "Guardando..." : "Cargar nota")</button>
+                            <button class="btn-ghost" @onclick="ClearSelection">Cancelar</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private bool isSaving = false;
+    private List<string> pageErrors = new();
+
+    private int selectedCourseId = 0;
+    private int selectedSubjectId = 0;
+
+    private List<TeacherSubjectItem> teacherSubjects = new();
+    private List<StudentView> students = new();
+
+    private int selectedStudentId = 0;
+    private string selectedStudentName = string.Empty;
+    private UserCourseSubjectDTO? selectedEnrollment;
+    private decimal selectedNota = 1m;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTeacherSubjectsAsync();
+    }
+
+    private async Task LoadTeacherSubjectsAsync()
+    {
+        isLoading = true;
+        pageErrors.Clear();
+        teacherSubjects.Clear();
+        students.Clear();
+
+        try
+        {
+            var user = await AuthService.GetCurrentUserAsync();
+            if (user == null)
+            {
+                Nav.NavigateTo("/login");
+                return;
+            }
+
+            if (user.TypeUser != UserType.Teacher)
+            {
+                // Redirigir si el rol no corresponde
+                Nav.NavigateTo("/");
+                return;
+            }
+
+            var courses = (await API.Clients.CoursesApiClient.GetAllAsync())?.ToList() ?? new List<CourseDTO>();
+            var subjectsCache = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToDictionary(s => s.Id) ?? new Dictionary<int, SubjectDTO>();
+
+            foreach (var c in courses)
+            {
+                try
+                {
+                    var insc = (await API.Clients.UserCourseSubjectsApiClient.GetByUserAndCourseAsync(user.Id, c.Id))?.ToList() ?? new List<UserCourseSubjectDTO>();
+                    foreach (var i in insc)
+                    {
+                        if (!teacherSubjects.Any(t => t.CourseId == i.CourseId && t.SubjectId == i.SubjectId))
+                        {
+                            var desc = subjectsCache.TryGetValue(i.SubjectId, out var sDto) ? sDto.Desc : (await API.Clients.SubjectsApiClient.GetAsync(i.SubjectId))?.Desc ?? $"Id {i.SubjectId}";
+                            teacherSubjects.Add(new TeacherSubjectItem { CourseId = i.CourseId, SubjectId = i.SubjectId, SubjectDesc = desc, CourseComision = c.Comision });
+                        }
+                    }
+                }
+                catch
+                {
+                    // ignorar fallo en curso individual y continuar
+                }
+            }
+
+            // seleccionar la primera materia si existe
+            if (teacherSubjects.Any())
+            {
+                await SelectSubject(teacherSubjects[0].CourseId, teacherSubjects[0].SubjectId);
+            }
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error cargando materias: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task SelectSubject(int courseId, int subjectId)
+    {
+        selectedCourseId = courseId;
+        selectedSubjectId = subjectId;
+        selectedStudentId = 0;
+        selectedEnrollment = null;
+        selectedStudentName = string.Empty;
+        students.Clear();
+        await LoadStudentsForSubject(courseId, subjectId);
+    }
+
+    private async Task LoadStudentsForSubject(int courseId, int subjectId)
+    {
+        isLoading = true;
+        pageErrors.Clear();
+        students.Clear();
+
+        try
+        {
+            var allUsers = (await API.Clients.UsersApiClient.GetAllAsync())?.Where(u => u.TypeUser == UserType.Student).ToList() ?? new List<UserDTO>();
+
+            foreach (var u in allUsers)
+            {
+                try
+                {
+                    var ins = (await API.Clients.UserCourseSubjectsApiClient.GetByUserAndCourseAsync(u.Id, courseId))?.FirstOrDefault(x => x.SubjectId == subjectId);
+                    if (ins != null)
+                    {
+                        var userFull = await API.Clients.UsersApiClient.GetAsync(u.Id);
+                        students.Add(new StudentView
+                        {
+                            UserId = u.Id,
+                            UserName = userFull?.UserName ?? $"id-{u.Id}",
+                            Name = $"{userFull?.Name} {userFull?.LastName}",
+                            Nota = ins.NotaFinal,
+                            Enrollment = ins
+                        });
+                    }
+                }
+                catch
+                {
+                    // ignorar fallo por usuario
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error cargando estudiantes: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void SelectStudent(int userId)
+    {
+        selectedStudentId = userId;
+        var st = students.FirstOrDefault(s => s.UserId == userId);
+        if (st != null)
+        {
+            selectedEnrollment = st.Enrollment;
+            selectedStudentName = st.Name;
+            selectedNota = st.Nota ?? 1m;
+        }
+    }
+
+    private void ClearSelection()
+    {
+        selectedStudentId = 0;
+        selectedEnrollment = null;
+        selectedStudentName = string.Empty;
+    }
+
+    private async Task SaveNota()
+    {
+        if (selectedEnrollment == null) return;
+
+        isSaving = true;
+        pageErrors.Clear();
+
+        try
+        {
+            selectedEnrollment.NotaFinal = selectedNota;
+            await API.Clients.UserCourseSubjectsApiClient.UpdateNotaAsync(selectedEnrollment);
+
+            // recargar alumnos para reflejar la nota actualizada
+            await LoadStudentsForSubject(selectedCourseId, selectedSubjectId);
+            ClearSelection();
+            await JS.InvokeVoidAsync("alert", "Nota cargada correctamente.");
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error guardando la nota: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+        }
+    }
+
+    private class TeacherSubjectItem
+    {
+        public int CourseId { get; set; }
+        public int SubjectId { get; set; }
+        public string SubjectDesc { get; set; } = string.Empty;
+        public string CourseComision { get; set; } = string.Empty;
+    }
+
+    private class StudentView
+    {
+        public int UserId { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public decimal? Nota { get; set; }
+        public UserCourseSubjectDTO? Enrollment { get; set; }
+    }
+}

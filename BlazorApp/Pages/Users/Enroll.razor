@@ -1,0 +1,186 @@
+﻿@page "/student"
+@page "/student/enroll"
+@layout StudentLayout
+@using DTOs
+@using Shared.Types
+@inject IAuthService AuthService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<h3 class="card">Inscribirse</h3>
+
+<div class="card">
+    @if (isLoading)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        @if (pageErrors.Any())
+        {
+            <div class="alert alert-danger">
+                <ul>@foreach (var err in pageErrors) {
+                <li>@err</li>
+            }
+    </ul>
+        </div>
+    }
+
+    <div class="form-row mb-2">
+        <label style="width:110px">Curso:</label>
+        <select class="input" @bind="selectedCourseId">
+            <option value="0">-- Seleccione curso --</option>
+            @foreach (var c in courses)
+            {
+                <option value="@c.Id">@($"{c.Comision} - {c.Turno} - {c.Año_calendario}")</option>
+            }
+        </select>
+    </div>
+
+    <div>
+        <h5>Materias disponibles (@availableSubjects.Count)</h5>
+        @if (!availableSubjects.Any())
+        {
+            <div class="text-muted">No hay materias disponibles para inscripción.</div>
+        }
+        else
+        {
+            <table class="table">
+                <thead><tr><th>Materia</th><th>Año</th><th>Hs/Sem</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var s in availableSubjects)
+                    {
+                        <tr>
+                            <td>@s.Desc</td>
+                            <td>@s.Año</td>
+                            <td>@s.HsSemanales</td>
+                            <td><button class="btn" @onclick="() => EnrollAsync(s.Id)">Inscribirse</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+        }
+</div>
+
+@code {
+    private bool isLoading = true;
+    private List<string> pageErrors = new();
+
+    private List<CourseDTO> courses = new();
+    private int _selectedCourseId = 0;
+    private int selectedCourseId
+    {
+        get => _selectedCourseId;
+        set
+        {
+            if (_selectedCourseId != value)
+            {
+                _selectedCourseId = value;
+                _ = LoadAvailableSubjectsAsync();
+            }
+        }
+    }
+
+    private List<SubjectDTO> availableSubjects = new();
+    private List<SubjectDTO> allSubjects = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoading = true;
+        pageErrors.Clear();
+
+        if (!await AuthService.IsAuthenticatedAsync())
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        var user = await AuthService.GetCurrentUserAsync();
+        if (user == null || user.TypeUser != UserType.Student)
+        {
+            Nav.NavigateTo("/", true);
+            return;
+        }
+
+        try
+        {
+            courses = (await API.Clients.CoursesApiClient.GetAllAsync())?.ToList() ?? new List<CourseDTO>();
+            allSubjects = (await API.Clients.SubjectsApiClient.GetAllAsync())?.ToList() ?? new List<SubjectDTO>();
+
+            selectedCourseId = 0;
+            availableSubjects.Clear();
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error inicializando: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private int ObtenerAñoDesdeComision(string comision)
+    {
+        if (string.IsNullOrWhiteSpace(comision)) return 0;
+        var digits = new string(comision.Where(char.IsDigit).ToArray());
+        if (digits.Length == 0) return 0;
+        if (int.TryParse(digits.Substring(0, 1), out var y)) return y;
+        return 0;
+    }
+
+    private async Task LoadAvailableSubjectsAsync()
+    {
+        availableSubjects.Clear();
+        pageErrors.Clear();
+
+        if (selectedCourseId == 0) return;
+
+        try
+        {
+            var course = courses.FirstOrDefault(c => c.Id == selectedCourseId);
+            var añoCurso = course != null ? ObtenerAñoDesdeComision(course.Comision) : 0;
+
+            var subjectsFiltered = añoCurso > 0 ? allSubjects.Where(s => s.Año == añoCurso).ToList() : allSubjects.ToList();
+
+            var user = await AuthService.GetCurrentUserAsync();
+            var enrolled = (await API.Clients.UserCourseSubjectsApiClient.GetByUserAndCourseAsync(user.Id, selectedCourseId))?.Select(x => x.SubjectId).ToHashSet() ?? new HashSet<int>();
+
+            availableSubjects = subjectsFiltered.Where(s => !enrolled.Contains(s.Id)).ToList();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error cargando materias: {ex.Message}");
+        }
+    }
+
+    private async Task EnrollAsync(int subjectId)
+    {
+        pageErrors.Clear();
+        try
+        {
+            var user = await AuthService.GetCurrentUserAsync();
+            if (user == null) { pageErrors.Add("Usuario no autenticado."); return; }
+
+            var dto = new UserCourseSubjectDTO
+            {
+                UserId = user.Id,
+                CourseId = selectedCourseId,
+                SubjectId = subjectId,
+                FechaInscripcion = DateTime.UtcNow
+            };
+
+            await API.Clients.UserCourseSubjectsApiClient.AddAsync(dto);
+
+            await JS.InvokeVoidAsync("alert", "Inscripción realizada correctamente.");
+            await LoadAvailableSubjectsAsync();
+        }
+        catch (Exception ex)
+        {
+            pageErrors.Add($"Error al inscribirse: {ex.Message}");
+        }
+    }
+}

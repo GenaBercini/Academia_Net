@@ -1,5 +1,17 @@
 [
   {
+    "Name": "Nuevo perfil",
+    "Projects": []
+  },
+  {
+    "Name": "Nuevo perfil",
+    "Projects": []
+  },
+  {
+    "Name": "Nuevo perfil",
+    "Projects": []
+  },
+  {
     "Name": "New Profile",
     "Projects": [
       {
@@ -7,7 +19,7 @@
         "Action": "Start"
       },
       {
-        "Path": "BlazorApp\\BlazorApp.csproj",
+        "Path": "WindowsForms\\WindowsForms.csproj",
         "Action": "Start"
       }
     ]

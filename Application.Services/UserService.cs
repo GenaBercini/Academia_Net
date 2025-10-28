@@ -187,15 +187,15 @@ namespace Application.Services
 
                                     student.Item().Text($"Estado: {u.Status}").FontSize(10);
 
-                                    // var enrollments = userRepository.GetEnrollmentsByUser(u.Id).ToList();
-                                    // if (enrollments.Any())
-                                    // {
-                                    //     student.Item().Text("Inscripciones:").FontSize(10).SemiBold();
-                                    //     foreach (var e in enrollments)
-                                    //     {
-                                    //         student.Item().Text($"  Curso {e.CourseId} - Materia {e.SubjectId} - Nota: {(e.NotaFinal.HasValue ? e.NotaFinal.Value.ToString("N2") : "N/A")} - Inscripción: {(e.FechaInscripcion.HasValue ? e.FechaInscripcion.Value.ToString("yyyy-MM-dd") : "N/A")}").FontSize(9);
-                                    //     }
-                                    // }
+                                    var enrollments = _userRepository.GetEnrollmentsByUser(u.Id).ToList();
+                                    if (enrollments.Any())
+                                    {
+                                        student.Item().Text("Inscripciones:").FontSize(10).SemiBold();
+                                        foreach (var e in enrollments)
+                                        {
+                                            student.Item().Text($"  Curso {e.CourseId} - Materia {e.SubjectId} - Nota: {(e.NotaFinal.HasValue ? e.NotaFinal.Value.ToString("N2") : "N/A")} - Inscripción: {(e.FechaInscripcion.HasValue ? e.FechaInscripcion.Value.ToString("yyyy-MM-dd") : "N/A")}").FontSize(9);
+                                        }
+                                    }
                                 });
                             }
                         });
@@ -219,8 +219,45 @@ namespace Application.Services
 
             return pdfBytes;
         }
+        // (añade este método público en la clase UserService)
 
-        private byte[] GenerateGradesPieChart(Dictionary<string, int> buckets)
+        public async Task<byte[]> GenerateGradesPieChartAsync()
+        {
+            // Buckets: ajustar según la agrupación que quieras
+            var buckets = new Dictionary<string, int>
+    {
+        { "0-3", 0 },
+        { "4-6", 0 },
+        { "7-8", 0 },
+        { "9-10", 0 }
+    };
+
+            // Obtener todos los usuarios y sus inscripciones
+            var users = await _userRepository.GetAllAsync();
+
+            foreach (var u in users)
+            {
+                var enrollments = _userRepository.GetEnrollmentsByUser(u.Id) ?? Enumerable.Empty<UserCourseSubject>();
+                foreach (var e in enrollments)
+                {
+                    if (e.NotaFinal.HasValue)
+                    {
+                        // redondear o truncar según prefieras
+                        var nota = (int)Math.Round(e.NotaFinal.Value);
+                        if (nota <= 3) buckets["0-3"]++;
+                        else if (nota <= 6) buckets["4-6"]++;
+                        else if (nota <= 8) buckets["7-8"]++;
+                        else buckets["9-10"]++;
+                    }
+                }
+            }
+
+            // Reusar el generador gráfico existente (método privado GenerateGradesPieChart)
+            return GenerateGradesPieChart(buckets);
+        }
+
+
+        public byte[] GenerateGradesPieChart(Dictionary<string, int> buckets)
         {
             const int width = 700;
             const int height = 400;
@@ -229,18 +266,18 @@ namespace Application.Services
             canvas.Clear(SKColors.White);
 
             var total = buckets.Values.Sum();
-            var rect = new SKRect(20, 20, 320, 320); // área del pie
+            var rect = new SKRect(20, 20, 320, 320);
             float startAngle = -90f;
 
             SKColor[] colors = new[]
             {
-                SKColors.LightGray,
-                SKColors.IndianRed,
-                SKColors.Orange,
-                SKColors.Gold,
-                SKColors.MediumSeaGreen,
-                SKColors.SteelBlue
-            };
+                    SKColors.LightGray,
+                    SKColors.IndianRed,
+                    SKColors.Orange,
+                    SKColors.Gold,
+                    SKColors.MediumSeaGreen,
+                    SKColors.SteelBlue
+                };
 
             var paint = new SKPaint { IsAntialias = true, Style = SKPaintStyle.Fill };
 
@@ -258,7 +295,6 @@ namespace Application.Services
                 i++;
             }
 
-            // Leyenda
             var legendX = 360;
             var legendY = 40;
             var legendPaint = new SKPaint { IsAntialias = true, TextSize = 14, Color = SKColors.Black };
