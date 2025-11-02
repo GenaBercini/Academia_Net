@@ -32,5 +32,4 @@ var host = builder.Build();
 
 var authService = host.Services.GetRequiredService<IAuthService>();
 API.Clients.AuthServiceProvider.Register(authService);
-
 await host.RunAsync();

@@ -1,0 +1,111 @@
+﻿@page "/profile"
+@inject API.Clients.IAuthService AuthService
+
+<div class="card profile-card">
+    <h3>Mi Perfil</h3>
+    @if (user == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <div class="profile-info">
+            <div><b>Usuario:</b> @user.UserName</div>
+            <div><b>Nombre:</b> @user.Name @user.LastName</div>
+            <div><b>Email:</b> @user.Email</div>
+            <div><b>DNI:</b> @user.Dni</div>
+            @if (!isAdmin)
+            {
+                <button class="btn" @onclick="ShowChangePassword">Cambiar contraseña</button>
+            }
+        </div>
+    }
+
+    @if (showChangePassword)
+    {
+        <EditForm Model="passwordModel" OnValidSubmit="ChangePasswordAsync" class="profile-form">
+            <div class="form-group">
+                <label>Contraseña actual</label>
+                <InputText type="@(_showCurrent ? "text" : "password")" @bind-Value="passwordModel.CurrentPassword" class="input" />
+                <button type="button" class="btn-ghost" @onclick="ToggleShowCurrent">@(_showCurrent ? "Ocultar" : "Ver")</button>
+            </div>
+            <div class="form-group">
+                <label>Nueva contraseña</label>
+                <InputText type="@(_showNew ? "text" : "password")" @bind-Value="passwordModel.NewPassword" class="input" />
+                <button type="button" class="btn-ghost" @onclick="ToggleShowNew">@(_showNew ? "Ocultar" : "Ver")</button>
+            </div>
+            <div class="form-group">
+                <label>Confirmar contraseña</label>
+                <InputText type="@(_showConfirm ? "text" : "password")" @bind-Value="passwordModel.ConfirmPassword" class="input" />
+                <button type="button" class="btn-ghost" @onclick="ToggleShowConfirm">@(_showConfirm ? "Ocultar" : "Ver")</button>
+            </div>
+            <button type="submit" class="btn">Actualizar</button>
+        </EditForm>
+        @if (!string.IsNullOrEmpty(changePasswordMessage))
+        {
+            <div class="alert alert-info">@changePasswordMessage</div>
+        }
+    }
+</div>
+
+@code {
+    UserDTO? user;
+    bool isAdmin = false;
+    bool showChangePassword = false;
+    PasswordModel passwordModel = new();
+    string? changePasswordMessage;
+
+    bool _showCurrent = false;
+    bool _showNew = false;
+    bool _showConfirm = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await AuthService.GetCurrentUserAsync();
+        isAdmin = user?.TypeUser == UserType.Admin;
+    }
+
+    void ShowChangePassword() => showChangePassword = true;
+    void ToggleShowCurrent() => _showCurrent = !_showCurrent;
+    void ToggleShowNew() => _showNew = !_showNew;
+    void ToggleShowConfirm() => _showConfirm = !_showConfirm;
+
+    async Task ChangePasswordAsync()
+    {
+        changePasswordMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(passwordModel.CurrentPassword))
+        {
+            changePasswordMessage = "Debe ingresar la contraseña actual.";
+            return;
+        }
+        if (passwordModel.NewPassword != passwordModel.ConfirmPassword)
+        {
+            changePasswordMessage = "Las contraseñas no coinciden.";
+            return;
+        }
+        if (user == null)
+        {
+            changePasswordMessage = "Usuario no identificado.";
+            return;
+        }
+
+        try
+        {
+            await API.Clients.UsersApiClient.ChangePasswordAsync(user.Id, passwordModel.CurrentPassword, passwordModel.NewPassword);
+            changePasswordMessage = "Contraseña actualizada correctamente.";
+            showChangePassword = false;
+        }
+        catch (Exception ex)
+        {
+            changePasswordMessage = $"Error al actualizar contraseña: {ex.Message}";
+        }
+    }
+
+    class PasswordModel
+    {
+        public string CurrentPassword { get; set; } = string.Empty;
+        public string NewPassword { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

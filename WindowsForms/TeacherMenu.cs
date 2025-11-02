@@ -75,10 +75,17 @@ namespace WindowsForms
             OpenOtherForm(new NotasList(profesorId));
         }
 
-        private void profileButton_Click(object sender, EventArgs e)
+        private async void btnProfile_Click(object sender, EventArgs e)
         {
-            ActivarBoton((Button)sender, "Perfil del Profesor");
-            OpenOtherForm(new ProfileTeacher());
+            var auth = AuthServiceProvider.Instance;
+            var current = await auth.GetCurrentUserAsync();
+            if (current == null)
+            {
+                MessageBox.Show("No se pudo determinar el usuario actual.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            ActivarBoton((Button)sender, "Profile Profesor");
+            OpenOtherForm(new UserProfile(current.Id));
         }
     }
 }

@@ -2,16 +2,13 @@
 using DTOs;
 using Microsoft.EntityFrameworkCore;
 using Shared.Types;
+using System.Drawing;
+using System.Reflection.Metadata;
 
 namespace Data
 {
     public class UserRepository
     {
-        //private TPIContext CreateContext()
-        //{
-        //    return new TPIContext();
-        //}
-
         private readonly TPIContext _context;
 
         public UserRepository(TPIContext context)
@@ -20,7 +17,6 @@ namespace Data
         }
         public UserCourseSubject? EnrollUserInCourseSubject(int userId, int courseId, int subjectId)
         {
-            //using var context = CreateContext();
 
             var user = _context.Users.FirstOrDefault(u => u.Id == userId && u.Status == UserStatus.Active);
             if (user == null) throw new InvalidOperationException("Usuario no encontrado o inactivo.");
@@ -76,7 +72,6 @@ namespace Data
 
         public IEnumerable<UserCourseSubject> GetEnrollmentsByUser(int userId)
         {
-            //using var context = CreateContext();
             return _context.UsersCoursesSubjects
                           .Include(e => e.CourseSubject)
                           .ThenInclude(cs => cs.Course)
@@ -87,14 +82,12 @@ namespace Data
         }
         public async Task AddAsync(User user)
         {
-            //using var context = CreateContext();
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            //using var context = CreateContext();
             var usuario = await _context.Users.FindAsync(id);
             if (usuario != null)
             {
@@ -107,20 +100,17 @@ namespace Data
 
         public async Task<User?> GetAsync(int id)
         {
-            //using var context = CreateContext();
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public  User? GetByUsername(string username)
         {
-            //using var _context = CreateContext();
             return  _context.Users.FirstOrDefault(u => u.UserName == username && u.Status == UserStatus.Active);
         }
 
         public async Task<IEnumerable<User>> GetAllAsync()
         {
-            //using var _context = CreateContext();
             return await _context.Users
                 .Where(u => u.Status == UserStatus.Active)
                 .ToListAsync();
@@ -128,7 +118,6 @@ namespace Data
        
         public async Task<bool> UpdateAsync(User user)
         {
-            //using var context = CreateContext();
             var existingUsuario = await _context.Users.FindAsync(user.Id);
             if (existingUsuario != null)
             {
@@ -165,9 +154,19 @@ namespace Data
 
         public bool IsUserEnrolled(int userId, int courseId, int subjectId)
         {
-            //using var context = CreateContext();
             return _context.UsersCoursesSubjects.Any(e =>
                 e.UserId == userId && e.CourseId == courseId && e.SubjectId == subjectId);
+        }
+
+        public async Task<bool> UpdatePasswordAsync(int userId, string newPassword)
+        {
+            var existingUsuario = await _context.Users.FindAsync(userId);
+            if (existingUsuario == null)
+                return false;
+
+            existingUsuario.SetPassword(newPassword);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }
