@@ -1,5 +1,6 @@
 ﻿using Domain.Model;
 using DTOs;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Shared.Types;
 using System.Drawing;
@@ -167,6 +168,104 @@ namespace Data
             existingUsuario.SetPassword(newPassword);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<User>> GetAllADOAsync(bool onlyStudents = true)
+        {
+            const string sql = @"
+            SELECT Id, UserName, Name, LastName, Email, Dni, StudentNumber, Adress,
+                TypeUser, JobPosition, DateOfAdmission, DateOfHire, Status
+            FROM Users
+            WHERE Status = @Status
+            /**onlyStudents**/
+            ORDER BY Id";
+
+            var users = new List<User>();
+            string connectionString = _context.Database.GetConnectionString();
+            var query = sql.Replace("/**onlyStudents**/", onlyStudents ? "AND TypeUser = @TypeUser" : "");
+
+            await using var connection = new SqlConnection(connectionString);
+            await using var command = new SqlCommand(query, connection);
+
+            command.Parameters.AddWithValue("@Status", (int)UserStatus.Active);
+            if (onlyStudents)
+                command.Parameters.AddWithValue("@TypeUser", (int)UserType.Student);
+
+            await connection.OpenAsync();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var oId = reader.GetOrdinal("Id");
+            var oUserName = reader.GetOrdinal("UserName");
+            var oName = reader.GetOrdinal("Name");
+            var oLastName = reader.GetOrdinal("LastName");
+            var oEmail = reader.GetOrdinal("Email");
+            var oDni = reader.GetOrdinal("Dni");
+            var oStudentNumber = reader.GetOrdinal("StudentNumber");
+            var oAdress = reader.GetOrdinal("Adress");
+            var oTypeUser = reader.GetOrdinal("TypeUser");
+            var oJobPosition = reader.GetOrdinal("JobPosition");
+            var oDateOfAdmission = reader.GetOrdinal("DateOfAdmission");
+            var oDateOfHire = reader.GetOrdinal("DateOfHire");
+            var oStatus = reader.GetOrdinal("Status");
+
+            while (await reader.ReadAsync())
+            {
+                object Get(int ord) => reader.IsDBNull(ord) ? DBNull.Value : reader.GetValue(ord);
+
+                int id = Convert.ToInt32(Get(oId));
+                var userName = Get(oUserName) == DBNull.Value ? null : (string)Get(oUserName);
+                var name = Get(oName) == DBNull.Value ? null : (string)Get(oName);
+                var lastName = Get(oLastName) == DBNull.Value ? null : (string)Get(oLastName);
+                var email = Get(oEmail) == DBNull.Value ? null : (string)Get(oEmail);
+                var dni = Get(oDni) == DBNull.Value ? null : (string)Get(oDni);
+                var studentNumber = Get(oStudentNumber) == DBNull.Value ? null : (string)Get(oStudentNumber);
+                var adress = Get(oAdress) == DBNull.Value ? null : (string)Get(oAdress);
+
+                var rawType = Get(oTypeUser);
+                int typeUserInt = rawType == DBNull.Value ? (int)UserType.Student : Convert.ToInt32(rawType);
+
+                var rawJob = Get(oJobPosition);
+                int? jobPosInt = rawJob == DBNull.Value ? (int?)null : Convert.ToInt32(rawJob);
+
+                var rawDateAdm = Get(oDateOfAdmission);
+                DateTime? dateOfAdmission = rawDateAdm == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rawDateAdm);
+
+                var rawDateHire = Get(oDateOfHire);
+                DateTime? dateOfHire = rawDateHire == DBNull.Value ? (DateTime?)null : Convert.ToDateTime(rawDateHire);
+
+                var rawStatus = Get(oStatus);
+                int statusInt = rawStatus == DBNull.Value ? (int)UserStatus.Active : Convert.ToInt32(rawStatus);
+
+                var user = new User();
+                user.SetId(id);
+
+                user.SetTypeUser((UserType)typeUserInt);
+
+                if (!string.IsNullOrWhiteSpace(userName)) user.SetUserName(userName!);
+                if (!string.IsNullOrWhiteSpace(name)) user.SetName(name!);
+                if (!string.IsNullOrWhiteSpace(lastName)) user.SetLastName(lastName!);
+                if (!string.IsNullOrWhiteSpace(email)) user.SetEmail(email!);
+                if (!string.IsNullOrWhiteSpace(adress)) user.SetAdress(adress!);
+                if (!string.IsNullOrWhiteSpace(dni)) user.SetDni(dni!);
+
+                if (!string.IsNullOrWhiteSpace(studentNumber) && user.TypeUser == UserType.Student)
+                    user.SetStudentNumber(studentNumber!);
+
+                if (dateOfAdmission.HasValue && user.TypeUser == UserType.Student)
+                    user.SetDateOfAdmission(dateOfAdmission.Value);
+
+                if (jobPosInt.HasValue && user.TypeUser == UserType.Teacher)
+                    user.SetJobPosition((JobPositionType)jobPosInt.Value);
+
+                if (dateOfHire.HasValue && user.TypeUser == UserType.Teacher)
+                    user.SetDateOfHire(dateOfHire.Value);
+
+                user.SetStatus((UserStatus)statusInt);
+
+                users.Add(user);
+            }
+
+            return users;
         }
     }
 }

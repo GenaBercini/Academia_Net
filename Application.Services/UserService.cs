@@ -17,13 +17,15 @@ namespace Application.Services
         private readonly string _outputDirectory = Path.Combine(Directory.GetCurrentDirectory(), "GeneratedReports");
         private readonly UserRepository _userRepository;
         private readonly CourseRepository _courseRepository;
+        private readonly EnrollmentRepository _enrollmentRepository;
         private readonly SubjectRepository _subjectRepository;
 
-        public UserService(UserRepository userRepository, CourseRepository courseRepository, SubjectRepository subjectRepository)
+        public UserService(UserRepository userRepository, CourseRepository courseRepository, SubjectRepository subjectRepository, EnrollmentRepository enrollmentRepository)
         {
             _userRepository = userRepository;
             _courseRepository = courseRepository;
             _subjectRepository = subjectRepository;
+            _enrollmentRepository = enrollmentRepository;
             QuestPDF.Settings.License = LicenseType.Community;
             if (!Directory.Exists(_outputDirectory))
                 Directory.CreateDirectory(_outputDirectory);
@@ -159,10 +161,7 @@ namespace Application.Services
 
         public async Task<byte[]> GenerateUsersGradesReportAsync(bool onlyStudents = true)
         {
-            var users = await _userRepository.GetAllAsync();
-            if (onlyStudents)
-                users = users.Where(u => u.TypeUser == UserType.Student).ToList();
-
+            var users = (await _userRepository.GetAllADOAsync(onlyStudents)).ToList();
             users = users.OrderBy(u => u.Id).ToList();
 
             var document = Document.Create(container =>
@@ -201,16 +200,6 @@ namespace Application.Services
                                            .FontSize(10);
 
                                     student.Item().Text($"Estado: {u.Status}").FontSize(10);
-
-                                    var enrollments = _userRepository.GetEnrollmentsByUser(u.Id).ToList();
-                                    if (enrollments.Any())
-                                    {
-                                        student.Item().Text("Inscripciones:").FontSize(10).SemiBold();
-                                        foreach (var e in enrollments)
-                                        {
-                                            student.Item().Text($"  Curso {e.CourseId} - Materia {e.SubjectId} - Nota: {(e.NotaFinal.HasValue ? e.NotaFinal.Value.ToString("N2") : "N/A")} - Inscripción: {(e.FechaInscripcion.HasValue ? e.FechaInscripcion.Value.ToString("yyyy-MM-dd") : "N/A")}").FontSize(9);
-                                        }
-                                    }
                                 });
                             }
                         });
@@ -229,7 +218,7 @@ namespace Application.Services
 
             var pdfBytes = document.GeneratePdf();
 
-            string filePath = Path.Combine(_outputDirectory, $"ListaEstudiantes_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+            string filePath = Path.Combine(_outputDirectory, $"ListaEstudiantes.pdf");
             File.WriteAllBytes(filePath, pdfBytes);
 
             return pdfBytes;
@@ -237,9 +226,8 @@ namespace Application.Services
 
         public async Task<byte[]> GenerateAdvancedReportAsync(bool onlyStudents = true)
         {
-            var users = await _userRepository.GetAllAsync();
-            if (onlyStudents)
-                users = users.Where(u => u.TypeUser == UserType.Student).ToList();
+            var users = (await _userRepository.GetAllADOAsync(onlyStudents)).ToList();
+            var userIds = users.Select(u => u.Id).ToHashSet();
 
             var courses = await _courseRepository.GetAllAsync();
             var courseToSpecialty = courses.ToDictionary(c => c.Id, c => c.Specialty?.DescEspecialidad ?? "Sin especialidad");
@@ -247,58 +235,41 @@ namespace Application.Services
             var subjects = await _subjectRepository.GetAllAsync();
             var subjectMap = subjects.ToDictionary(s => s.Id, s => s.Desc);
 
-            // 1) Distribución por especialidad (conteo de alumnos únicos)
-            var specialtyStudents = new Dictionary<string, HashSet<int>>(StringComparer.OrdinalIgnoreCase);
+            var enrollments = (await _enrollmentRepository.GetAllAsync())
+                                .Where(e => userIds.Contains(e.UserId))
+                                .ToList();
 
-            // 2) Promedio por materia
+            var specialtyStudents = new Dictionary<string, HashSet<int>>(StringComparer.OrdinalIgnoreCase);
             var subjectSumCount = new Dictionary<int, (decimal sum, int count)>();
 
-            // 3) Cantidad de alumnos por materia (únicos)
-            var subjectStudentsSet = new Dictionary<int, HashSet<int>>();
-
-            foreach (var u in users)
+            foreach (var e in enrollments)
             {
-                var enrollments = _userRepository.GetEnrollmentsByUser(u.Id) ?? Enumerable.Empty<UserCourseSubject>();
-                foreach (var e in enrollments)
+                var specialty = courseToSpecialty.TryGetValue(e.CourseId, out var sp) ? sp : "Sin especialidad";
+                if (!specialtyStudents.TryGetValue(specialty, out var set))
                 {
-                    // Specialty
-                    var specialty = courseToSpecialty.TryGetValue(e.CourseId, out var sp) ? sp : "Sin especialidad";
-                    if (!specialtyStudents.TryGetValue(specialty, out var stSet))
-                    {
-                        stSet = new HashSet<int>();
-                        specialtyStudents[specialty] = stSet;
-                    }
-                    stSet.Add(u.Id);
+                    set = new HashSet<int>();
+                    specialtyStudents[specialty] = set;
+                }
+                set.Add(e.UserId);
 
-                    // Subject - students
-                    if (!subjectStudentsSet.TryGetValue(e.SubjectId, out var subjSet))
-                    {
-                        subjSet = new HashSet<int>();
-                        subjectStudentsSet[e.SubjectId] = subjSet;
-                    }
-                    subjSet.Add(u.Id);
-
-                    // Subject - averages
-                    if (e.NotaFinal.HasValue)
-                    {
-                        if (!subjectSumCount.TryGetValue(e.SubjectId, out var cur)) cur = (0m, 0);
-                        cur.sum += e.NotaFinal.Value;
-                        cur.count += 1;
-                        subjectSumCount[e.SubjectId] = cur;
-                    }
+                if (e.NotaFinal.HasValue)
+                {
+                    if (!subjectSumCount.TryGetValue(e.SubjectId, out var cur)) cur = (0m, 0);
+                    cur.sum += e.NotaFinal.Value;
+                    cur.count += 1;
+                    subjectSumCount[e.SubjectId] = cur;
                 }
             }
 
             var specialtyCounts = specialtyStudents.ToDictionary(kv => kv.Key, kv => kv.Value.Count);
-            var subjectCounts = subjectStudentsSet.ToDictionary(kv => subjectMap.TryGetValue(kv.Key, out var nm) ? nm : $"Materia {kv.Key}", kv => kv.Value.Count);
-            var subjectAverages = subjectSumCount.ToDictionary(kv => subjectMap.TryGetValue(kv.Key, out var nm) ? nm : $"Materia {kv.Key}", kv => kv.Value.count == 0 ? 0.0 : Math.Round((double)(kv.Value.sum / kv.Value.count), 2));
+            var subjectAverages = subjectSumCount.ToDictionary(
+                kv => subjectMap.TryGetValue(kv.Key, out var nm) ? nm : $"Materia {kv.Key}",
+                kv => kv.Value.count == 0 ? 0.0 : Math.Round((double)(kv.Value.sum / kv.Value.count), 2)
+            );
 
-            // Generar gráficos
             var pieBytes = GeneratePieChart(specialtyCounts, 700, 420);
             var avgBarBytes = GenerateBarChart(subjectAverages, 1000, 420);
-            var countBarBytes = GenerateBarChart(subjectCounts.ToDictionary(k => k.Key, k => (double)k.Value), 1000, 420);
 
-            // Construir PDF
             var document = Document.Create(container =>
             {
                 container.Page(page =>
@@ -309,7 +280,7 @@ namespace Application.Services
                     page.DefaultTextStyle(x => x.FontSize(11));
 
                     page.Header()
-                        .Text("Reporte Académico - Distribución y Rendimiento")
+                        .Text("Reporte Académico - Distribución y Promedios")
                         .SemiBold().FontSize(16).FontColor(Colors.Blue.Medium);
 
                     page.Content().Column(col =>
@@ -317,7 +288,6 @@ namespace Application.Services
                         col.Spacing(12);
                         col.Item().Text($"Generado: {DateTime.Now:yyyy-MM-dd HH:mm}").FontSize(10).FontColor(Colors.Grey.Darken1);
 
-                        // Distribución por especialidad
                         col.Item().Text("1) Distribución de estudiantes por especialidad").SemiBold();
                         if (pieBytes?.Length > 0)
                         {
@@ -330,25 +300,19 @@ namespace Application.Services
 
                         col.Item().Table(table =>
                         {
-                            table.ColumnsDefinition(c => { c.RelativeColumn(); c.ConstantColumn(80); c.ConstantColumn(80); });
+                            table.ColumnsDefinition(c => { c.RelativeColumn(); c.ConstantColumn(80); });
                             table.Header(header =>
                             {
                                 header.Cell().Element(h => h.Text("Especialidad").SemiBold());
                                 header.Cell().AlignCenter().Element(h => h.Text("Alumnos").SemiBold());
-                                header.Cell().AlignCenter().Element(h => h.Text("%").SemiBold());
                             });
 
-                            var totalStudents = specialtyCounts.Values.Sum();
                             foreach (var kv in specialtyCounts.OrderByDescending(x => x.Value))
                             {
                                 table.Cell().Element(c => c.Text(kv.Key));
                                 table.Cell().AlignCenter().Element(c => c.Text(kv.Value.ToString()));
-                                var pct = totalStudents == 0 ? 0 : Math.Round((double)kv.Value * 100.0 / totalStudents, 1);
-                                table.Cell().AlignCenter().Element(c => c.Text($"{pct}%"));
                             }
                         });
-
-                        // Promedio por materia
                         col.Item().PaddingTop(8).Text("2) Promedio de calificaciones por materia").SemiBold();
                         if (avgBarBytes?.Length > 0)
                         {
@@ -374,33 +338,6 @@ namespace Application.Services
                                 table.Cell().AlignRight().Element(c => c.Text(kv.Value.ToString("0.##")));
                             }
                         });
-
-                        // Cantidad inscriptos por materia
-                        col.Item().PaddingTop(8).Text("3) Cantidad de estudiantes inscriptos por materia").SemiBold();
-                        if (countBarBytes != null && countBarBytes?.Length > 0)
-                        {
-                            col.Item().Element(e =>
-                            {
-                                using var ms = new MemoryStream(countBarBytes);
-                                e.Image(ms);
-                            });
-                        }
-
-                        col.Item().PaddingTop(4).Table(table =>
-                        {
-                            table.ColumnsDefinition(c => { c.RelativeColumn(); c.ConstantColumn(80); });
-                            table.Header(header =>
-                            {
-                                header.Cell().Element(h => h.Text("Materia").SemiBold());
-                                header.Cell().AlignRight().Element(h => h.Text("Inscriptos").SemiBold());
-                            });
-
-                            foreach (var kv in subjectCounts.OrderByDescending(x => x.Value))
-                            {
-                                table.Cell().Element(c => c.Text(kv.Key));
-                                table.Cell().AlignRight().Element(c => c.Text(kv.Value.ToString()));
-                            }
-                        });
                     });
 
                     page.Footer()
@@ -421,8 +358,6 @@ namespace Application.Services
 
             return pdfBytes;
         }
-
-        // Helper: gráfico de torta genérico
         private byte[] GeneratePieChart(Dictionary<string, int> data, int width = 700, int height = 400)
         {
             using var surface = SKSurface.Create(new SKImageInfo(width, height));
@@ -475,7 +410,6 @@ namespace Application.Services
             return dataEnc.ToArray();
         }
 
-        // Helper: gráfico de barras genérico (valores double)
         private byte[] GenerateBarChart(Dictionary<string, double> values, int width = 1000, int height = 420)
         {
             using var surface = SKSurface.Create(new SKImageInfo(width, height));
@@ -549,7 +483,6 @@ namespace Application.Services
             using var dataEnc = image.Encode(SKEncodedImageFormat.Png, 100);
             return dataEnc.ToArray();
         }
-
 
         private record UserAverageDto(int Id, string UserName, string FullName, string Email, decimal? Average);
     }

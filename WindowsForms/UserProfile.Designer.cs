@@ -140,6 +140,7 @@
             txtNewPassword.Name = "txtNewPassword";
             txtNewPassword.Size = new Size(211, 23);
             txtNewPassword.TabIndex = 8;
+            txtNewPassword.UseSystemPasswordChar = true;
             // 
             // txtCurrentPassword
             // 
@@ -147,6 +148,7 @@
             txtCurrentPassword.Name = "txtCurrentPassword";
             txtCurrentPassword.Size = new Size(211, 23);
             txtCurrentPassword.TabIndex = 9;
+            txtCurrentPassword.UseSystemPasswordChar = true;
             // 
             // txtConfirmPassword
             // 
@@ -154,6 +156,7 @@
             txtConfirmPassword.Name = "txtConfirmPassword";
             txtConfirmPassword.Size = new Size(211, 23);
             txtConfirmPassword.TabIndex = 10;
+            txtConfirmPassword.UseSystemPasswordChar = true;
             // 
             // btnChangePassword
             // 

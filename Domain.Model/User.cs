@@ -64,7 +64,7 @@ namespace Domain.Model
             }
         }
 
-        private User() { }
+        public User() { }
 
         public void SetUserName(string userName)
         {

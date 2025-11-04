@@ -87,5 +87,13 @@ namespace Data
             _context.CoursesSubjects.Add(entity);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<UserCourseSubject>> GetAllAsync()
+        {
+            return await _context.UsersCoursesSubjects
+                                 .Include(e => e.Course)
+                                 .Include(e => e.Subject)
+                                 .ToListAsync();
+        }
     }
 }

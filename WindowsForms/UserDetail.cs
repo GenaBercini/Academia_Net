@@ -209,10 +209,5 @@ namespace WindowsForms
 
             return valido;
         }
-
-        private void comboJobPosition_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

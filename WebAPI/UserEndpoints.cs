@@ -149,8 +149,11 @@ namespace WebAPI
                 {
                     return Results.Problem(ex.Message);
                 }
-            });
-
+            })
+            .WithName("GetUsersAdvancedReport")
+            .Produces(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status500InternalServerError)
+            .WithOpenApi();
         }
     }
 }

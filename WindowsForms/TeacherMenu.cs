@@ -60,16 +60,11 @@ namespace WindowsForms
             ActivarBoton((Button)sender, "Notas de Usuarios");
 
             int profesorId = 0;
-            try
+            var auth = AuthServiceProvider.Instance;
+            var current = await auth.GetCurrentUserAsync();
+            if (current != null)
             {
-                var auth = AuthServiceProvider.Instance;
-                var current = await auth.GetCurrentUserAsync();
-                if (current != null)
-                    profesorId = current.Id;
-            }
-            catch
-            {
-               
+                profesorId = current.Id;
             }
 
             OpenOtherForm(new NotasList(profesorId));
