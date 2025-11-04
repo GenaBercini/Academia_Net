@@ -60,10 +60,18 @@ namespace WindowsForms
             ActivarBoton((Button)sender, "Materias Inscriptas");
             OpenOtherForm(new SubjectStudent());
         }
-        private void profileButton_Click(object sender, EventArgs e)
+
+        private async void btnProfile_Click(object sender, EventArgs e)
         {
-            ActivarBoton((Button)sender, "Perfil del Estudiante");
-            OpenOtherForm(new ProfileStudent());
+            var auth = AuthServiceProvider.Instance;
+            var current = await auth.GetCurrentUserAsync();
+            if (current == null)
+            {
+                MessageBox.Show("No se pudo determinar el usuario actual.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            ActivarBoton((Button)sender, "Profile Estudiante");
+            OpenOtherForm(new UserProfile(current.Id));
         }
     }
 }

@@ -1,11 +1,6 @@
-﻿
-using API.Clients;
+﻿using API.Clients;
 using DTOs;
 using Microsoft.JSInterop;
-using System.Text.Json;
-using DTOs;
-using Microsoft.JSInterop;
-using API.Clients;
 using System.Text.Json;
 using System.Linq;
 
@@ -89,19 +84,8 @@ namespace BlazorApp.Services
                     var user = JsonSerializer.Deserialize<UserDTO>(userJson, opts);
                     if (user != null) return user;
                 }
-
                 var username = await GetUsernameAsync();
                 if (string.IsNullOrEmpty(username)) return null;
-
-                try
-                {
-                    var todos = (await UsersApiClient.GetAllAsync()).ToList();
-                    var found = todos.FirstOrDefault(u => u.UserName.Equals(username, StringComparison.OrdinalIgnoreCase));
-                    if (found != null) return found;
-                }
-                catch
-                {
-                }
 
                 return new UserDTO { UserName = username };
             }

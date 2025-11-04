@@ -102,6 +102,24 @@ namespace WebAPI
             .Produces(StatusCodes.Status404NotFound)
             .WithOpenApi();
 
+            app.MapPost("/users/{id}/change-password", async (int id, ChangePasswordDTO dto, UserService userService) =>
+            {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.NewPassword) || string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                    return Results.BadRequest(new { error = "Debe ingresar la contraseña actual y la nueva." });
+
+                var user = await userService.GetAsync(id);
+                if (user == null) return Results.NotFound();
+
+                var changed = await userService.ChangePasswordAsync(id, dto.CurrentPassword, dto.NewPassword);
+                if (!changed) return Results.Problem("No se pudo cambiar la contraseña.");
+                return Results.NoContent();
+            })
+            .WithName("ChangeUserPassword")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status404NotFound)
+            .WithOpenApi();
+
 
             app.MapGet("/users/report/grades", async (UserService userService, bool onlyStudents = true) =>
             {
@@ -120,19 +138,19 @@ namespace WebAPI
             .Produces(StatusCodes.Status500InternalServerError)
             .WithOpenApi();
 
-            app.MapGet("/users/report/grades/pie", async (UserService userService) =>
+            app.MapGet("/users/report/advanced", async (UserService userService, bool onlyStudents = true) =>
             {
                 try
                 {
-                    var pngBytes = await userService.GenerateGradesPieChartAsync();
-                    return Results.File(pngBytes, "image/png", "GraficoNotas.png");
+                    var pdfBytes = await userService.GenerateAdvancedReportAsync(onlyStudents);
+                    return Results.File(pdfBytes, "application/pdf", "ReporteAvanzado.pdf");
                 }
                 catch (Exception ex)
                 {
                     return Results.Problem(ex.Message);
                 }
             })
-            .WithName("GetUsersGradesPieChart")
+            .WithName("GetUsersAdvancedReport")
             .Produces(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status500InternalServerError)
             .WithOpenApi();

@@ -59,7 +59,7 @@
             button1.TabIndex = 7;
             button1.Text = "Profile";
             button1.UseVisualStyleBackColor = true;
-            button1.Click += profileButton_Click;
+            button1.Click += btnProfile_Click;
             // 
             // button6
             // 

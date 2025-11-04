@@ -1,6 +1,7 @@
-﻿using System.Numerics;
-using Domain.Model;
+﻿using Domain.Model;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 
 namespace Data
 {
@@ -13,10 +14,6 @@ namespace Data
         {
             _context = context;
         }
-        //private TPIContext CreateContext()
-        //{
-        //    return new TPIContext();
-        //}
 
         public async Task AddAsync(Subject subject)
         {
@@ -77,6 +74,33 @@ namespace Data
                 return true;
             }
             return false;
+        }
+
+        public async Task<Dictionary<int, string>> GetSubjectMapADOAsync()
+        {
+            const string sql = @"
+            SELECT Id, [Desc]
+            FROM Subjects
+            WHERE IsDeleted = 0
+            ORDER BY Id";
+
+            var map = new Dictionary<int, string>();
+            string connectionString = _context.Database.GetConnectionString();
+
+            await using var connection = new SqlConnection(connectionString);
+            await using var command = new SqlCommand(sql, connection);
+
+            await connection.OpenAsync();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                int id = reader.GetInt32(0);
+                string desc = reader.IsDBNull(1) ? "Sin descripción" : reader.GetString(1);
+                map[id] = desc;
+            }
+
+            return map;
         }
 
 

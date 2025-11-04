@@ -6,10 +6,6 @@ namespace Data
 {
     public class SpecialtyRepository
     {
-        //private TPIContext CreateContext()
-        //{
-        //    return new TPIContext();
-        //}
 
         private readonly TPIContext _context;
 

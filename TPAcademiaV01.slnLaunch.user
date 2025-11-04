@@ -1,7 +1,16 @@
 [
   {
     "Name": "Nuevo perfil",
-    "Projects": []
+    "Projects": [
+      {
+        "Path": "WebAPI\\WebAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "BlazorApp\\BlazorApp.csproj",
+        "Action": "Start"
+      }
+    ]
   },
   {
     "Name": "Nuevo perfil",
@@ -16,6 +25,10 @@
     "Projects": [
       {
         "Path": "WebAPI\\WebAPI.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "BlazorApp\\BlazorApp.csproj",
         "Action": "Start"
       },
       {

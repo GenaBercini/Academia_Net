@@ -1,8 +1,9 @@
 ﻿using Domain.Model;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Shared.Types;
 using System;
 using System.Numerics;
-using Shared.Types;
 
 
 namespace Data
@@ -132,6 +133,34 @@ namespace Data
                       .Include(x => x.Subject)
                       .Include(x => x.Course)
                       .First(x => x.CourseId == courseId && x.SubjectId == subjectId);
+        }
+
+        public async Task<Dictionary<int, string>> GetCourseToSpecialtyMapADOAsync()
+        {
+            const string sql = @"
+            SELECT c.Id, s.DescEspecialidad
+            ROM Courses c
+            LEFT JOIN Specialties s ON c.SpecialtyId = s.Id
+            WHERE c.IsDeleted = 0
+            ORDER BY c.Id";
+
+            var map = new Dictionary<int, string>();
+            string connectionString = _context.Database.GetConnectionString();
+
+            await using var connection = new SqlConnection(connectionString);
+            await using var command = new SqlCommand(sql, connection);
+
+            await connection.OpenAsync();
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                int id = reader.GetInt32(0);
+                string specialtyDesc = reader.IsDBNull(1) ? "Sin especialidad" : reader.GetString(1);
+                map[id] = specialtyDesc;
+            }
+
+            return map;
         }
     }
 }

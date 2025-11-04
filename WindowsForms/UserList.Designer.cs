@@ -33,8 +33,8 @@
             deleteButton = new Button();
             updateButton = new Button();
             panel1 = new Panel();
-            button1 = new Button();
             pieChartButton = new Button();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)UsersDataGridView).BeginInit();
             panel1.SuspendLayout();
             SuspendLayout();
@@ -107,25 +107,25 @@
             panel1.Size = new Size(801, 45);
             panel1.TabIndex = 4;
             // 
+            // pieChartButton
+            // 
+            pieChartButton.Location = new Point(165, 11);
+            pieChartButton.Name = "pieChartButton";
+            pieChartButton.Size = new Size(166, 23);
+            pieChartButton.TabIndex = 5;
+            pieChartButton.Text = "Distribución y Promedios";
+            pieChartButton.UseVisualStyleBackColor = true;
+            pieChartButton.Click += PieChartButton_Click;
+            // 
             // button1
             // 
             button1.Location = new Point(16, 11);
             button1.Name = "button1";
             button1.Size = new Size(116, 23);
             button1.TabIndex = 4;
-            button1.Text = "ReporteListado";
+            button1.Text = "Listado de usuarios";
             button1.UseVisualStyleBackColor = true;
             button1.Click += ExportReportButton_Click;
-            // 
-            // pieChartButton
-            // 
-            pieChartButton.Location = new Point(165, 11);
-            pieChartButton.Name = "pieChartButton";
-            pieChartButton.Size = new Size(116, 23);
-            pieChartButton.TabIndex = 5;
-            pieChartButton.Text = "ReporteGrafico";
-            pieChartButton.UseVisualStyleBackColor = true;
-            pieChartButton.Click += PieChartButton_Click;
             // 
             // UserList
             // 

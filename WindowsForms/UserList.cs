@@ -193,17 +193,8 @@ namespace WindowsForms
 
             if (result == DialogResult.Yes)
             {
-                try
-                {
                     await UsersApiClient.DeleteAsync(seleccionado.Id);
                     GetAllUsers();
-                }
-                catch (Exception ex)
-                {
-                    Debug.WriteLine(ex);
-                    MessageBox.Show($"Error al eliminar usuario: {ex.Message}",
-                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
         }
         private UserDTO SelectedUser()
@@ -217,9 +208,6 @@ namespace WindowsForms
         {
             try
             {
-                button1.Enabled = false;
-                Cursor.Current = Cursors.WaitCursor;
-
                 var pdfBytes = await UsersApiClient.GetUsersGradesReportAsync(true);
                 if (pdfBytes == null || pdfBytes.Length == 0)
                     throw new Exception("El servidor devolvió un documento vacío.");
@@ -227,18 +215,18 @@ namespace WindowsForms
                 string selectedPath = null;
                 this.Invoke(() =>
                 {
-                    using var sfd = new SaveFileDialog
+                    using var saveDocDialog = new SaveFileDialog
                     {
                         Filter = "PDF (*.pdf)|*.pdf",
-                        FileName = $"ReporteUsuariosNotas_{DateTime.Now:yyyyMMdd_HHmmss}.pdf",
+                        FileName = $"ListadoUsuarios.pdf",
                         Title = "Guardar reporte de usuarios como",
                         OverwritePrompt = true,
                         RestoreDirectory = true,
                         InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
                     };
 
-                    if (sfd.ShowDialog(this) == DialogResult.OK)
-                        selectedPath = sfd.FileName;
+                    if (saveDocDialog.ShowDialog(this) == DialogResult.OK)
+                        selectedPath = saveDocDialog.FileName;
                 });
 
                 if (string.IsNullOrEmpty(selectedPath))
@@ -248,21 +236,11 @@ namespace WindowsForms
 
                 MessageBox.Show($"Reporte guardado en:\n{selectedPath}", "Reporte generado", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                try { Process.Start(new ProcessStartInfo { FileName = selectedPath, UseShellExecute = true }); }
-                catch { }
-            }
-            catch (UnauthorizedAccessException)
-            {
-                MessageBox.Show("Su sesión ha expirado. Inicie sesión de nuevo.", "Sesión inválida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Process.Start(new ProcessStartInfo { FileName = selectedPath, UseShellExecute = true });
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error al descargar el reporte:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                button1.Enabled = true;
-                Cursor.Current = Cursors.Default;
             }
         }
 
@@ -270,48 +248,42 @@ namespace WindowsForms
         {
             try
             {
-                pieChartButton.Enabled = false;
-                Cursor.Current = Cursors.WaitCursor;
-
-                var bytes = await UsersApiClient.GetGradesPieChartAsync();
-                if (bytes == null || bytes.Length == 0)
-                    throw new Exception("El servidor devolvió un gráfico vacío.");
+                var pdfBytes = await UsersApiClient.GetAdvancedReportAsync(true);
+                if (pdfBytes == null || pdfBytes.Length == 0)
+                {
+                    MessageBox.Show("El servidor devolvió un documento vacío.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 string selectedPath = null;
                 this.Invoke(() =>
                 {
-                    using var sfd = new SaveFileDialog
+                    using var saveDocDialog = new SaveFileDialog
                     {
-                        Filter = "PNG (*.png)|*.png",
-                        FileName = $"GraficoNotas_{DateTime.Now:yyyyMMdd_HHmmss}.png",
-                        Title = "Guardar gráfico de notas como",
+                        Filter = "PDF (*.pdf)|*.pdf",
+                        FileName = $"DistribucionesYPromedio.pdf",
+                        Title = "Guardar reporte avanzado como",
                         OverwritePrompt = true,
                         RestoreDirectory = true,
                         InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
                     };
 
-                    if (sfd.ShowDialog(this) == DialogResult.OK)
-                        selectedPath = sfd.FileName;
+                    if (saveDocDialog.ShowDialog(this) == DialogResult.OK)
+                        selectedPath = saveDocDialog.FileName;
                 });
 
                 if (string.IsNullOrEmpty(selectedPath))
                     return;
 
-                await Task.Run(() => File.WriteAllBytes(selectedPath, bytes));
+                await Task.Run(() => System.IO.File.WriteAllBytes(selectedPath, pdfBytes));
 
-                MessageBox.Show($"Gráfico guardado en:\n{selectedPath}", "Gráfico generado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show($"Reporte guardado en:\n{selectedPath}", "Reporte generado", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                try { Process.Start(new ProcessStartInfo { FileName = selectedPath, UseShellExecute = true }); }
-                catch { }
+                Process.Start(new ProcessStartInfo { FileName = selectedPath, UseShellExecute = true });
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al descargar el gráfico:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            finally
-            {
-                pieChartButton.Enabled = true;
-                Cursor.Current = Cursors.Default;
+                MessageBox.Show($"Error al descargar el reporte avanzado:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

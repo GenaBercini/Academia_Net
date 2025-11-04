@@ -1,0 +1,30 @@
+﻿@page "/admin/profile"
+@layout AdminLayout
+@inject API.Clients.IAuthService AuthService
+
+<div class="card profile-card">
+    <h3>Mi Perfil</h3>
+    @if (user == null)
+    {
+        <p>Cargando...</p>
+    }
+    else
+    {
+        <div class="profile-info">
+            <div><b>Usuario:</b> @user.UserName</div>
+            <div><b>Nombre:</b> @user.Name @user.LastName</div>
+            <div><b>Email:</b> @user.Email</div>
+            <div><b>DNI:</b> @user.Dni</div>
+        </div>
+    }
+</div>
+
+@code {
+    UserDTO? user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await AuthService.GetCurrentUserAsync();
+    }
+}
+

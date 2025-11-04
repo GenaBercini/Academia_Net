@@ -20,6 +20,7 @@
 
         public static void Register(IAuthService authService)
         {
+            if (authService == null) throw new ArgumentNullException(nameof(authService));
             lock (_lock)
             {
                 _instance = authService;

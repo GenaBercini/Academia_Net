@@ -5,12 +5,8 @@ using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using API.Clients;
-using DTOs;
-using Shared.Types;
 
 namespace WindowsForms
 {
@@ -217,40 +213,25 @@ namespace WindowsForms
 
            
             var final = new List<UserCourseSubjectDTO>();
-            try
-            {
                 var users = await UsersApiClient.GetAllAsync();
                 var methodByUser = clientType.GetMethod("GetByUserAndCourseAsync", BindingFlags.Public | BindingFlags.Static);
                 if (methodByUser != null)
                 {
-                    foreach (var u in users.Where(u => u.TypeUser != UserType.Admin))
+                foreach (var u in users.Where(u => u.TypeUser != UserType.Admin))
+                {
+                    var taskObj = methodByUser.Invoke(null, new object[] { u.Id, courseId });
+                    if (taskObj is Task t)
                     {
-                        try
+                        await t.ConfigureAwait(false);
+                        var resultProp = taskObj.GetType().GetProperty("Result");
+                        var res = resultProp?.GetValue(taskObj) as IEnumerable<UserCourseSubjectDTO>;
+                        if (res != null)
                         {
-                            var taskObj = methodByUser.Invoke(null, new object[] { u.Id, courseId });
-                            if (taskObj is Task t)
-                            {
-                                await t.ConfigureAwait(false);
-                                var resultProp = taskObj.GetType().GetProperty("Result");
-                                var res = resultProp?.GetValue(taskObj) as IEnumerable<UserCourseSubjectDTO>;
-                                if (res != null)
-                                {
-                                    final.AddRange(res.Where(r => r.SubjectId == subjectId));
-                                }
-                            }
-                        }
-                        catch
-                        {
-                           
+                            final.AddRange(res.Where(r => r.SubjectId == subjectId));
                         }
                     }
                 }
             }
-            catch
-            {
-               
-            }
-
             return final;
         }
 
@@ -261,7 +242,6 @@ namespace WindowsForms
                 studentDataGridView.DataSource = null;
                 return;
             }
-
             try
             {
                 var row = subjectDataGridView.SelectedRows[0];
